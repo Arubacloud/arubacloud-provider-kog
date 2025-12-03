@@ -1,5 +1,9 @@
 # Aruba Cloud Provider KOG Blueprint
 
+[![GitHub release](https://img.shields.io/github/tag/arubacloud/arubacloud-resource-operator.svg?label=release)](https://github.com/arubacloud/arubacloud-resource-operator/releases/latest) [![Tests](https://github.com/arubacloud/arubacloud-resource-operator/actions/workflows/test.yml/badge.svg)](https://github.com/arubacloud/arubacloud-resource-operator/actions/workflows/test.yml) [![Release](https://github.com/arubacloud/arubacloud-resource-operator/actions/workflows/release.yml/badge.svg)](https://github.com/arubacloud/arubacloud-resource-operator/actions/workflows/release.yml)
+
+> **⚠️ Development Status**: This operator is currently under active development and is **not production-ready yet**. APIs and resource schemas may change. Use at your own risk in production environments.
+
 ***KOG***: (*Krateo Operator Generator*)
 
 This is a Krateo Blueprint that deploys the Aruba Cloud Provider KOG leveraging the [OASGen Provider](https://github.com/krateoplatformops/oasgen-provider) and the [Aruba Cloud API](https://api.arubacloud.com/docs/intro).
@@ -596,4 +600,5 @@ It contains common issues and solutions related to this chart.
 ## Release process
 
 Please refer to the [Release guide](./docs/release.md) in the `/docs` folder for detailed instructions on how to release new versions of the chart and its components.
+
 
