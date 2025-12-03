@@ -1,0 +1,27 @@
+dependencies:
+- name: arubacloud-provider-kog-compute
+  repository: file://../arubacloud-provider-kog-compute-blueprint
+  version: 0.0.1
+- name: arubacloud-provider-kog-container
+  repository: file://../arubacloud-provider-kog-container-blueprint
+  version: 0.0.1
+- name: arubacloud-provider-kog-database
+  repository: file://../arubacloud-provider-kog-database-blueprint
+  version: 0.0.1
+- name: arubacloud-provider-kog-project
+  repository: file://../arubacloud-provider-kog-project-blueprint
+  version: 0.0.1
+- name: arubacloud-provider-kog-schedule
+  repository: file://../arubacloud-provider-kog-schedule-blueprint
+  version: 0.0.1
+- name: arubacloud-provider-kog-storage
+  repository: file://../arubacloud-provider-kog-storage-blueprint
+  version: 0.0.1
+- name: arubacloud-provider-kog-security
+  repository: file://../arubacloud-provider-kog-security-blueprint
+  version: 0.0.1
+- name: arubacloud-provider-kog-network
+  repository: file://../arubacloud-provider-kog-network-blueprint
+  version: 0.0.1
+digest: sha256:de68cc97e3deaca94d298ac37b1f563a703afa59631b47b2e17e32fbd6180d5a
+generated: "2025-12-03T16:30:33.908684701+01:00"

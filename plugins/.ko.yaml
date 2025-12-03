@@ -2,11 +2,67 @@
 # This file defines the container image builds for all plugins in the workspace.
 # It's used by the 'ko' tool to build and publish the images.
 
-defaultBaseImage: golang:1.24-alpine
+defaultBaseImage: gcr.io/distroless/static-debian11:nonroot
 
 builds:
-- id: subnet-plugin
-  dir: ./cmd/subnet-plugin
+- id: compute-plugin
+  dir: ./cmd/compute-plugin
+  main: .
+  ldflags:
+  - -s -w
+  env:
+  - CGO_ENABLED=0
+
+- id: container-plugin
+  dir: ./cmd/container-plugin
+  main: .
+  ldflags:
+  - -s -w
+  env:
+  - CGO_ENABLED=0
+
+- id: database-plugin
+  dir: ./cmd/database-plugin
+  main: .
+  ldflags:
+  - -s -w
+  env:
+  - CGO_ENABLED=0
+
+- id: project-plugin
+  dir: ./cmd/project-plugin
+  main: .
+  ldflags:
+  - -s -w
+  env:
+  - CGO_ENABLED=0
+
+- id: schedule-plugin
+  dir: ./cmd/schedule-plugin
+  main: .
+  ldflags:
+  - -s -w
+  env:
+  - CGO_ENABLED=0
+
+- id: storage-plugin
+  dir: ./cmd/storage-plugin
+  main: .
+  ldflags:
+  - -s -w
+  env:
+  - CGO_ENABLED=0
+
+- id: security-plugin
+  dir: ./cmd/security-plugin
+  main: .
+  ldflags:
+  - -s -w
+  env:
+  - CGO_ENABLED=0
+
+- id: network-plugin
+  dir: ./cmd/network-plugin
   main: .
   ldflags:
   - -s -w

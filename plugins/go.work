@@ -1,6 +1,14 @@
 go 1.24.2
 
 use (
+	./cmd/compute-plugin
+	./cmd/container-plugin
+	./cmd/database-plugin
+	./cmd/network-plugin
+	./cmd/project-plugin
+	./cmd/schedule-plugin
+	./cmd/security-plugin
+	./cmd/storage-plugin
 	./cmd/subnet-plugin
 	./pkg
 )

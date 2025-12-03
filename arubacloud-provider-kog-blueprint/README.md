@@ -53,8 +53,8 @@ helm dependency update
 Then install the chart from the local directory:
 
 ```bash
-helm install arubacloud-provider-kog . \
-  --namespace <release-namespace> \
+helm upgrade --install arubacloud-provider-kog . \
+  --namespace arubacloud-system \
   --create-namespace \
   --wait
 ```
