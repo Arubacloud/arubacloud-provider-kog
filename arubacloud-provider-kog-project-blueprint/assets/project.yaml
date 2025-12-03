@@ -1,0 +1,457 @@
+openapi: 3.0.3
+info:
+  title: Aruba Cloud - Project API
+  description: |
+    REST API for managing Project resources in Aruba Cloud.
+    Projects are organizational containers for all cloud resources.
+  version: 1.0.0
+  contact:
+    name: Aruba Cloud API Support
+    url: https://www.arubacloud.com
+
+servers:
+  - url: https://api.arubacloud.com
+    description: Production server
+
+security:
+  - BearerAuth: []
+
+tags:
+  - name: Projects
+    description: Project management operations
+
+paths:
+  /projects:
+    get:
+      tags:
+        - Projects
+      summary: List Projects
+      description: Retrieve a paginated list of all projects
+      operationId: listProjects
+      parameters:
+        - $ref: '#/components/parameters/Filter'
+        - $ref: '#/components/parameters/Sort'
+        - $ref: '#/components/parameters/Offset'
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/ApiVersion'
+      responses:
+        '200':
+          description: Project list retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectList'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    post:
+      tags:
+        - Projects
+      summary: Create Project
+      description: Create a new project
+      operationId: createProject
+      parameters:
+        - $ref: '#/components/parameters/ApiVersion'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProjectRequest'
+      responses:
+        '201':
+          description: Project created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /projects/{projectId}:
+    get:
+      tags:
+        - Projects
+      summary: Get Project
+      description: Retrieve details of a specific project
+      operationId: getProject
+      parameters:
+        - $ref: '#/components/parameters/ProjectIdPath'
+        - $ref: '#/components/parameters/ApiVersion'
+      responses:
+        '200':
+          description: Project details retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    put:
+      tags:
+        - Projects
+      summary: Update Project
+      description: Update an existing project
+      operationId: updateProject
+      parameters:
+        - $ref: '#/components/parameters/ProjectIdPath'
+        - $ref: '#/components/parameters/ApiVersion'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProjectRequest'
+      responses:
+        '200':
+          description: Project updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    delete:
+      tags:
+        - Projects
+      summary: Delete Project
+      description: Delete a project and all its resources
+      operationId: deleteProject
+      parameters:
+        - $ref: '#/components/parameters/ProjectIdPath'
+        - $ref: '#/components/parameters/ApiVersion'
+      responses:
+        '204':
+          description: Project deleted successfully
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token obtained from the authentication endpoint
+
+  parameters:
+    ProjectIdPath:
+      name: projectId
+      in: path
+      required: true
+      description: Unique identifier of the project
+      schema:
+        type: string
+        example: "my-project-id"
+
+    Filter:
+      name: filter
+      in: query
+      description: Filter expression for querying resources (OData-like syntax)
+      schema:
+        type: string
+        example: "metadata/name eq 'production'"
+
+    Sort:
+      name: sort
+      in: query
+      description: Sort expression for ordering results
+      schema:
+        type: string
+        example: "metadata/name asc"
+
+    Offset:
+      name: offset
+      in: query
+      description: Number of items to skip (for pagination)
+      schema:
+        type: integer
+        format: int32
+        minimum: 0
+        default: 0
+
+    Limit:
+      name: limit
+      in: query
+      description: Maximum number of items to return (for pagination)
+      schema:
+        type: integer
+        format: int32
+        minimum: 1
+        maximum: 100
+        default: 20
+
+    ApiVersion:
+      name: api-version
+      in: query
+      description: API version to use for the request
+      schema:
+        type: string
+        example: "2024-01-01"
+
+  schemas:
+    # Project Schemas
+    ProjectRequest:
+      type: object
+      required:
+        - metadata
+        - properties
+      properties:
+        metadata:
+          $ref: '#/components/schemas/ProjectMetadataRequest'
+        properties:
+          $ref: '#/components/schemas/ProjectPropertiesRequest'
+
+    ProjectMetadataRequest:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          description: Name of the project
+          example: "my-production-project"
+          minLength: 3
+          maxLength: 63
+          pattern: "^[a-z0-9]([a-z0-9-]*[a-z0-9])?$"
+        tags:
+          type: array
+          items:
+            type: string
+          description: Tags associated with the project
+          example: ["production", "web-services"]
+
+    ProjectPropertiesRequest:
+      type: object
+      properties:
+        description:
+          type: string
+          description: Description of the project
+          example: "Production environment for web services"
+          maxLength: 500
+        default:
+          type: boolean
+          description: Whether this is the default project
+          default: false
+
+    ProjectResponse:
+      type: object
+      properties:
+        metadata:
+          $ref: '#/components/schemas/ProjectMetadataResponse'
+        properties:
+          $ref: '#/components/schemas/ProjectPropertiesResponse'
+        status:
+          $ref: '#/components/schemas/ResourceStatus'
+
+    ProjectMetadataResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the project
+        uri:
+          type: string
+          description: URI of the project
+          example: "/projects/my-project-id"
+        name:
+          type: string
+          description: Name of the project
+        tags:
+          type: array
+          items:
+            type: string
+          description: Tags associated with the project
+        creationDate:
+          type: string
+          format: date-time
+          description: Project creation timestamp
+        createdBy:
+          type: string
+          description: User who created the project
+        updateDate:
+          type: string
+          format: date-time
+          description: Last update timestamp
+        updatedBy:
+          type: string
+          description: User who last updated the project
+        version:
+          type: string
+          description: Project version
+
+    ProjectPropertiesResponse:
+      type: object
+      properties:
+        description:
+          type: string
+          description: Description of the project
+        default:
+          type: boolean
+          description: Whether this is the default project
+        resourceCount:
+          type: integer
+          description: Number of resources in the project
+          example: 42
+
+    ProjectList:
+      type: object
+      properties:
+        total:
+          type: integer
+          format: int64
+          description: Total number of projects
+        self:
+          type: string
+          description: Self link to current page
+        prev:
+          type: string
+          description: Link to previous page
+        next:
+          type: string
+          description: Link to next page
+        first:
+          type: string
+          description: Link to first page
+        last:
+          type: string
+          description: Link to last page
+        values:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProjectResponse'
+
+    # Common Schemas
+    ResourceStatus:
+      type: object
+      properties:
+        state:
+          type: string
+          description: Current state of the resource
+          enum:
+            - Creating
+            - Active
+            - Updating
+            - Deleting
+            - Failed
+          example: "Active"
+        creationDate:
+          type: string
+          format: date-time
+          description: Status creation timestamp
+        disableStatusInfo:
+          $ref: '#/components/schemas/DisableStatusInfo'
+        previousStatus:
+          $ref: '#/components/schemas/PreviousStatus'
+        failureReason:
+          type: string
+          description: Reason for failure (if state is Failed)
+
+    DisableStatusInfo:
+      type: object
+      properties:
+        isDisabled:
+          type: boolean
+          description: Whether the resource is disabled
+        reasons:
+          type: array
+          items:
+            type: string
+          description: Reasons for disabling
+
+    PreviousStatus:
+      type: object
+      properties:
+        state:
+          type: string
+          description: Previous state of the resource
+        creationDate:
+          type: string
+          format: date-time
+          description: Previous status creation timestamp
+
+    ErrorResponse:
+      type: object
+      properties:
+        title:
+          type: string
+          description: Error title
+          example: "Bad Request"
+        status:
+          type: integer
+          description: HTTP status code
+          example: 400
+        detail:
+          type: string
+          description: Detailed error message
+          example: "The request body is invalid"
+        instance:
+          type: string
+          description: URI reference that identifies the specific occurrence of the problem
+        type:
+          type: string
+          description: URI reference to the error type documentation
+
+  responses:
+    BadRequest:
+      description: Bad Request - Invalid request parameters or body
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    Unauthorized:
+      description: Unauthorized - Authentication is required
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    NotFound:
+      description: Not Found - Resource does not exist
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    Conflict:
+      description: Conflict - Resource already exists or operation conflicts with current state
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    InternalServerError:
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'

@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-blockstorage
+data:
+  blockstorage.yaml: |
+{{ tpl (.Files.Get "assets/blockstorage.yaml") . | indent 4 }}

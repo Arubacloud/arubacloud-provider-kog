@@ -1,0 +1,442 @@
+openapi: 3.0.3
+info:
+  title: Aruba Cloud - Security Rule API
+  description: |
+    REST API for managing Security Rule resources within Security Groups in Aruba Cloud VPCs.
+    Security Rules define firewall rules for ingress and egress traffic control.
+  version: 1.0.0
+  contact:
+    name: Aruba Cloud API Support
+    url: https://www.arubacloud.com
+
+servers:
+  - url: https://api.arubacloud.com
+    description: Production server
+
+security:
+  - BearerAuth: []
+
+tags:
+  - name: SecurityRules
+    description: Security group rule operations
+
+paths:
+  /projects/{projectId}/providers/Aruba.Network/vpcs/{vpcId}/securitygroups/{securityGroupId}/securityrules:
+    get:
+      tags: [SecurityRules]
+      summary: List Security Rules
+      operationId: listSecurityRules
+      parameters:
+        - $ref: '#/components/parameters/ProjectIdPath'
+        - $ref: '#/components/parameters/VpcIdPath'
+        - $ref: '#/components/parameters/SecurityGroupIdPath'
+        - $ref: '#/components/parameters/Filter'
+        - $ref: '#/components/parameters/Sort'
+        - $ref: '#/components/parameters/Offset'
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/ApiVersion'
+      responses:
+        '200':
+          description: Security rule list retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SecurityRuleList'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+    post:
+      tags: [SecurityRules]
+      summary: Create Security Rule
+      operationId: createSecurityRule
+      parameters:
+        - $ref: '#/components/parameters/ProjectIdPath'
+        - $ref: '#/components/parameters/VpcIdPath'
+        - $ref: '#/components/parameters/SecurityGroupIdPath'
+        - $ref: '#/components/parameters/ApiVersion'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SecurityRuleRequest'
+      responses:
+        '201':
+          description: Security rule created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SecurityRuleResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /projects/{projectId}/providers/Aruba.Network/vpcs/{vpcId}/securitygroups/{securityGroupId}/securityrules/{ruleId}:
+    get:
+      tags: [SecurityRules]
+      summary: Get Security Rule
+      operationId: getSecurityRule
+      parameters:
+        - $ref: '#/components/parameters/ProjectIdPath'
+        - $ref: '#/components/parameters/VpcIdPath'
+        - $ref: '#/components/parameters/SecurityGroupIdPath'
+        - $ref: '#/components/parameters/RuleIdPath'
+        - $ref: '#/components/parameters/ApiVersion'
+      responses:
+        '200':
+          description: Security rule details retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SecurityRuleResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    put:
+      tags: [SecurityRules]
+      summary: Update Security Rule
+      operationId: updateSecurityRule
+      parameters:
+        - $ref: '#/components/parameters/ProjectIdPath'
+        - $ref: '#/components/parameters/VpcIdPath'
+        - $ref: '#/components/parameters/SecurityGroupIdPath'
+        - $ref: '#/components/parameters/RuleIdPath'
+        - $ref: '#/components/parameters/ApiVersion'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SecurityRuleRequest'
+      responses:
+        '200':
+          description: Security rule updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SecurityRuleResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    delete:
+      tags: [SecurityRules]
+      summary: Delete Security Rule
+      operationId: deleteSecurityRule
+      parameters:
+        - $ref: '#/components/parameters/ProjectIdPath'
+        - $ref: '#/components/parameters/VpcIdPath'
+        - $ref: '#/components/parameters/SecurityGroupIdPath'
+        - $ref: '#/components/parameters/RuleIdPath'
+        - $ref: '#/components/parameters/ApiVersion'
+      responses:
+        '204':
+          description: Security rule deleted successfully
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  parameters:
+    ProjectIdPath:
+      name: projectId
+      in: path
+      required: true
+      description: The unique identifier of the project
+      schema:
+        type: string
+
+    VpcIdPath:
+      name: vpcId
+      in: path
+      required: true
+      description: The unique identifier of the VPC
+      schema:
+        type: string
+
+    SecurityGroupIdPath:
+      name: securityGroupId
+      in: path
+      required: true
+      description: The unique identifier of the security group
+      schema:
+        type: string
+
+    RuleIdPath:
+      name: ruleId
+      in: path
+      required: true
+      description: The unique identifier of the security rule
+      schema:
+        type: string
+
+    Filter:
+      name: filter
+      in: query
+      description: Filter expression for results
+      schema:
+        type: string
+
+    Sort:
+      name: sort
+      in: query
+      description: Sort expression for results
+      schema:
+        type: string
+
+    Offset:
+      name: offset
+      in: query
+      description: Number of items to skip
+      schema:
+        type: integer
+        format: int32
+        default: 0
+
+    Limit:
+      name: limit
+      in: query
+      description: Maximum number of items to return
+      schema:
+        type: integer
+        format: int32
+        default: 50
+
+    ApiVersion:
+      name: api-version
+      in: query
+      description: API version
+      schema:
+        type: string
+
+  schemas:
+    SecurityRuleRequest:
+      type: object
+      required:
+        - metadata
+        - properties
+      properties:
+        metadata:
+          $ref: '#/components/schemas/RegionalResourceMetadataRequest'
+        properties:
+          type: object
+          required:
+            - direction
+            - protocol
+            - port
+            - target
+          properties:
+            direction:
+              type: string
+              enum: [Ingress, Egress]
+              description: Direction of traffic (Ingress or Egress)
+            protocol:
+              type: string
+              description: Protocol (TCP, UDP, ICMP, or protocol number)
+              example: "TCP"
+            port:
+              type: string
+              description: Port or port range (e.g., 80, 443, 1024-65535)
+              example: "443"
+            target:
+              type: object
+              required:
+                - kind
+                - value
+              properties:
+                kind:
+                  type: string
+                  enum: [IP, SecurityGroup]
+                  description: Type of target (IP address or Security Group)
+                value:
+                  type: string
+                  description: IP address/CIDR or Security Group identifier
+                  example: "0.0.0.0/0"
+
+    SecurityRuleResponse:
+      type: object
+      properties:
+        metadata:
+          $ref: '#/components/schemas/ResourceMetadataResponse'
+        properties:
+          type: object
+          properties:
+            direction:
+              type: string
+              description: Direction of traffic
+            protocol:
+              type: string
+              description: Protocol
+            port:
+              type: string
+              description: Port or port range
+            target:
+              type: object
+              properties:
+                kind:
+                  type: string
+                  description: Type of target
+                value:
+                  type: string
+                  description: IP address/CIDR or Security Group identifier
+        status:
+          $ref: '#/components/schemas/ResourceStatus'
+
+    SecurityRuleList:
+      allOf:
+        - $ref: '#/components/schemas/ListResponse'
+        - type: object
+          properties:
+            values:
+              type: array
+              items:
+                $ref: '#/components/schemas/SecurityRuleResponse'
+
+    RegionalResourceMetadataRequest:
+      type: object
+      required:
+        - name
+        - location
+      properties:
+        name:
+          type: string
+          description: Name of the resource
+        tags:
+          type: array
+          items:
+            type: string
+          description: Tags associated with the resource
+        location:
+          type: object
+          required:
+            - value
+          properties:
+            value:
+              type: string
+              description: Location identifier
+
+    ResourceMetadataResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the resource
+        uri:
+          type: string
+          description: URI of the resource
+        name:
+          type: string
+          description: Name of the resource
+        tags:
+          type: array
+          items:
+            type: string
+          description: Tags associated with the resource
+        creationDate:
+          type: string
+          format: date-time
+          description: Resource creation timestamp
+
+    ResourceStatus:
+      type: object
+      properties:
+        state:
+          type: string
+          enum: [Creating, Active, Updating, Deleting, Failed]
+          description: Current state of the resource
+        creationDate:
+          type: string
+          format: date-time
+          description: Status creation timestamp
+        failureReason:
+          type: string
+          description: Reason for failure if state is Failed
+
+    ListResponse:
+      type: object
+      properties:
+        total:
+          type: integer
+          format: int64
+          description: Total number of items available
+        self:
+          type: string
+          description: Link to current page
+        next:
+          type: string
+          description: Link to next page
+        prev:
+          type: string
+          description: Link to previous page
+
+    ErrorResponse:
+      type: object
+      properties:
+        title:
+          type: string
+          description: Error title
+        status:
+          type: integer
+          description: HTTP status code
+        detail:
+          type: string
+          description: Detailed error message
+
+  responses:
+    BadRequest:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    NotFound:
+      description: Not Found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    Conflict:
+      description: Conflict
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    InternalServerError:
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'

@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-cloudserver
+data:
+  cloudserver.yaml: |
+{{ tpl (.Files.Get "assets/cloudserver.yaml") . | indent 4 }}

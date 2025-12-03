@@ -1,0 +1,541 @@
+openapi: 3.0.3
+info:
+  title: Aruba Cloud - Database Backup API
+  description: |
+    REST API for managing Database Backups in Aruba Cloud.
+    This API allows you to create, read, and delete database backups.
+  version: 1.0.0
+  contact:
+    name: Aruba Cloud API Support
+    url: https://www.arubacloud.com
+
+servers:
+  - url: https://api.arubacloud.com
+    description: Production server
+
+security:
+  - BearerAuth: []
+
+tags:
+  - name: Backups
+    description: Database backup operations
+
+paths:
+  /projects/{projectId}/providers/Aruba.Database/backups:
+    get:
+      tags:
+        - Backups
+      summary: List Database Backups
+      description: Retrieve a paginated list of database backups in a project
+      operationId: listBackups
+      parameters:
+        - $ref: '#/components/parameters/ProjectIdPath'
+        - $ref: '#/components/parameters/Filter'
+        - $ref: '#/components/parameters/Sort'
+        - $ref: '#/components/parameters/Projection'
+        - $ref: '#/components/parameters/Offset'
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/ApiVersion'
+      responses:
+        '200':
+          description: Successfully retrieved backup list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BackupList'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    post:
+      tags:
+        - Backups
+      summary: Create Database Backup
+      description: Create a new database backup
+      operationId: createBackup
+      parameters:
+        - $ref: '#/components/parameters/ProjectIdPath'
+        - $ref: '#/components/parameters/ApiVersion'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BackupRequest'
+      responses:
+        '201':
+          description: Backup successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BackupResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /projects/{projectId}/providers/Aruba.Database/backups/{backupId}:
+    get:
+      tags:
+        - Backups
+      summary: Get Database Backup
+      description: Retrieve details of a specific database backup
+      operationId: getBackup
+      parameters:
+        - $ref: '#/components/parameters/ProjectIdPath'
+        - $ref: '#/components/parameters/BackupIdPath'
+        - $ref: '#/components/parameters/ApiVersion'
+      responses:
+        '200':
+          description: Successfully retrieved backup details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BackupResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    delete:
+      tags:
+        - Backups
+      summary: Delete Database Backup
+      description: Delete a database backup
+      operationId: deleteBackup
+      parameters:
+        - $ref: '#/components/parameters/ProjectIdPath'
+        - $ref: '#/components/parameters/BackupIdPath'
+        - $ref: '#/components/parameters/ApiVersion'
+      responses:
+        '204':
+          description: Backup successfully deleted
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token obtained from the authentication endpoint
+
+  parameters:
+    ProjectIdPath:
+      name: projectId
+      in: path
+      required: true
+      description: Unique identifier of the project
+      schema:
+        type: string
+        example: "my-project-id"
+
+    BackupIdPath:
+      name: backupId
+      in: path
+      required: true
+      description: Unique identifier of the backup
+      schema:
+        type: string
+        example: "my-backup"
+
+    Filter:
+      name: filter
+      in: query
+      description: Filter expression for querying resources (OData-like syntax)
+      schema:
+        type: string
+        example: "properties/sizeGB gt 10"
+
+    Sort:
+      name: sort
+      in: query
+      description: Sort expression for ordering results
+      schema:
+        type: string
+        example: "metadata/creationDate desc"
+
+    Projection:
+      name: projection
+      in: query
+      description: Fields to include in the response
+      schema:
+        type: string
+        example: "metadata,properties/sizeGB"
+
+    Offset:
+      name: offset
+      in: query
+      description: Number of items to skip (for pagination)
+      schema:
+        type: integer
+        format: int32
+        minimum: 0
+        default: 0
+
+    Limit:
+      name: limit
+      in: query
+      description: Maximum number of items to return (for pagination)
+      schema:
+        type: integer
+        format: int32
+        minimum: 1
+        maximum: 100
+        default: 20
+
+    ApiVersion:
+      name: api-version
+      in: query
+      description: API version to use for the request
+      schema:
+        type: string
+        example: "2024-01-01"
+
+  schemas:
+    # Backup Schemas
+    BackupRequest:
+      type: object
+      required:
+        - metadata
+        - properties
+      properties:
+        metadata:
+          $ref: '#/components/schemas/ResourceMetadataRequest'
+        properties:
+          $ref: '#/components/schemas/BackupPropertiesRequest'
+
+    BackupPropertiesRequest:
+      type: object
+      required:
+        - source
+      properties:
+        source:
+          $ref: '#/components/schemas/ReferenceResource'
+        retentionDays:
+          type: integer
+          format: int32
+          description: Number of days to retain the backup
+          minimum: 1
+          maximum: 365
+          default: 30
+          example: 7
+
+    BackupResponse:
+      type: object
+      properties:
+        metadata:
+          $ref: '#/components/schemas/ResourceMetadataResponse'
+        properties:
+          $ref: '#/components/schemas/BackupPropertiesResult'
+        status:
+          $ref: '#/components/schemas/ResourceStatus'
+
+    BackupPropertiesResult:
+      type: object
+      properties:
+        linkedResources:
+          type: array
+          items:
+            $ref: '#/components/schemas/LinkedResource'
+        source:
+          $ref: '#/components/schemas/ReferenceResource'
+        sizeGB:
+          type: number
+          format: float
+          description: Size of the backup in GB
+          example: 5.2
+        retentionDays:
+          type: integer
+          format: int32
+          description: Number of days to retain the backup
+        expirationDate:
+          type: string
+          format: date-time
+          description: Date when the backup will be automatically deleted
+        backupType:
+          type: string
+          description: Type of backup
+          enum:
+            - Full
+            - Incremental
+            - Differential
+          example: "Full"
+
+    BackupList:
+      type: object
+      properties:
+        total:
+          type: integer
+          format: int64
+          description: Total number of items
+        self:
+          type: string
+          description: Self link to current page
+        prev:
+          type: string
+          description: Link to previous page
+        next:
+          type: string
+          description: Link to next page
+        first:
+          type: string
+          description: Link to first page
+        last:
+          type: string
+          description: Link to last page
+        values:
+          type: array
+          items:
+            $ref: '#/components/schemas/BackupResponse'
+
+    # Common Schemas
+    ResourceMetadataRequest:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          description: Name of the resource
+          example: "daily-backup-2024-12-03"
+        tags:
+          type: array
+          items:
+            type: string
+          description: Tags associated with the resource
+          example: ["automated", "daily"]
+
+    ResourceMetadataResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the resource
+        uri:
+          type: string
+          description: URI of the resource
+          example: "/projects/my-project/providers/Aruba.Database/backups/daily-backup-2024-12-03"
+        name:
+          type: string
+          description: Name of the resource
+        project:
+          $ref: '#/components/schemas/ProjectResponseMetadata'
+        tags:
+          type: array
+          items:
+            type: string
+        category:
+          $ref: '#/components/schemas/CategoryResponseMetadata'
+        creationDate:
+          type: string
+          format: date-time
+          description: Resource creation timestamp
+        createdBy:
+          type: string
+          description: User who created the resource
+        updateDate:
+          type: string
+          format: date-time
+          description: Last update timestamp
+        updatedBy:
+          type: string
+          description: User who last updated the resource
+        version:
+          type: string
+          description: Resource version
+
+    ProjectResponseMetadata:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Project identifier
+
+    CategoryResponseMetadata:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Category name
+        provider:
+          type: string
+          description: Provider name
+          example: "Aruba.Database"
+        typology:
+          $ref: '#/components/schemas/TypologyResponseMetadata'
+
+    TypologyResponseMetadata:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Typology identifier
+        name:
+          type: string
+          description: Typology name
+
+    ResourceStatus:
+      type: object
+      properties:
+        state:
+          type: string
+          description: Current state of the resource
+          enum:
+            - Creating
+            - Active
+            - Updating
+            - Deleting
+            - Failed
+            - Restoring
+          example: "Active"
+        creationDate:
+          type: string
+          format: date-time
+          description: Status creation timestamp
+        disableStatusInfo:
+          $ref: '#/components/schemas/DisableStatusInfo'
+        previousStatus:
+          $ref: '#/components/schemas/PreviousStatus'
+        failureReason:
+          type: string
+          description: Reason for failure (if state is Failed)
+
+    DisableStatusInfo:
+      type: object
+      properties:
+        isDisabled:
+          type: boolean
+          description: Whether the resource is disabled
+        reasons:
+          type: array
+          items:
+            type: string
+          description: Reasons for disabling
+
+    PreviousStatus:
+      type: object
+      properties:
+        state:
+          type: string
+          description: Previous state of the resource
+        creationDate:
+          type: string
+          format: date-time
+          description: Previous status creation timestamp
+
+    ReferenceResource:
+      type: object
+      required:
+        - uri
+      properties:
+        uri:
+          type: string
+          description: URI reference to another resource
+          example: "/projects/my-project/providers/Aruba.Database/dbaas/my-dbaas"
+
+    LinkedResource:
+      type: object
+      required:
+        - uri
+        - strictCorrelation
+      properties:
+        uri:
+          type: string
+          description: URI of the linked resource
+        strictCorrelation:
+          type: boolean
+          description: Indicates if there's a strict correlation with this resource
+
+    ErrorResponse:
+      type: object
+      properties:
+        title:
+          type: string
+          description: Error title
+          example: "Bad Request"
+        status:
+          type: integer
+          description: HTTP status code
+          example: 400
+        detail:
+          type: string
+          description: Detailed error message
+          example: "The request body is invalid"
+        instance:
+          type: string
+          description: URI reference that identifies the specific occurrence of the problem
+        type:
+          type: string
+          description: URI reference to the error type documentation
+
+  responses:
+    BadRequest:
+      description: Bad Request - Invalid request parameters or body
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    Unauthorized:
+      description: Unauthorized - Authentication is required
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    Forbidden:
+      description: Forbidden - Insufficient permissions
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    NotFound:
+      description: Not Found - Resource does not exist
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    Conflict:
+      description: Conflict - Resource already exists or operation conflicts with current state
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    InternalServerError:
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'

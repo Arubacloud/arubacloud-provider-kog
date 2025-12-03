@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-restore
+data:
+  restore.yaml: |
+{{ tpl (.Files.Get "assets/restore.yaml") . | indent 4 }}

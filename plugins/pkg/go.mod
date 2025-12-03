@@ -1,4 +1,4 @@
-module github.com/krateoplatformops/arubacloud-provider-kog/pkg
+module github.com/Arubacloud/arubacloud-provider-kog/pkg
 
 go 1.24.2
 

@@ -1,0 +1,74 @@
+kind: RestDefinition
+apiVersion: ogen.krateo.io/v1alpha1
+metadata:
+  name: {{ .Release.Name }}-restore
+spec:
+  oasPath: configmap://{{ .Release.Namespace }}/{{ .Release.Name }}-restore/restore.yaml
+  resourceGroup: storage.ogen-krateo.arubacloud.com
+  resource: 
+    kind: Restore
+    identifiers:
+      - name
+
+    additionalStatusFields:
+      - id
+    excludedSpecFields:
+      - id
+    verbsDescription:
+    - action: findby
+      method: GET
+      path: /projects/{projectId}/providers/Aruba.Storage/backups/{backupId}/restores
+    - action: get
+      method: GET
+      path: /projects/{projectId}/providers/Aruba.Storage/backups/{backupId}/restores/{id}
+    - action: create
+      method: POST
+      path: /projects/{projectId}/providers/Aruba.Storage/backups/{backupId}/restores
+    - action: update
+      method: PUT
+      path: /projects/{projectId}/providers/Aruba.Storage/backups/{backupId}/restores/{id}
+    - action: delete
+      method: DELETE
+      path: /projects/{projectId}/providers/Aruba.Storage/backups/{backupId}/restores/{id}
+    configurationFields:
+    - fromOpenAPI:
+        name: api-version
+        in: query
+      fromRestDefinition:
+        actions: ["*"] # star means all actions set in the verbsDescription above
+    - fromOpenAPI:
+        name: filter
+        in: query
+      fromRestDefinition:
+        actions:
+          - findby
+    - fromOpenAPI:
+        name: sort
+        in: query
+      fromRestDefinition:
+        actions:
+          - findby
+    - fromOpenAPI:
+        name: projection
+        in: query
+      fromRestDefinition:
+        actions:
+          - findby
+    - fromOpenAPI:
+        name: offset
+        in: query
+      fromRestDefinition:
+        actions:
+          - findby
+    - fromOpenAPI:
+        name: limit
+        in: query
+      fromRestDefinition:
+        actions:
+          - findby
+    - fromOpenAPI:
+        name: ignoreDeletedStatus
+        in: query
+      fromRestDefinition:
+        actions:
+          - get

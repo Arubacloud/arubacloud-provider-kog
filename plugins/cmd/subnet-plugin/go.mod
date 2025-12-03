@@ -1,4 +1,4 @@
-module github.com/krateoplatformops/arubacloud-provider-kog/subnet-plugin
+module github.com/Arubacloud/arubacloud-provider-kog/subnet-plugin
 
 go 1.24.2
 

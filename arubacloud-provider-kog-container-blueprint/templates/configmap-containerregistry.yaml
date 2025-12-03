@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-containerregistry
+data:
+  containerregistry.yaml: |
+{{ tpl (.Files.Get "assets/containerregistry.yaml") . | indent 4 }}

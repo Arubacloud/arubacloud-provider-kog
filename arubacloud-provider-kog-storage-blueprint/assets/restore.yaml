@@ -1,0 +1,419 @@
+openapi: 3.0.3
+info:
+  title: Aruba Cloud - Storage Restore API
+  description: |
+    REST API for managing Storage Restore operations in Aruba Cloud.
+    Restore operations allow recovery of data from backups to destination volumes.
+  version: 1.0.0
+  contact:
+    name: Aruba Cloud API Support
+    url: https://www.arubacloud.com
+
+servers:
+  - url: https://api.arubacloud.com
+    description: Production server
+
+security:
+  - BearerAuth: []
+
+tags:
+  - name: Restores
+    description: Storage restore operations
+
+paths:
+  /projects/{projectId}/providers/Aruba.Storage/backups/{backupId}/restores:
+    get:
+      tags: [Restores]
+      summary: List Restores
+      operationId: listRestores
+      parameters:
+        - $ref: '#/components/parameters/ProjectIdPath'
+        - $ref: '#/components/parameters/BackupIdPath'
+        - $ref: '#/components/parameters/Filter'
+        - $ref: '#/components/parameters/Sort'
+        - $ref: '#/components/parameters/Offset'
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/ApiVersion'
+      responses:
+        '200':
+          description: Successfully retrieved restore list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestoreList'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+    post:
+      tags: [Restores]
+      summary: Create Restore
+      operationId: createRestore
+      parameters:
+        - $ref: '#/components/parameters/ProjectIdPath'
+        - $ref: '#/components/parameters/BackupIdPath'
+        - $ref: '#/components/parameters/ApiVersion'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RestoreRequest'
+      responses:
+        '201':
+          description: Restore successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestoreResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /projects/{projectId}/providers/Aruba.Storage/backups/{backupId}/restores/{restoreId}:
+    get:
+      tags: [Restores]
+      summary: Get Restore
+      operationId: getRestore
+      parameters:
+        - $ref: '#/components/parameters/ProjectIdPath'
+        - $ref: '#/components/parameters/BackupIdPath'
+        - $ref: '#/components/parameters/RestoreIdPath'
+        - $ref: '#/components/parameters/ApiVersion'
+      responses:
+        '200':
+          description: Successfully retrieved restore details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestoreResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    put:
+      tags: [Restores]
+      summary: Update Restore
+      operationId: updateRestore
+      parameters:
+        - $ref: '#/components/parameters/ProjectIdPath'
+        - $ref: '#/components/parameters/BackupIdPath'
+        - $ref: '#/components/parameters/RestoreIdPath'
+        - $ref: '#/components/parameters/ApiVersion'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RestoreRequest'
+      responses:
+        '200':
+          description: Restore successfully updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RestoreResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    delete:
+      tags: [Restores]
+      summary: Delete Restore
+      operationId: deleteRestore
+      parameters:
+        - $ref: '#/components/parameters/ProjectIdPath'
+        - $ref: '#/components/parameters/BackupIdPath'
+        - $ref: '#/components/parameters/RestoreIdPath'
+        - $ref: '#/components/parameters/ApiVersion'
+      responses:
+        '204':
+          description: Restore successfully deleted
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  parameters:
+    ProjectIdPath:
+      name: projectId
+      in: path
+      required: true
+      description: The unique identifier of the project
+      schema:
+        type: string
+
+    BackupIdPath:
+      name: backupId
+      in: path
+      required: true
+      description: The unique identifier of the backup
+      schema:
+        type: string
+
+    RestoreIdPath:
+      name: restoreId
+      in: path
+      required: true
+      description: The unique identifier of the restore operation
+      schema:
+        type: string
+
+    Filter:
+      name: filter
+      in: query
+      description: Filter expression for results
+      schema:
+        type: string
+
+    Sort:
+      name: sort
+      in: query
+      description: Sort expression for results
+      schema:
+        type: string
+
+    Offset:
+      name: offset
+      in: query
+      description: Number of items to skip
+      schema:
+        type: integer
+        format: int32
+        default: 0
+
+    Limit:
+      name: limit
+      in: query
+      description: Maximum number of items to return
+      schema:
+        type: integer
+        format: int32
+        default: 50
+
+    ApiVersion:
+      name: api-version
+      in: query
+      description: API version
+      schema:
+        type: string
+
+  schemas:
+    RestoreRequest:
+      type: object
+      required:
+        - metadata
+        - properties
+      properties:
+        metadata:
+          $ref: '#/components/schemas/RegionalResourceMetadataRequest'
+        properties:
+          type: object
+          required:
+            - destinationVolume
+          properties:
+            destinationVolume:
+              $ref: '#/components/schemas/ReferenceResource'
+              description: Reference to the destination volume where data will be restored
+
+    RestoreResponse:
+      type: object
+      properties:
+        metadata:
+          $ref: '#/components/schemas/ResourceMetadataResponse'
+        properties:
+          type: object
+          properties:
+            destinationVolume:
+              $ref: '#/components/schemas/ReferenceResource'
+              description: Reference to the destination volume
+        status:
+          $ref: '#/components/schemas/ResourceStatus'
+
+    RestoreList:
+      allOf:
+        - $ref: '#/components/schemas/ListResponse'
+        - type: object
+          properties:
+            values:
+              type: array
+              items:
+                $ref: '#/components/schemas/RestoreResponse'
+
+    RegionalResourceMetadataRequest:
+      type: object
+      required:
+        - name
+        - location
+      properties:
+        name:
+          type: string
+          description: Name of the resource
+        tags:
+          type: array
+          items:
+            type: string
+          description: Tags associated with the resource
+        location:
+          type: object
+          required:
+            - value
+          properties:
+            value:
+              type: string
+              description: Location identifier
+
+    ResourceMetadataResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the resource
+        uri:
+          type: string
+          description: URI of the resource
+        name:
+          type: string
+          description: Name of the resource
+        tags:
+          type: array
+          items:
+            type: string
+          description: Tags associated with the resource
+        location:
+          type: object
+          properties:
+            value:
+              type: string
+              description: Location identifier
+            region:
+              type: string
+              description: Region name
+            city:
+              type: string
+              description: City name
+        creationDate:
+          type: string
+          format: date-time
+          description: Resource creation timestamp
+        updateDate:
+          type: string
+          format: date-time
+          description: Resource last update timestamp
+
+    ResourceStatus:
+      type: object
+      properties:
+        state:
+          type: string
+          enum: [Creating, Active, Updating, Deleting, Failed]
+          description: Current state of the resource
+        creationDate:
+          type: string
+          format: date-time
+          description: Status creation timestamp
+        failureReason:
+          type: string
+          description: Reason for failure if state is Failed
+
+    ReferenceResource:
+      type: object
+      required:
+        - uri
+      properties:
+        uri:
+          type: string
+          description: URI of the referenced resource
+
+    ListResponse:
+      type: object
+      properties:
+        total:
+          type: integer
+          format: int64
+          description: Total number of items available
+        self:
+          type: string
+          description: Link to current page
+        prev:
+          type: string
+          description: Link to previous page
+        next:
+          type: string
+          description: Link to next page
+        first:
+          type: string
+          description: Link to first page
+        last:
+          type: string
+          description: Link to last page
+
+    ErrorResponse:
+      type: object
+      properties:
+        title:
+          type: string
+          description: Error title
+        status:
+          type: integer
+          description: HTTP status code
+        detail:
+          type: string
+          description: Detailed error message
+
+  responses:
+    BadRequest:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    NotFound:
+      description: Not Found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    Conflict:
+      description: Conflict
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    InternalServerError:
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'

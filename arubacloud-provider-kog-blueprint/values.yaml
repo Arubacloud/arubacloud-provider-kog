@@ -1,11 +1,95 @@
 # @schema
 # type: object
-# description: Configuration for the Subnet Blueprint dependency.
+# description: Configuration for the Compute Blueprint dependency.
 # @schema
-arubacloud-provider-kog-subnet-blueprint:
+arubacloud-provider-kog-compute-blueprint:
   # @schema
   # type: boolean
-  # description: Enable the Subnet Blueprint dependency.
+  # description: Enable the Compute Blueprint dependency.
+  # default: true
+  # @schema
+  enabled: true
+
+# @schema
+# type: object
+# description: Configuration for the Container Blueprint dependency.
+# @schema
+arubacloud-provider-kog-container-blueprint:
+  # @schema
+  # type: boolean
+  # description: Enable the Container Blueprint dependency.
+  # default: true
+  # @schema
+  enabled: true
+
+# @schema
+# type: object
+# description: Configuration for the Database Blueprint dependency.
+# @schema
+arubacloud-provider-kog-database-blueprint:
+  # @schema
+  # type: boolean
+  # description: Enable the Database Blueprint dependency.
+  # default: true
+  # @schema
+  enabled: true
+
+# @schema
+# type: object
+# description: Configuration for the Project Blueprint dependency.
+# @schema
+arubacloud-provider-kog-project-blueprint:
+  # @schema
+  # type: boolean
+  # description: Enable the Project Blueprint dependency.
+  # default: true
+  # @schema
+  enabled: true
+
+# @schema
+# type: object
+# description: Configuration for the Schedule Blueprint dependency.
+# @schema
+arubacloud-provider-kog-schedule-blueprint:
+  # @schema
+  # type: boolean
+  # description: Enable the Schedule Blueprint dependency.
+  # default: true
+  # @schema
+  enabled: true
+
+# @schema
+# type: object
+# description: Configuration for the Storage Blueprint dependency.
+# @schema
+arubacloud-provider-kog-storage-blueprint:
+  # @schema
+  # type: boolean
+  # description: Enable the Storage Blueprint dependency.
+  # default: true
+  # @schema
+  enabled: true
+
+# @schema
+# type: object
+# description: Configuration for the Security Blueprint dependency.
+# @schema
+arubacloud-provider-kog-security-blueprint:
+  # @schema
+  # type: boolean
+  # description: Enable the Security Blueprint dependency.
+  # default: true
+  # @schema
+  enabled: true
+
+# @schema
+# type: object
+# description: Configuration for the Network Blueprint dependency.
+# @schema
+arubacloud-provider-kog-network-blueprint:
+  # @schema
+  # type: boolean
+  # description: Enable the Network Blueprint dependency.
   # default: true
   # @schema
   enabled: true

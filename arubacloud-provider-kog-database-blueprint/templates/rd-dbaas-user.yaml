@@ -1,0 +1,74 @@
+kind: RestDefinition
+apiVersion: ogen.krateo.io/v1alpha1
+metadata:
+  name: {{ .Release.Name }}-dbaas-user
+spec:
+  oasPath: configmap://{{ .Release.Namespace }}/{{ .Release.Name }}-dbaas-user/dbaas-user.yaml
+  resourceGroup: database.ogen-krateo.arubacloud.com
+  resource: 
+    kind: DBaaSUser
+    identifiers:
+      - name
+
+    additionalStatusFields:
+      - id
+    excludedSpecFields:
+      - id
+    verbsDescription:
+    - action: findby
+      method: GET
+      path: /projects/{projectId}/providers/Aruba.Database/dbaas/{dbaasId}/users
+    - action: get
+      method: GET
+      path: /projects/{projectId}/providers/Aruba.Database/dbaas/{dbaasId}/users/{id}
+    - action: create
+      method: POST
+      path: /projects/{projectId}/providers/Aruba.Database/dbaas/{dbaasId}/users
+    - action: update
+      method: PUT
+      path: /projects/{projectId}/providers/Aruba.Database/dbaas/{dbaasId}/users/{id}
+    - action: delete
+      method: DELETE
+      path: /projects/{projectId}/providers/Aruba.Database/dbaas/{dbaasId}/users/{id}
+    configurationFields:
+    - fromOpenAPI:
+        name: api-version
+        in: query
+      fromRestDefinition:
+        actions: ["*"] # star means all actions set in the verbsDescription above
+    - fromOpenAPI:
+        name: filter
+        in: query
+      fromRestDefinition:
+        actions:
+          - findby
+    - fromOpenAPI:
+        name: sort
+        in: query
+      fromRestDefinition:
+        actions:
+          - findby
+    - fromOpenAPI:
+        name: projection
+        in: query
+      fromRestDefinition:
+        actions:
+          - findby
+    - fromOpenAPI:
+        name: offset
+        in: query
+      fromRestDefinition:
+        actions:
+          - findby
+    - fromOpenAPI:
+        name: limit
+        in: query
+      fromRestDefinition:
+        actions:
+          - findby
+    - fromOpenAPI:
+        name: ignoreDeletedStatus
+        in: query
+      fromRestDefinition:
+        actions:
+          - get
