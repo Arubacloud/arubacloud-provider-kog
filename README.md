@@ -3,7 +3,17 @@
 ***KOG***: (*Krateo Operator Generator*)
 
 This is a Krateo Blueprint that deploys the Aruba Cloud Provider KOG leveraging the [OASGen Provider](https://github.com/krateoplatformops/oasgen-provider) and the [Aruba Cloud API](https://api.arubacloud.com/docs/intro).
-This provider allows you to manage Aruba Cloud resources such as subnets in a cloud-native way using the Krateo platform.
+This provider allows you to manage Aruba Cloud resources in a cloud-native way using the Krateo platform.
+
+**Supported resource categories:**
+- **Compute** - Virtual servers and SSH key pairs (CloudServer, KeyPair)
+- **Container** - Kubernetes and container registries (KaaS, ContainerRegistry)
+- **Database** - Managed database services (DBaaS, Database, User, Grant, Backup)
+- **Network** - Networking resources (VPC, Subnet, SecurityGroup, SecurityRule, ElasticIP, LoadBalancer, VPNTunnel)
+- **Storage** - Block storage and backups (BlockStorage, Snapshot, Backup, Restore)
+- **Project** - Project management (Project)
+- **Schedule** - Job scheduling (Job)
+- **Security** - Key management (KMS)
 
 ## Summary
 
@@ -14,8 +24,11 @@ This provider allows you to manage Aruba Cloud resources such as subnets in a cl
   - [Single resource installation](#single-resource-installation)
 - [OpenAPI Specification](#openapi-specification)
 - [Supported resources](#supported-resources)
+  - [Available Blueprints](#available-blueprints)
   - [Resource details](#resource-details)
     - [Subnet](#subnet)
+    - [CloudServer](#cloudserver)
+    - [DBaaS](#dbaas)
   - [Resource examples](#resource-examples)
 - [Authentication](#authentication)
 - [Configuration](#configuration)
@@ -78,8 +91,9 @@ Note that the names of the RestDefinitions and the namespace where the RestDefin
 
 ### Single resource installation
 
-To manage a single resource, you can install the specific Helm chart for that resource. For example, to install the `arubacloud-provider-kog-subnet` resource, you can use the following command:
+To manage resources from a specific category, you can install the dedicated Helm chart. Here are examples for each category:
 
+**Subnet resources:**
 ```sh
 helm install arubacloud-provider-kog-subnet arubacloud-provider-kog-subnet \
   --repo https://marketplace.krateo.io \
@@ -89,20 +103,156 @@ helm install arubacloud-provider-kog-subnet arubacloud-provider-kog-subnet \
   --wait
 ```
 
+**Compute resources (CloudServer, KeyPair):**
+```sh
+helm install arubacloud-provider-kog-compute arubacloud-provider-kog-compute-blueprint \
+  --repo https://marketplace.krateo.io \
+  --namespace <release-namespace> \
+  --create-namespace \
+  --wait
+```
+
+**Container resources (KaaS, ContainerRegistry):**
+```sh
+helm install arubacloud-provider-kog-container arubacloud-provider-kog-container-blueprint \
+  --repo https://marketplace.krateo.io \
+  --namespace <release-namespace> \
+  --create-namespace \
+  --wait
+```
+
+**Database resources (DBaaS, Database, User, Grant, Backup):**
+```sh
+helm install arubacloud-provider-kog-database arubacloud-provider-kog-database-blueprint \
+  --repo https://marketplace.krateo.io \
+  --namespace <release-namespace> \
+  --create-namespace \
+  --wait
+```
+
+**Network resources (VPC, Subnet, SecurityGroup, SecurityRule, ElasticIP, LoadBalancer, VPNTunnel):**
+```sh
+helm install arubacloud-provider-kog-network arubacloud-provider-kog-network-blueprint \
+  --repo https://marketplace.krateo.io \
+  --namespace <release-namespace> \
+  --create-namespace \
+  --wait
+```
+
+**Storage resources (BlockStorage, Snapshot, Backup, Restore):**
+```sh
+helm install arubacloud-provider-kog-storage arubacloud-provider-kog-storage-blueprint \
+  --repo https://marketplace.krateo.io \
+  --namespace <release-namespace> \
+  --create-namespace \
+  --wait
+```
+
+**Project resources:**
+```sh
+helm install arubacloud-provider-kog-project arubacloud-provider-kog-project-blueprint \
+  --repo https://marketplace.krateo.io \
+  --namespace <release-namespace> \
+  --create-namespace \
+  --wait
+```
+
+**Schedule resources (Job):**
+```sh
+helm install arubacloud-provider-kog-schedule arubacloud-provider-kog-schedule-blueprint \
+  --repo https://marketplace.krateo.io \
+  --namespace <release-namespace> \
+  --create-namespace \
+  --wait
+```
+
+**Security resources (KMS):**
+```sh
+helm install arubacloud-provider-kog-security arubacloud-provider-kog-security-blueprint \
+  --repo https://marketplace.krateo.io \
+  --namespace <release-namespace> \
+  --create-namespace \
+  --wait
+```
+
 ## OpenAPI Specification
 
 The OpenAPI Specification used for this provider is derived from the one provided by Aruba Cloud which can be found at the following URL: https://api.arubacloud.com/openapi/network-provider.json.
 
 ## Supported resources
 
-This chart supports the following resources and operations:
+This provider supports the following resources across multiple categories:
 
+### Compute Resources
 | Resource     | Get  | Create | Update | Delete |
 |--------------|------|--------|--------|--------|
-| Subnet       | ✅   | ✅     | ✅     | ✅     |
+| CloudServer  | ✅   | ✅     | ✅     | ✅     |
+| KeyPair      | ✅   | ✅     | ✅     | ✅     |
 
+### Container Resources
+| Resource           | Get  | Create | Update | Delete |
+|-------------------|------|--------|--------|--------|
+| KaaS              | ✅   | ✅     | ✅     | ✅     |
+| ContainerRegistry | ✅   | ✅     | ✅     | ✅     |
 
-The resources listed above are Custom Resources (CRs) defined in the `arubacloud.ogen.krateo.io` API group. They are used to manage Aruba Cloud resources in a Kubernetes-native way, allowing you to create, update, and delete Arubacloud resources using Kubernetes manifests.
+### Database Resources
+| Resource   | Get  | Create | Update | Delete |
+|-----------|------|--------|--------|--------|
+| DBaaS     | ✅   | ✅     | ✅     | ✅     |
+| Database  | ✅   | ✅     | ✅     | ✅     |
+| User      | ✅   | ✅     | ✅     | ✅     |
+| Grant     | ✅   | ✅     | ✅     | ✅     |
+| Backup    | ✅   | ✅     | ✅     | ✅     |
+
+### Network Resources
+| Resource       | Get  | Create | Update | Delete |
+|---------------|------|--------|--------|--------|
+| VPC           | ✅   | ✅     | ✅     | ✅     |
+| Subnet        | ✅   | ✅     | ✅     | ✅     |
+| SecurityGroup | ✅   | ✅     | ✅     | ✅     |
+| SecurityRule  | ✅   | ✅     | ✅     | ✅     |
+| ElasticIP     | ✅   | ✅     | ✅     | ✅     |
+| LoadBalancer  | ✅   | ✅     | ✅     | ✅     |
+| VPNTunnel     | ✅   | ✅     | ✅     | ✅     |
+
+### Storage Resources
+| Resource      | Get  | Create | Update | Delete |
+|--------------|------|--------|--------|--------|
+| BlockStorage | ✅   | ✅     | ✅     | ✅     |
+| Snapshot     | ✅   | ✅     | ✅     | ✅     |
+| Backup       | ✅   | ✅     | ✅     | ✅     |
+| Restore      | ✅   | ✅     | ✅     | ✅     |
+
+### Project Resources
+| Resource | Get  | Create | Update | Delete |
+|---------|------|--------|--------|--------|
+| Project | ✅   | ✅     | ✅     | ✅     |
+
+### Schedule Resources
+| Resource | Get  | Create | Update | Delete |
+|---------|------|--------|--------|--------|
+| Job     | ✅   | ✅     | ✅     | ✅     |
+
+### Security Resources
+| Resource | Get  | Create | Update | Delete |
+|---------|------|--------|--------|--------|
+| KMS     | ✅   | ✅     | ✅     | ✅     |
+
+The resources listed above are Custom Resources (CRs) defined in the `arubacloud.ogen.krateo.io` API group. They are used to manage Aruba Cloud resources in a Kubernetes-native way, allowing you to create, update, and delete Aruba Cloud resources using Kubernetes manifests.
+
+## Available Blueprints
+
+This project provides separate Helm charts for each resource category:
+
+- **arubacloud-provider-kog-compute-blueprint** - Manages compute resources (CloudServer, KeyPair)
+- **arubacloud-provider-kog-container-blueprint** - Manages container resources (KaaS, ContainerRegistry)
+- **arubacloud-provider-kog-database-blueprint** - Manages database resources (DBaaS, Database, User, Grant, Backup)
+- **arubacloud-provider-kog-network-blueprint** - Manages network resources (VPC, Subnet, SecurityGroup, SecurityRule, ElasticIP, LoadBalancer, VPNTunnel)
+- **arubacloud-provider-kog-storage-blueprint** - Manages storage resources (BlockStorage, Snapshot, Backup, Restore)
+- **arubacloud-provider-kog-project-blueprint** - Manages project resources
+- **arubacloud-provider-kog-schedule-blueprint** - Manages scheduling resources (Job)
+- **arubacloud-provider-kog-security-blueprint** - Manages security resources (KMS)
+- **arubacloud-provider-kog-blueprint** - Umbrella chart that includes all of the above
 
 ### Resource details
 
@@ -153,9 +303,79 @@ spec:
       #    gateway: "10.1.0.12"
 ```
 
+#### CloudServer
+
+The `CloudServer` resource allows you to create, update, and delete Aruba Cloud virtual servers.
+You can specify the server name, location, instance type, image, network configuration, and other settings.
+
+An example of a CloudServer resource is:
+```yaml
+apiVersion: arubacloud.ogen.krateo.io/v1alpha1
+kind: CloudServer
+metadata:
+  name: my-cloud-server
+  namespace: default
+  annotations:
+    krateo.io/connector-verbose: "true"
+spec:
+  configurationRef:
+    name: cloudserver-config
+    namespace: default
+  projectId: "proj-12345"
+  name: "my-cloud-server"
+  location:
+    value: "ITBG-Bergamo"
+  properties:
+    instanceType: "LS"  # Small instance
+    image: "ubuntu-22.04"
+    networkConfiguration:
+      vpcId: "vpc-67890"
+      subnetId: "subnet-12345"
+    tags:
+      - "production"
+      - "web-server"
+```
+
+#### DBaaS
+
+The `DBaaS` resource allows you to create, update, and delete Aruba Cloud managed database instances.
+You can specify the database engine, version, instance type, storage, and other configuration options.
+
+An example of a DBaaS resource is:
+```yaml
+apiVersion: arubacloud.ogen.krateo.io/v1alpha1
+kind: Dbaas
+metadata:
+  name: my-postgres-db
+  namespace: default
+  annotations:
+    krateo.io/connector-verbose: "true"
+spec:
+  configurationRef:
+    name: dbaas-config
+    namespace: default
+  projectId: "proj-12345"
+  name: "my-postgres-db"
+  location:
+    value: "ITBG-Bergamo"
+  properties:
+    engine: "postgresql"
+    version: "15"
+    instanceType: "db.t3.medium"
+    storageSize: 100  # GB
+    backupRetentionPeriod: 7  # days
+```
+
 ### Resource examples
 
-You can find example resources for each supported resource type in the `/samples` folder of the main chart.
+You can find example resources for each supported resource type in the `/samples` folder of each blueprint chart.
+For instance:
+- Subnet examples: `arubacloud-provider-kog-subnet-blueprint/samples/`
+- Compute examples: `arubacloud-provider-kog-compute-blueprint/samples/`
+- Database examples: `arubacloud-provider-kog-database-blueprint/samples/`
+- And so on for each category...
+
+The umbrella chart (`arubacloud-provider-kog-blueprint`) also includes sample files for quick reference.
 
 ## Authentication
 
@@ -184,11 +404,19 @@ EOF
 
 Replace `<YOUR_TOKEN>` with your actual Aruba Cloud Token (without quotes and without `Bearer ` prefix).
 
-- **\<Resource\>Configuration**: These resource can reference the Kubernetes Secret and are used to authenticate with the Aruba Cloud API. They must be referenced with the `configurationRef` field of the resources defined in this chart. The configuration resource can be in a different namespace than the resource itself.
+- **\<Resource\>Configuration**: These resources can reference the Kubernetes Secret and are used to authenticate with the Aruba Cloud API. They must be referenced with the `configurationRef` field of the resources defined in this chart. The configuration resource can be in a different namespace than the resource itself.
 
-Note that the specific configuration resource type depends on the resource you are managing. For instance, in the case of the `Subnet` resource, you would need a `SubnetConfiguration`.
+Note that the specific configuration resource type depends on the resource you are managing:
+- For `Subnet` resources: use `SubnetConfiguration`
+- For `CloudServer` resources: use `CloudServerConfiguration`
+- For `KeyPair` resources: use `KeyPairConfiguration`
+- For `KaaS` resources: use `KaaSConfiguration`
+- For `DBaaS` resources: use `DbaasConfiguration`
+- For `VPC` resources: use `VpcConfiguration`
+- For `BlockStorage` resources: use `BlockStorageConfiguration`
+- And so on for each resource type...
 
-An example of a `SubnetConfiguration` resource that references the Kubernetes Secret, to be applied to your cluster:
+An example of a `SubnetConfiguration` resource that references the Kubernetes Secret:
 ```sh
 kubectl apply -f - <<EOF
 apiVersion: arubacloud.ogen.krateo.io/v1alpha1
@@ -237,29 +465,108 @@ spec:
   name: test-subnet-kog-123
 ```
 
+Similarly, for a `CloudServer` resource, you would create a `CloudServerConfiguration`:
+```sh
+kubectl apply -f - <<EOF
+apiVersion: arubacloud.ogen.krateo.io/v1alpha1
+kind: CloudServerConfiguration
+metadata:
+  name: my-cloudserver-config
+  namespace: default
+spec:
+  authentication:
+    bearer:
+      tokenRef:
+        name: arubacloud-token
+        namespace: default
+        key: token
+  configuration:
+    query:
+      create:
+        api-version: "1.0"
+      delete:
+        api-version: "1.0"
+      get:
+        api-version: "1.0"
+      update:
+        api-version: "1.0"
+      findby:
+        api-version: "1.0"
+EOF
+```
+
+And reference it in your `CloudServer` resource:
+```yaml
+apiVersion: arubacloud.ogen.krateo.io/v1alpha1
+kind: CloudServer
+metadata:
+  name: my-server
+  namespace: default
+spec:
+  configurationRef:
+    name: my-cloudserver-config
+    namespace: default
+  projectId: ABCDEFGHIJKLMN
+  name: my-server
+  # ... other properties
+```
+
 More details about the configuration resources in the [Configuration resources](#configuration-resources) section below.
 
 ## Configuration
 
 ### Configuration resources
 
-Each resource type (e.g., `Subnet`) requires a specific configuration resource (e.g., `SubnetConfiguration`) to be created in the cluster.
-Currently, the supported configuration resources are:
-- `SubnetConfiguration`
+Each resource type requires a specific configuration resource to be created in the cluster.
+
+**Currently supported configuration resources:**
+- `CloudServerConfiguration` - For CloudServer resources
+- `KeyPairConfiguration` - For KeyPair resources
+- `KaaSConfiguration` - For KaaS resources
+- `ContainerRegistryConfiguration` - For ContainerRegistry resources
+- `DbaasConfiguration` - For DBaaS resources
+- `DatabaseConfiguration` - For Database resources
+- `UserConfiguration` - For User resources
+- `GrantConfiguration` - For Grant resources
+- `BackupConfiguration` - For Backup resources (database)
+- `VpcConfiguration` - For VPC resources
+- `SubnetConfiguration` - For Subnet resources
+- `SecurityGroupConfiguration` - For SecurityGroup resources
+- `SecurityRuleConfiguration` - For SecurityRule resources
+- `ElasticIpConfiguration` - For ElasticIP resources
+- `LoadBalancerConfiguration` - For LoadBalancer resources
+- `VpnTunnelConfiguration` - For VPNTunnel resources
+- `BlockStorageConfiguration` - For BlockStorage resources
+- `SnapshotConfiguration` - For Snapshot resources
+- `BackupConfiguration` - For Backup resources (storage)
+- `RestoreConfiguration` - For Restore resources
+- `ProjectConfiguration` - For Project resources
+- `JobConfiguration` - For Job resources
+- `KmsConfiguration` - For KMS resources
 
 These configuration resources are used to store the authentication information (i.e., reference to the Kubernetes Secret containing the Aruba Cloud Token) and other configuration options for the resource type.
-You can find examples of these configuration resources in the `/samples/configs` folder of the main chart.
+You can find examples of these configuration resources in the `/samples/configs` folder of each blueprint chart.
 Note that a single configuration resource can be used by multiple resources of the same type.
 For example, you can create a single `SubnetConfiguration` resource and reference it in multiple `Subnet` resources.
 
 ### values.yaml
 
-You can customize the **arubacloud-provider-kog-blueprint** chart by modifying the `values.yaml` file.
-For instance, you can select which resources the provider should support in the oncoming installation.
+You can customize the **arubacloud-provider-kog-blueprint** chart (the umbrella chart) by modifying the `values.yaml` file.
+For instance, you can select which category of resources the provider should support by enabling or disabling individual blueprints.
 This may be useful if you want to limit the resources managed by the provider to only those you need, reducing the overhead of managing unnecessary controllers.
-The default configuration of the chart enables all resources supported by the chart.
 
-Note: currently `subnet` is the only supported resource.
+The umbrella chart supports the following blueprints that can be enabled/disabled:
+- `arubacloud-provider-kog-subnet-blueprint` - Subnet resources
+- `arubacloud-provider-kog-compute-blueprint` - Compute resources (CloudServer, KeyPair)
+- `arubacloud-provider-kog-container-blueprint` - Container resources (KaaS, ContainerRegistry)
+- `arubacloud-provider-kog-database-blueprint` - Database resources (DBaaS and related)
+- `arubacloud-provider-kog-network-blueprint` - Network resources (VPC, SecurityGroup, etc.)
+- `arubacloud-provider-kog-storage-blueprint` - Storage resources (BlockStorage, Snapshot, Backup, Restore)
+- `arubacloud-provider-kog-project-blueprint` - Project resources
+- `arubacloud-provider-kog-schedule-blueprint` - Schedule resources (Job)
+- `arubacloud-provider-kog-security-blueprint` - Security resources (KMS)
+
+By default, all blueprints are enabled.
 
 ### Verbose logging
 
