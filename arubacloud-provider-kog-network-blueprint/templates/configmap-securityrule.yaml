@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-securityrule
+data:
+  securityrule.yaml: |
+{{ tpl (.Files.Get "assets/securityrule.yaml") . | indent 4 }}

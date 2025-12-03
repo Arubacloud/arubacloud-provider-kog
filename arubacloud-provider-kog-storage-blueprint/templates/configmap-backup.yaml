@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-backup
+data:
+  backup.yaml: |
+{{ tpl (.Files.Get "assets/backup.yaml") . | indent 4 }}

@@ -1,0 +1,707 @@
+openapi: 3.0.3
+info:
+  title: Aruba Cloud - Schedule Job API
+  description: |
+    REST API for managing scheduled job automation in Aruba Cloud.
+    Schedule API allows you to automate recurring or one-time operations on cloud resources.
+  version: 1.0.0
+  contact:
+    name: Aruba Cloud API Support
+    url: https://www.arubacloud.com
+
+servers:
+  - url: https://api.arubacloud.com
+    description: Production server
+
+security:
+  - BearerAuth: []
+
+tags:
+  - name: Jobs
+    description: Scheduled job automation operations
+
+paths:
+  /projects/{projectId}/providers/Aruba.Schedule/jobs:
+    get:
+      tags:
+        - Jobs
+      summary: List Jobs
+      description: Retrieve a paginated list of scheduled jobs in a project
+      operationId: listJobs
+      parameters:
+        - $ref: '#/components/parameters/ProjectIdPath'
+        - $ref: '#/components/parameters/Filter'
+        - $ref: '#/components/parameters/Sort'
+        - $ref: '#/components/parameters/Projection'
+        - $ref: '#/components/parameters/Offset'
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/ApiVersion'
+      responses:
+        '200':
+          description: Job list retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobList'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    post:
+      tags:
+        - Jobs
+      summary: Create Job
+      description: Create a new scheduled job
+      operationId: createJob
+      parameters:
+        - $ref: '#/components/parameters/ProjectIdPath'
+        - $ref: '#/components/parameters/ApiVersion'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JobRequest'
+      responses:
+        '201':
+          description: Job created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /projects/{projectId}/providers/Aruba.Schedule/jobs/{jobName}:
+    get:
+      tags:
+        - Jobs
+      summary: Get Job
+      description: Retrieve details of a specific scheduled job
+      operationId: getJob
+      parameters:
+        - $ref: '#/components/parameters/ProjectIdPath'
+        - $ref: '#/components/parameters/JobNamePath'
+        - $ref: '#/components/parameters/ApiVersion'
+      responses:
+        '200':
+          description: Job details retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    put:
+      tags:
+        - Jobs
+      summary: Update Job
+      description: Update an existing scheduled job
+      operationId: updateJob
+      parameters:
+        - $ref: '#/components/parameters/ProjectIdPath'
+        - $ref: '#/components/parameters/JobNamePath'
+        - $ref: '#/components/parameters/ApiVersion'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JobRequest'
+      responses:
+        '200':
+          description: Job updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    delete:
+      tags:
+        - Jobs
+      summary: Delete Job
+      description: Delete a scheduled job
+      operationId: deleteJob
+      parameters:
+        - $ref: '#/components/parameters/ProjectIdPath'
+        - $ref: '#/components/parameters/JobNamePath'
+        - $ref: '#/components/parameters/ApiVersion'
+      responses:
+        '204':
+          description: Job deleted successfully
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token obtained from the authentication endpoint
+
+  parameters:
+    ProjectIdPath:
+      name: projectId
+      in: path
+      required: true
+      description: Unique identifier of the project
+      schema:
+        type: string
+        example: "my-project-id"
+
+    JobNamePath:
+      name: jobName
+      in: path
+      required: true
+      description: Name of the scheduled job
+      schema:
+        type: string
+        example: "daily-backup-job"
+
+    Filter:
+      name: filter
+      in: query
+      description: Filter expression for querying resources (OData-like syntax)
+      schema:
+        type: string
+        example: "properties/enabled eq true"
+
+    Sort:
+      name: sort
+      in: query
+      description: Sort expression for ordering results
+      schema:
+        type: string
+        example: "metadata/name asc"
+
+    Projection:
+      name: projection
+      in: query
+      description: Fields to include in the response
+      schema:
+        type: string
+        example: "metadata,properties/nextExecution"
+
+    Offset:
+      name: offset
+      in: query
+      description: Number of items to skip (for pagination)
+      schema:
+        type: integer
+        format: int32
+        minimum: 0
+        default: 0
+
+    Limit:
+      name: limit
+      in: query
+      description: Maximum number of items to return (for pagination)
+      schema:
+        type: integer
+        format: int32
+        minimum: 1
+        maximum: 100
+        default: 20
+
+    ApiVersion:
+      name: api-version
+      in: query
+      description: API version to use for the request
+      schema:
+        type: string
+        example: "2024-01-01"
+
+  schemas:
+    # Job Schemas
+    JobRequest:
+      type: object
+      required:
+        - metadata
+        - properties
+      properties:
+        metadata:
+          $ref: '#/components/schemas/RegionalResourceMetadataRequest'
+        properties:
+          $ref: '#/components/schemas/JobPropertiesRequest'
+
+    JobPropertiesRequest:
+      type: object
+      required:
+        - scheduleJobType
+      properties:
+        enabled:
+          type: boolean
+          description: Whether the job is enabled
+          default: true
+        scheduleJobType:
+          type: string
+          description: Type of job
+          enum:
+            - OneShot
+            - Recurring
+          example: "Recurring"
+        scheduleAt:
+          type: string
+          format: date-time
+          description: Date and time when the job should run (required for OneShot jobs)
+          example: "2024-12-31T23:59:59Z"
+        executeUntil:
+          type: string
+          format: date-time
+          description: End date until which the job can run (for Recurring jobs)
+          example: "2025-12-31T23:59:59Z"
+        cron:
+          type: string
+          description: CRON expression that defines the recurrence of the job
+          example: "0 0 * * *"
+        steps:
+          type: array
+          description: Steps that will be executed as part of the job
+          items:
+            $ref: '#/components/schemas/JobStep'
+
+    JobStep:
+      type: object
+      required:
+        - resourceUri
+        - actionUri
+        - httpVerb
+      properties:
+        name:
+          type: string
+          description: Descriptive name of the step
+          example: "Backup VM"
+        resourceUri:
+          type: string
+          description: URI of the resource on which the action will be performed
+          example: "/projects/my-project/providers/Aruba.Compute/cloudservers/my-vm"
+        actionUri:
+          type: string
+          description: URI of the action to execute on the resource
+          example: "/projects/my-project/providers/Aruba.Compute/cloudservers/my-vm/backup"
+        httpVerb:
+          type: string
+          description: HTTP verb to be used for the action
+          enum:
+            - GET
+            - POST
+            - PUT
+            - PATCH
+            - DELETE
+          example: "POST"
+        body:
+          type: string
+          description: Optional HTTP request body to send with the action
+          example: '{"snapshotName": "daily-backup"}'
+
+    JobResponse:
+      type: object
+      properties:
+        metadata:
+          $ref: '#/components/schemas/ResourceMetadataResponse'
+        properties:
+          $ref: '#/components/schemas/JobPropertiesResponse'
+        status:
+          $ref: '#/components/schemas/ResourceStatus'
+
+    JobPropertiesResponse:
+      type: object
+      properties:
+        linkedResources:
+          type: array
+          items:
+            $ref: '#/components/schemas/LinkedResource'
+        enabled:
+          type: boolean
+          description: Whether the job is enabled
+        scheduleJobType:
+          type: string
+          description: Type of job
+          enum:
+            - OneShot
+            - Recurring
+        scheduleAt:
+          type: string
+          format: date-time
+          description: Date and time when the job should run
+        executeUntil:
+          type: string
+          format: date-time
+          description: End date until which the job can run
+        cron:
+          type: string
+          description: CRON expression that defines the recurrence of the job
+        recurrency:
+          type: string
+          description: Recurrence pattern of the job
+          enum:
+            - Hourly
+            - Daily
+            - Weekly
+            - Monthly
+            - Custom
+        steps:
+          type: array
+          description: Steps that will be executed as part of the job
+          items:
+            $ref: '#/components/schemas/JobStepResponse'
+        nextExecution:
+          type: string
+          format: date-time
+          description: Date and time of the next scheduled execution
+        lastExecution:
+          type: string
+          format: date-time
+          description: Date and time of the last execution
+        deactiveReason:
+          type: string
+          description: Reason why the job was deactivated
+          enum:
+            - None
+            - Manual
+            - ResourceDeleted
+
+    JobStepResponse:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Descriptive name of the step
+        resourceUri:
+          type: string
+          description: URI of the resource
+        actionUri:
+          type: string
+          description: URI of the action
+        actionName:
+          type: string
+          description: Name of the action
+        typology:
+          type: string
+          description: Type of the resource
+        typologyName:
+          type: string
+          description: Name of the typology
+        httpVerb:
+          type: string
+          description: HTTP verb
+          enum:
+            - GET
+            - POST
+            - PUT
+            - PATCH
+            - DELETE
+        body:
+          type: string
+          description: HTTP request body
+
+    JobList:
+      type: object
+      properties:
+        total:
+          type: integer
+          format: int64
+          description: Total number of jobs
+        self:
+          type: string
+          description: Self link to current page
+        prev:
+          type: string
+          description: Link to previous page
+        next:
+          type: string
+          description: Link to next page
+        first:
+          type: string
+          description: Link to first page
+        last:
+          type: string
+          description: Link to last page
+        values:
+          type: array
+          items:
+            $ref: '#/components/schemas/JobResponse'
+
+    # Common Schemas
+    RegionalResourceMetadataRequest:
+      type: object
+      required:
+        - name
+        - location
+      properties:
+        name:
+          type: string
+          description: Name of the resource
+          example: "daily-backup-job"
+        tags:
+          type: array
+          items:
+            type: string
+          description: Tags associated with the resource
+          example: ["automation", "backup"]
+        location:
+          $ref: '#/components/schemas/LocationRequest'
+
+    LocationRequest:
+      type: object
+      required:
+        - value
+      properties:
+        value:
+          type: string
+          description: Location identifier
+          example: "ITBG-Bergamo"
+
+    ResourceMetadataResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the resource
+        uri:
+          type: string
+          description: URI of the resource
+          example: "/projects/my-project/providers/Aruba.Schedule/jobs/daily-backup-job"
+        name:
+          type: string
+          description: Name of the resource
+        location:
+          $ref: '#/components/schemas/LocationResponse'
+        project:
+          $ref: '#/components/schemas/ProjectResponseMetadata'
+        tags:
+          type: array
+          items:
+            type: string
+        category:
+          $ref: '#/components/schemas/CategoryResponseMetadata'
+        creationDate:
+          type: string
+          format: date-time
+          description: Resource creation timestamp
+        createdBy:
+          type: string
+          description: User who created the resource
+        updateDate:
+          type: string
+          format: date-time
+          description: Last update timestamp
+        updatedBy:
+          type: string
+          description: User who last updated the resource
+        version:
+          type: string
+          description: Resource version
+
+    LocationResponse:
+      type: object
+      properties:
+        code:
+          type: string
+          description: Location code
+        country:
+          type: string
+          description: Country name
+        region:
+          type: string
+          description: Region name
+        city:
+          type: string
+          description: City name
+        value:
+          type: string
+          description: Full location value
+
+    ProjectResponseMetadata:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Project identifier
+
+    CategoryResponseMetadata:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Category name
+        provider:
+          type: string
+          description: Provider name
+          example: "Aruba.Schedule"
+        typology:
+          $ref: '#/components/schemas/TypologyResponseMetadata'
+
+    TypologyResponseMetadata:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Typology identifier
+        name:
+          type: string
+          description: Typology name
+
+    ResourceStatus:
+      type: object
+      properties:
+        state:
+          type: string
+          description: Current state of the resource
+          enum:
+            - Creating
+            - Active
+            - Updating
+            - Deleting
+            - Failed
+            - Disabled
+          example: "Active"
+        creationDate:
+          type: string
+          format: date-time
+          description: Status creation timestamp
+        disableStatusInfo:
+          $ref: '#/components/schemas/DisableStatusInfo'
+        previousStatus:
+          $ref: '#/components/schemas/PreviousStatus'
+        failureReason:
+          type: string
+          description: Reason for failure (if state is Failed)
+
+    DisableStatusInfo:
+      type: object
+      properties:
+        isDisabled:
+          type: boolean
+          description: Whether the resource is disabled
+        reasons:
+          type: array
+          items:
+            type: string
+          description: Reasons for disabling
+
+    PreviousStatus:
+      type: object
+      properties:
+        state:
+          type: string
+          description: Previous state of the resource
+        creationDate:
+          type: string
+          format: date-time
+          description: Previous status creation timestamp
+
+    LinkedResource:
+      type: object
+      required:
+        - uri
+        - strictCorrelation
+      properties:
+        uri:
+          type: string
+          description: URI of the linked resource
+        strictCorrelation:
+          type: boolean
+          description: Indicates if there's a strict correlation with this resource
+
+    ErrorResponse:
+      type: object
+      properties:
+        title:
+          type: string
+          description: Error title
+          example: "Bad Request"
+        status:
+          type: integer
+          description: HTTP status code
+          example: 400
+        detail:
+          type: string
+          description: Detailed error message
+          example: "The request body is invalid"
+        instance:
+          type: string
+          description: URI reference that identifies the specific occurrence of the problem
+        type:
+          type: string
+          description: URI reference to the error type documentation
+
+  responses:
+    BadRequest:
+      description: Bad Request - Invalid request parameters or body
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    Unauthorized:
+      description: Unauthorized - Authentication is required
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    Forbidden:
+      description: Forbidden - Insufficient permissions
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    NotFound:
+      description: Not Found - Resource does not exist
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    Conflict:
+      description: Conflict - Resource already exists or operation conflicts with current state
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    InternalServerError:
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'

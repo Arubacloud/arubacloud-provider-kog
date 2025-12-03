@@ -1,0 +1,74 @@
+kind: RestDefinition
+apiVersion: ogen.krateo.io/v1alpha1
+metadata:
+  name: {{ .Release.Name }}-kms
+spec:
+  oasPath: configmap://{{ .Release.Namespace }}/{{ .Release.Name }}-kms/kms.yaml
+  resourceGroup: security.ogen-krateo.arubacloud.com
+  resource: 
+    kind: KMS
+    identifiers:
+      - name
+
+    additionalStatusFields:
+      - id
+    excludedSpecFields:
+      - id
+    verbsDescription:
+    - action: findby
+      method: GET
+      path: /projects/{projectId}/providers/Aruba.Security/kms/keys
+    - action: get
+      method: GET
+      path: /projects/{projectId}/providers/Aruba.Security/kms/keys/{id}
+    - action: create
+      method: POST
+      path: /projects/{projectId}/providers/Aruba.Security/kms/keys
+    - action: update
+      method: PUT
+      path: /projects/{projectId}/providers/Aruba.Security/kms/keys/{id}
+    - action: delete
+      method: DELETE
+      path: /projects/{projectId}/providers/Aruba.Security/kms/keys/{id}
+    configurationFields:
+    - fromOpenAPI:
+        name: api-version
+        in: query
+      fromRestDefinition:
+        actions: ["*"] # star means all actions set in the verbsDescription above
+    - fromOpenAPI:
+        name: filter
+        in: query
+      fromRestDefinition:
+        actions:
+          - findby
+    - fromOpenAPI:
+        name: sort
+        in: query
+      fromRestDefinition:
+        actions:
+          - findby
+    - fromOpenAPI:
+        name: projection
+        in: query
+      fromRestDefinition:
+        actions:
+          - findby
+    - fromOpenAPI:
+        name: offset
+        in: query
+      fromRestDefinition:
+        actions:
+          - findby
+    - fromOpenAPI:
+        name: limit
+        in: query
+      fromRestDefinition:
+        actions:
+          - findby
+    - fromOpenAPI:
+        name: ignoreDeletedStatus
+        in: query
+      fromRestDefinition:
+        actions:
+          - get

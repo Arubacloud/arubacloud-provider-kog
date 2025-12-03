@@ -1,0 +1,74 @@
+kind: RestDefinition
+apiVersion: ogen.krateo.io/v1alpha1
+metadata:
+  name: {{ .Release.Name }}-job
+spec:
+  oasPath: configmap://{{ .Release.Namespace }}/{{ .Release.Name }}-job/job.yaml
+  resourceGroup: schedule.ogen-krateo.arubacloud.com
+  resource: 
+    kind: Job
+    identifiers:
+      - name
+
+    additionalStatusFields:
+      - id
+    excludedSpecFields:
+      - id
+    verbsDescription:
+    - action: findby
+      method: GET
+      path: /projects/{projectId}/providers/Aruba.Schedule/jobs
+    - action: get
+      method: GET
+      path: /projects/{projectId}/providers/Aruba.Schedule/jobs/{id}
+    - action: create
+      method: POST
+      path: /projects/{projectId}/providers/Aruba.Schedule/jobs
+    - action: update
+      method: PUT
+      path: /projects/{projectId}/providers/Aruba.Schedule/jobs/{id}
+    - action: delete
+      method: DELETE
+      path: /projects/{projectId}/providers/Aruba.Schedule/jobs/{id}
+    configurationFields:
+    - fromOpenAPI:
+        name: api-version
+        in: query
+      fromRestDefinition:
+        actions: ["*"] # star means all actions set in the verbsDescription above
+    - fromOpenAPI:
+        name: filter
+        in: query
+      fromRestDefinition:
+        actions:
+          - findby
+    - fromOpenAPI:
+        name: sort
+        in: query
+      fromRestDefinition:
+        actions:
+          - findby
+    - fromOpenAPI:
+        name: projection
+        in: query
+      fromRestDefinition:
+        actions:
+          - findby
+    - fromOpenAPI:
+        name: offset
+        in: query
+      fromRestDefinition:
+        actions:
+          - findby
+    - fromOpenAPI:
+        name: limit
+        in: query
+      fromRestDefinition:
+        actions:
+          - findby
+    - fromOpenAPI:
+        name: ignoreDeletedStatus
+        in: query
+      fromRestDefinition:
+        actions:
+          - get

@@ -1,0 +1,74 @@
+kind: RestDefinition
+apiVersion: ogen.krateo.io/v1alpha1
+metadata:
+  name: {{ .Release.Name }}-cloudserver
+spec:
+  oasPath: configmap://{{ .Release.Namespace }}/{{ .Release.Name }}-cloudserver/cloudserver.yaml
+  resourceGroup: compute.ogen-krateo.arubacloud.com
+  resource: 
+    kind: CloudServer
+    identifiers:
+      - name
+
+    additionalStatusFields:
+      - id
+    excludedSpecFields:
+      - id
+    verbsDescription:
+    - action: findby
+      method: GET
+      path: /projects/{projectId}/providers/Aruba.Compute/cloudservers
+    - action: get
+      method: GET
+      path: /projects/{projectId}/providers/Aruba.Compute/cloudservers/{id}
+    - action: create
+      method: POST
+      path: /projects/{projectId}/providers/Aruba.Compute/cloudservers
+    - action: update
+      method: PUT
+      path: /projects/{projectId}/providers/Aruba.Compute/cloudservers/{id}
+    - action: delete
+      method: DELETE
+      path: /projects/{projectId}/providers/Aruba.Compute/cloudservers/{id}
+    configurationFields:
+    - fromOpenAPI:
+        name: api-version
+        in: query
+      fromRestDefinition:
+        actions: ["*"] # star means all actions set in the verbsDescription above
+    - fromOpenAPI:
+        name: filter
+        in: query
+      fromRestDefinition:
+        actions:
+          - findby
+    - fromOpenAPI:
+        name: sort
+        in: query
+      fromRestDefinition:
+        actions:
+          - findby
+    - fromOpenAPI:
+        name: projection
+        in: query
+      fromRestDefinition:
+        actions:
+          - findby
+    - fromOpenAPI:
+        name: offset
+        in: query
+      fromRestDefinition:
+        actions:
+          - findby
+    - fromOpenAPI:
+        name: limit
+        in: query
+      fromRestDefinition:
+        actions:
+          - findby
+    - fromOpenAPI:
+        name: ignoreDeletedStatus
+        in: query
+      fromRestDefinition:
+        actions:
+          - get

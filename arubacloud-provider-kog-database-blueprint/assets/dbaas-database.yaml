@@ -1,0 +1,565 @@
+openapi: 3.0.3
+info:
+  title: Aruba Cloud - Database Instance API
+  description: |
+    REST API for managing individual Database instances within a DBaaS service in Aruba Cloud.
+    This API allows you to create, read, update, and delete databases within a DBaaS instance.
+  version: 1.0.0
+  contact:
+    name: Aruba Cloud API Support
+    url: https://www.arubacloud.com
+
+servers:
+  - url: https://api.arubacloud.com
+    description: Production server
+
+security:
+  - BearerAuth: []
+
+tags:
+  - name: Databases
+    description: Database instance operations
+
+paths:
+  /projects/{projectId}/providers/Aruba.Database/dbaas/{dbaasId}/databases:
+    get:
+      tags:
+        - Databases
+      summary: List Databases
+      description: Retrieve a paginated list of databases in a DBaaS instance
+      operationId: listDatabases
+      parameters:
+        - $ref: '#/components/parameters/ProjectIdPath'
+        - $ref: '#/components/parameters/DbaasIdPath'
+        - $ref: '#/components/parameters/Filter'
+        - $ref: '#/components/parameters/Sort'
+        - $ref: '#/components/parameters/Projection'
+        - $ref: '#/components/parameters/Offset'
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/ApiVersion'
+      responses:
+        '200':
+          description: Successfully retrieved database list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DatabaseList'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    post:
+      tags:
+        - Databases
+      summary: Create Database
+      description: Create a new database within a DBaaS instance
+      operationId: createDatabase
+      parameters:
+        - $ref: '#/components/parameters/ProjectIdPath'
+        - $ref: '#/components/parameters/DbaasIdPath'
+        - $ref: '#/components/parameters/ApiVersion'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DatabaseRequest'
+      responses:
+        '201':
+          description: Database successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DatabaseResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /projects/{projectId}/providers/Aruba.Database/dbaas/{dbaasId}/databases/{databaseId}:
+    get:
+      tags:
+        - Databases
+      summary: Get Database
+      description: Retrieve details of a specific database
+      operationId: getDatabase
+      parameters:
+        - $ref: '#/components/parameters/ProjectIdPath'
+        - $ref: '#/components/parameters/DbaasIdPath'
+        - $ref: '#/components/parameters/DatabaseIdPath'
+        - $ref: '#/components/parameters/ApiVersion'
+      responses:
+        '200':
+          description: Successfully retrieved database details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DatabaseResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    put:
+      tags:
+        - Databases
+      summary: Update Database
+      description: Update an existing database
+      operationId: updateDatabase
+      parameters:
+        - $ref: '#/components/parameters/ProjectIdPath'
+        - $ref: '#/components/parameters/DbaasIdPath'
+        - $ref: '#/components/parameters/DatabaseIdPath'
+        - $ref: '#/components/parameters/ApiVersion'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DatabaseRequest'
+      responses:
+        '200':
+          description: Database successfully updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DatabaseResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    delete:
+      tags:
+        - Databases
+      summary: Delete Database
+      description: Delete a database
+      operationId: deleteDatabase
+      parameters:
+        - $ref: '#/components/parameters/ProjectIdPath'
+        - $ref: '#/components/parameters/DbaasIdPath'
+        - $ref: '#/components/parameters/DatabaseIdPath'
+        - $ref: '#/components/parameters/ApiVersion'
+      responses:
+        '204':
+          description: Database successfully deleted
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token obtained from the authentication endpoint
+
+  parameters:
+    ProjectIdPath:
+      name: projectId
+      in: path
+      required: true
+      description: Unique identifier of the project
+      schema:
+        type: string
+        example: "my-project-id"
+
+    DbaasIdPath:
+      name: dbaasId
+      in: path
+      required: true
+      description: Unique identifier of the DBaaS instance
+      schema:
+        type: string
+        example: "my-dbaas"
+
+    DatabaseIdPath:
+      name: databaseId
+      in: path
+      required: true
+      description: Unique identifier of the database
+      schema:
+        type: string
+        example: "my-database"
+
+    Filter:
+      name: filter
+      in: query
+      description: Filter expression for querying resources (OData-like syntax)
+      schema:
+        type: string
+        example: "properties/characterSet eq 'utf8mb4'"
+
+    Sort:
+      name: sort
+      in: query
+      description: Sort expression for ordering results
+      schema:
+        type: string
+        example: "metadata/name asc"
+
+    Projection:
+      name: projection
+      in: query
+      description: Fields to include in the response
+      schema:
+        type: string
+        example: "metadata,properties/characterSet"
+
+    Offset:
+      name: offset
+      in: query
+      description: Number of items to skip (for pagination)
+      schema:
+        type: integer
+        format: int32
+        minimum: 0
+        default: 0
+
+    Limit:
+      name: limit
+      in: query
+      description: Maximum number of items to return (for pagination)
+      schema:
+        type: integer
+        format: int32
+        minimum: 1
+        maximum: 100
+        default: 20
+
+    ApiVersion:
+      name: api-version
+      in: query
+      description: API version to use for the request
+      schema:
+        type: string
+        example: "2024-01-01"
+
+  schemas:
+    # Database Schemas
+    DatabaseRequest:
+      type: object
+      required:
+        - metadata
+        - properties
+      properties:
+        metadata:
+          $ref: '#/components/schemas/ResourceMetadataRequest'
+        properties:
+          $ref: '#/components/schemas/DatabasePropertiesRequest'
+
+    DatabasePropertiesRequest:
+      type: object
+      properties:
+        characterSet:
+          type: string
+          description: Character set for the database
+          example: "utf8mb4"
+          default: "utf8mb4"
+        collation:
+          type: string
+          description: Collation for the database
+          example: "utf8mb4_unicode_ci"
+          default: "utf8mb4_unicode_ci"
+
+    DatabaseResponse:
+      type: object
+      properties:
+        metadata:
+          $ref: '#/components/schemas/ResourceMetadataResponse'
+        properties:
+          $ref: '#/components/schemas/DatabasePropertiesResult'
+        status:
+          $ref: '#/components/schemas/ResourceStatus'
+
+    DatabasePropertiesResult:
+      type: object
+      properties:
+        linkedResources:
+          type: array
+          items:
+            $ref: '#/components/schemas/LinkedResource'
+        characterSet:
+          type: string
+          description: Character set of the database
+        collation:
+          type: string
+          description: Collation of the database
+        sizeGB:
+          type: number
+          format: float
+          description: Current size of the database in GB
+
+    DatabaseList:
+      type: object
+      properties:
+        total:
+          type: integer
+          format: int64
+          description: Total number of items
+        self:
+          type: string
+          description: Self link to current page
+        prev:
+          type: string
+          description: Link to previous page
+        next:
+          type: string
+          description: Link to next page
+        first:
+          type: string
+          description: Link to first page
+        last:
+          type: string
+          description: Link to last page
+        values:
+          type: array
+          items:
+            $ref: '#/components/schemas/DatabaseResponse'
+
+    # Common Schemas
+    ResourceMetadataRequest:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          description: Name of the resource
+          example: "mydb"
+        tags:
+          type: array
+          items:
+            type: string
+          description: Tags associated with the resource
+          example: ["production", "app-data"]
+
+    ResourceMetadataResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the resource
+        uri:
+          type: string
+          description: URI of the resource
+          example: "/projects/my-project/providers/Aruba.Database/dbaas/my-dbaas/databases/mydb"
+        name:
+          type: string
+          description: Name of the resource
+        project:
+          $ref: '#/components/schemas/ProjectResponseMetadata'
+        tags:
+          type: array
+          items:
+            type: string
+        category:
+          $ref: '#/components/schemas/CategoryResponseMetadata'
+        creationDate:
+          type: string
+          format: date-time
+          description: Resource creation timestamp
+        createdBy:
+          type: string
+          description: User who created the resource
+        updateDate:
+          type: string
+          format: date-time
+          description: Last update timestamp
+        updatedBy:
+          type: string
+          description: User who last updated the resource
+        version:
+          type: string
+          description: Resource version
+
+    ProjectResponseMetadata:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Project identifier
+
+    CategoryResponseMetadata:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Category name
+        provider:
+          type: string
+          description: Provider name
+          example: "Aruba.Database"
+        typology:
+          $ref: '#/components/schemas/TypologyResponseMetadata'
+
+    TypologyResponseMetadata:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Typology identifier
+        name:
+          type: string
+          description: Typology name
+
+    ResourceStatus:
+      type: object
+      properties:
+        state:
+          type: string
+          description: Current state of the resource
+          enum:
+            - Creating
+            - Active
+            - Updating
+            - Deleting
+            - Failed
+          example: "Active"
+        creationDate:
+          type: string
+          format: date-time
+          description: Status creation timestamp
+        disableStatusInfo:
+          $ref: '#/components/schemas/DisableStatusInfo'
+        previousStatus:
+          $ref: '#/components/schemas/PreviousStatus'
+        failureReason:
+          type: string
+          description: Reason for failure (if state is Failed)
+
+    DisableStatusInfo:
+      type: object
+      properties:
+        isDisabled:
+          type: boolean
+          description: Whether the resource is disabled
+        reasons:
+          type: array
+          items:
+            type: string
+          description: Reasons for disabling
+
+    PreviousStatus:
+      type: object
+      properties:
+        state:
+          type: string
+          description: Previous state of the resource
+        creationDate:
+          type: string
+          format: date-time
+          description: Previous status creation timestamp
+
+    LinkedResource:
+      type: object
+      required:
+        - uri
+        - strictCorrelation
+      properties:
+        uri:
+          type: string
+          description: URI of the linked resource
+        strictCorrelation:
+          type: boolean
+          description: Indicates if there's a strict correlation with this resource
+
+    ErrorResponse:
+      type: object
+      properties:
+        title:
+          type: string
+          description: Error title
+          example: "Bad Request"
+        status:
+          type: integer
+          description: HTTP status code
+          example: 400
+        detail:
+          type: string
+          description: Detailed error message
+          example: "The request body is invalid"
+        instance:
+          type: string
+          description: URI reference that identifies the specific occurrence of the problem
+        type:
+          type: string
+          description: URI reference to the error type documentation
+
+  responses:
+    BadRequest:
+      description: Bad Request - Invalid request parameters or body
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    Unauthorized:
+      description: Unauthorized - Authentication is required
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    Forbidden:
+      description: Forbidden - Insufficient permissions
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    NotFound:
+      description: Not Found - Resource does not exist
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    Conflict:
+      description: Conflict - Resource already exists or operation conflicts with current state
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    InternalServerError:
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'

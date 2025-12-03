@@ -1,0 +1,683 @@
+openapi: 3.0.3
+info:
+  title: Aruba Cloud - Container KaaS API
+  description: |
+    REST API for managing Kubernetes as a Service (KaaS) resources in Aruba Cloud.
+    This API allows you to create, read, update, and delete Kubernetes clusters.
+  version: 1.0.0
+  contact:
+    name: Aruba Cloud API Support
+    url: https://www.arubacloud.com
+
+servers:
+  - url: https://api.arubacloud.com
+    description: Production server
+
+security:
+  - BearerAuth: []
+
+tags:
+  - name: KaaS
+    description: Kubernetes as a Service operations
+
+paths:
+  /projects/{projectId}/providers/Aruba.Container/kaas:
+    get:
+      tags:
+        - KaaS
+      summary: List KaaS Clusters
+      description: Retrieve a paginated list of KaaS clusters in a project
+      operationId: listKaaS
+      parameters:
+        - $ref: '#/components/parameters/ProjectIdPath'
+        - $ref: '#/components/parameters/Filter'
+        - $ref: '#/components/parameters/Sort'
+        - $ref: '#/components/parameters/Projection'
+        - $ref: '#/components/parameters/Offset'
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/ApiVersion'
+      responses:
+        '200':
+          description: Successfully retrieved KaaS cluster list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/KaaSList'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    post:
+      tags:
+        - KaaS
+      summary: Create KaaS Cluster
+      description: Create a new Kubernetes cluster
+      operationId: createKaaS
+      parameters:
+        - $ref: '#/components/parameters/ProjectIdPath'
+        - $ref: '#/components/parameters/ApiVersion'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/KaaSRequest'
+      responses:
+        '201':
+          description: KaaS cluster successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/KaaSResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /projects/{projectId}/providers/Aruba.Container/kaas/{kaasId}:
+    get:
+      tags:
+        - KaaS
+      summary: Get KaaS Cluster
+      description: Retrieve details of a specific Kubernetes cluster
+      operationId: getKaaS
+      parameters:
+        - $ref: '#/components/parameters/ProjectIdPath'
+        - $ref: '#/components/parameters/KaasIdPath'
+        - $ref: '#/components/parameters/ApiVersion'
+      responses:
+        '200':
+          description: Successfully retrieved KaaS cluster details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/KaaSResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    put:
+      tags:
+        - KaaS
+      summary: Update KaaS Cluster
+      description: Update an existing Kubernetes cluster
+      operationId: updateKaaS
+      parameters:
+        - $ref: '#/components/parameters/ProjectIdPath'
+        - $ref: '#/components/parameters/KaasIdPath'
+        - $ref: '#/components/parameters/ApiVersion'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/KaaSRequest'
+      responses:
+        '200':
+          description: KaaS cluster successfully updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/KaaSResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    delete:
+      tags:
+        - KaaS
+      summary: Delete KaaS Cluster
+      description: Delete a Kubernetes cluster
+      operationId: deleteKaaS
+      parameters:
+        - $ref: '#/components/parameters/ProjectIdPath'
+        - $ref: '#/components/parameters/KaasIdPath'
+        - $ref: '#/components/parameters/ApiVersion'
+      responses:
+        '204':
+          description: KaaS cluster successfully deleted
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token obtained from the authentication endpoint
+
+  parameters:
+    ProjectIdPath:
+      name: projectId
+      in: path
+      required: true
+      description: Unique identifier of the project
+      schema:
+        type: string
+        example: "my-project-id"
+
+    KaasIdPath:
+      name: kaasId
+      in: path
+      required: true
+      description: Unique identifier of the KaaS cluster
+      schema:
+        type: string
+        example: "my-k8s-cluster"
+
+    Filter:
+      name: filter
+      in: query
+      description: Filter expression for querying resources (OData-like syntax)
+      schema:
+        type: string
+        example: "properties/ha eq true"
+
+    Sort:
+      name: sort
+      in: query
+      description: Sort expression for ordering results
+      schema:
+        type: string
+        example: "metadata/name asc"
+
+    Projection:
+      name: projection
+      in: query
+      description: Fields to include in the response
+      schema:
+        type: string
+        example: "metadata,properties/kubernetesVersion"
+
+    Offset:
+      name: offset
+      in: query
+      description: Number of items to skip (for pagination)
+      schema:
+        type: integer
+        format: int32
+        minimum: 0
+        default: 0
+
+    Limit:
+      name: limit
+      in: query
+      description: Maximum number of items to return (for pagination)
+      schema:
+        type: integer
+        format: int32
+        minimum: 1
+        maximum: 100
+        default: 20
+
+    ApiVersion:
+      name: api-version
+      in: query
+      description: API version to use for the request
+      schema:
+        type: string
+        example: "2024-01-01"
+
+  schemas:
+    # KaaS Schemas
+    KaaSRequest:
+      type: object
+      required:
+        - metadata
+        - properties
+      properties:
+        metadata:
+          $ref: '#/components/schemas/RegionalResourceMetadataRequest'
+        properties:
+          $ref: '#/components/schemas/KaaSPropertiesRequest'
+
+    KaaSPropertiesRequest:
+      type: object
+      required:
+        - vpc
+        - subnet
+        - securityGroup
+        - nodeCIDR
+        - kubernetesVersion
+        - nodePools
+        - ha
+        - billingPlan
+      properties:
+        preset:
+          type: boolean
+          description: Use preset configuration
+          default: false
+        vpc:
+          $ref: '#/components/schemas/ReferenceResource'
+        subnet:
+          $ref: '#/components/schemas/ReferenceResource'
+        securityGroup:
+          type: object
+          properties:
+            name:
+              type: string
+              description: Name of the security group
+        nodeCIDR:
+          type: object
+          properties:
+            name:
+              type: string
+              description: Name of the node CIDR
+            address:
+              type: string
+              description: CIDR address block
+              example: "10.0.0.0/16"
+        kubernetesVersion:
+          type: object
+          properties:
+            value:
+              type: string
+              description: Kubernetes version
+              example: "1.28.3"
+        nodePools:
+          type: array
+          description: Node pools configuration
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+                description: Name of the node pool
+              nodes:
+                type: integer
+                description: Number of nodes in the pool
+                minimum: 1
+              instance:
+                type: string
+                description: Instance type for nodes
+                example: "CSO2A4"
+              zone:
+                type: string
+                description: Availability zone
+                example: "ITBG-1"
+        ha:
+          type: boolean
+          description: Enable high availability
+          default: false
+        billingPlan:
+          type: object
+          properties:
+            billingPeriod:
+              type: string
+              description: Billing period
+              enum: ["hourly", "monthly", "yearly"]
+              example: "monthly"
+
+    KaaSResponse:
+      type: object
+      properties:
+        metadata:
+          $ref: '#/components/schemas/ResourceMetadataResponse'
+        properties:
+          $ref: '#/components/schemas/KaaSPropertiesResult'
+        status:
+          $ref: '#/components/schemas/ResourceStatus'
+
+    KaaSPropertiesResult:
+      type: object
+      properties:
+        linkedResources:
+          type: array
+          items:
+            $ref: '#/components/schemas/LinkedResource'
+        preset:
+          type: boolean
+          description: Whether preset configuration is used
+        vpc:
+          $ref: '#/components/schemas/ReferenceResource'
+        subnet:
+          $ref: '#/components/schemas/ReferenceResource'
+        kubernetesVersion:
+          type: object
+          properties:
+            value:
+              type: string
+              description: Kubernetes version
+        nodePools:
+          type: array
+          description: Node pools configuration
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+                description: Name of the node pool
+              nodes:
+                type: integer
+                description: Number of nodes in the pool
+              instance:
+                type: string
+                description: Instance type for nodes
+              zone:
+                type: string
+                description: Availability zone
+        ha:
+          type: boolean
+          description: High availability enabled
+
+    KaaSList:
+      type: object
+      properties:
+        total:
+          type: integer
+          format: int64
+          description: Total number of items
+        self:
+          type: string
+          description: Self link to current page
+        prev:
+          type: string
+          description: Link to previous page
+        next:
+          type: string
+          description: Link to next page
+        first:
+          type: string
+          description: Link to first page
+        last:
+          type: string
+          description: Link to last page
+        values:
+          type: array
+          items:
+            $ref: '#/components/schemas/KaaSResponse'
+
+    # Common Schemas
+    RegionalResourceMetadataRequest:
+      type: object
+      required:
+        - name
+        - location
+      properties:
+        name:
+          type: string
+          description: Name of the resource
+          example: "my-k8s-cluster"
+        tags:
+          type: array
+          items:
+            type: string
+          description: Tags associated with the resource
+          example: ["production", "kubernetes"]
+        location:
+          $ref: '#/components/schemas/LocationRequest'
+
+    LocationRequest:
+      type: object
+      required:
+        - value
+      properties:
+        value:
+          type: string
+          description: Location identifier
+          example: "ITBG-Bergamo"
+
+    ResourceMetadataResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the resource
+        uri:
+          type: string
+          description: URI of the resource
+          example: "/projects/my-project/providers/Aruba.Container/kaas/my-k8s-cluster"
+        name:
+          type: string
+          description: Name of the resource
+        location:
+          $ref: '#/components/schemas/LocationResponse'
+        project:
+          $ref: '#/components/schemas/ProjectResponseMetadata'
+        tags:
+          type: array
+          items:
+            type: string
+        category:
+          $ref: '#/components/schemas/CategoryResponseMetadata'
+        creationDate:
+          type: string
+          format: date-time
+          description: Resource creation timestamp
+        createdBy:
+          type: string
+          description: User who created the resource
+        updateDate:
+          type: string
+          format: date-time
+          description: Last update timestamp
+        updatedBy:
+          type: string
+          description: User who last updated the resource
+        version:
+          type: string
+          description: Resource version
+
+    LocationResponse:
+      type: object
+      properties:
+        code:
+          type: string
+          description: Location code
+        country:
+          type: string
+          description: Country name
+        region:
+          type: string
+          description: Region name
+        city:
+          type: string
+          description: City name
+        value:
+          type: string
+          description: Full location value
+
+    ProjectResponseMetadata:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Project identifier
+
+    CategoryResponseMetadata:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Category name
+        provider:
+          type: string
+          description: Provider name
+          example: "Aruba.Container"
+        typology:
+          $ref: '#/components/schemas/TypologyResponseMetadata'
+
+    TypologyResponseMetadata:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Typology identifier
+        name:
+          type: string
+          description: Typology name
+
+    ResourceStatus:
+      type: object
+      properties:
+        state:
+          type: string
+          description: Current state of the resource
+          enum:
+            - Creating
+            - Active
+            - Updating
+            - Deleting
+            - Failed
+            - Stopped
+          example: "Active"
+        creationDate:
+          type: string
+          format: date-time
+          description: Status creation timestamp
+        disableStatusInfo:
+          $ref: '#/components/schemas/DisableStatusInfo'
+        previousStatus:
+          $ref: '#/components/schemas/PreviousStatus'
+        failureReason:
+          type: string
+          description: Reason for failure (if state is Failed)
+
+    DisableStatusInfo:
+      type: object
+      properties:
+        isDisabled:
+          type: boolean
+          description: Whether the resource is disabled
+        reasons:
+          type: array
+          items:
+            type: string
+          description: Reasons for disabling
+
+    PreviousStatus:
+      type: object
+      properties:
+        state:
+          type: string
+          description: Previous state of the resource
+        creationDate:
+          type: string
+          format: date-time
+          description: Previous status creation timestamp
+
+    ReferenceResource:
+      type: object
+      required:
+        - uri
+      properties:
+        uri:
+          type: string
+          description: URI reference to another resource
+          example: "/projects/my-project/providers/Aruba.Network/vpcs/my-vpc"
+
+    LinkedResource:
+      type: object
+      required:
+        - uri
+        - strictCorrelation
+      properties:
+        uri:
+          type: string
+          description: URI of the linked resource
+        strictCorrelation:
+          type: boolean
+          description: Indicates if there's a strict correlation with this resource
+
+    ErrorResponse:
+      type: object
+      properties:
+        title:
+          type: string
+          description: Error title
+          example: "Bad Request"
+        status:
+          type: integer
+          description: HTTP status code
+          example: 400
+        detail:
+          type: string
+          description: Detailed error message
+          example: "The request body is invalid"
+        instance:
+          type: string
+          description: URI reference that identifies the specific occurrence of the problem
+        type:
+          type: string
+          description: URI reference to the error type documentation
+
+  responses:
+    BadRequest:
+      description: Bad Request - Invalid request parameters or body
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    Unauthorized:
+      description: Unauthorized - Authentication is required
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    Forbidden:
+      description: Forbidden - Insufficient permissions
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    NotFound:
+      description: Not Found - Resource does not exist
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    Conflict:
+      description: Conflict - Resource already exists or operation conflicts with current state
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    InternalServerError:
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'

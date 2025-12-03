@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-elasticip
+data:
+  elasticip.yaml: |
+{{ tpl (.Files.Get "assets/elasticip.yaml") . | indent 4 }}

@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-vpntunnel
+data:
+  vpntunnel.yaml: |
+{{ tpl (.Files.Get "assets/vpntunnel.yaml") . | indent 4 }}

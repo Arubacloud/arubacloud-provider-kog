@@ -1,0 +1,428 @@
+openapi: 3.0.3
+info:
+  title: Aruba Cloud - KMS (Key Management Service) API
+  description: |
+    REST API for managing KMS encryption keys in Aruba Cloud.
+    Key Management Service (KMS) provides centralized key management for encryption operations across cloud resources.
+  version: 1.0.0
+  contact:
+    name: Aruba Cloud API Support
+    url: https://www.arubacloud.com
+
+servers:
+  - url: https://api.arubacloud.com
+    description: Production server
+
+security:
+  - BearerAuth: []
+
+tags:
+  - name: KMS Keys
+    description: Key Management Service operations for encryption keys
+
+paths:
+  /projects/{projectId}/providers/Aruba.Security/kms/keys:
+    get:
+      tags: [KMS Keys]
+      summary: List KMS Keys
+      description: Retrieve a paginated list of KMS encryption keys in a project
+      operationId: listKmsKeys
+      parameters:
+        - $ref: '#/components/parameters/ProjectId'
+        - $ref: '#/components/parameters/Filter'
+        - $ref: '#/components/parameters/Sort'
+        - $ref: '#/components/parameters/Offset'
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/ApiVersion'
+      responses:
+        '200':
+          description: KMS key list retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/KmsList'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    post:
+      tags: [KMS Keys]
+      summary: Create KMS Key
+      description: Create a new KMS encryption key
+      operationId: createKmsKey
+      parameters:
+        - $ref: '#/components/parameters/ProjectId'
+        - $ref: '#/components/parameters/ApiVersion'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/KmsRequest'
+      responses:
+        '201':
+          description: KMS key created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/KmsResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /projects/{projectId}/providers/Aruba.Security/kms/keys/{keyName}:
+    get:
+      tags: [KMS Keys]
+      summary: Get KMS Key
+      description: Retrieve details of a specific KMS encryption key
+      operationId: getKmsKey
+      parameters:
+        - $ref: '#/components/parameters/ProjectId'
+        - $ref: '#/components/parameters/KeyName'
+        - $ref: '#/components/parameters/ApiVersion'
+      responses:
+        '200':
+          description: KMS key details retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/KmsResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    put:
+      tags: [KMS Keys]
+      summary: Update KMS Key
+      description: Update an existing KMS encryption key
+      operationId: updateKmsKey
+      parameters:
+        - $ref: '#/components/parameters/ProjectId'
+        - $ref: '#/components/parameters/KeyName'
+        - $ref: '#/components/parameters/ApiVersion'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/KmsRequest'
+      responses:
+        '200':
+          description: KMS key updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/KmsResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    delete:
+      tags: [KMS Keys]
+      summary: Delete KMS Key
+      description: Delete a KMS encryption key
+      operationId: deleteKmsKey
+      parameters:
+        - $ref: '#/components/parameters/ProjectId'
+        - $ref: '#/components/parameters/KeyName'
+        - $ref: '#/components/parameters/ApiVersion'
+      responses:
+        '204':
+          description: KMS key deleted successfully
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token obtained from the authentication endpoint
+
+  parameters:
+    ProjectId:
+      name: projectId
+      in: path
+      required: true
+      description: The unique identifier of the project
+      schema:
+        type: string
+
+    KeyName:
+      name: keyName
+      in: path
+      required: true
+      description: The name of the KMS encryption key
+      schema:
+        type: string
+
+    Filter:
+      name: filter
+      in: query
+      description: Filter expression (OData style)
+      schema:
+        type: string
+
+    Sort:
+      name: sort
+      in: query
+      description: Sort expression
+      schema:
+        type: string
+
+    Offset:
+      name: offset
+      in: query
+      description: Number of items to skip
+      schema:
+        type: integer
+        format: int32
+        default: 0
+
+    Limit:
+      name: limit
+      in: query
+      description: Maximum number of items to return
+      schema:
+        type: integer
+        format: int32
+        default: 50
+
+    ApiVersion:
+      name: api-version
+      in: query
+      description: API version
+      schema:
+        type: string
+
+  schemas:
+    KmsRequest:
+      type: object
+      required:
+        - metadata
+        - properties
+      properties:
+        metadata:
+          $ref: '#/components/schemas/RegionalResourceMetadataRequest'
+        properties:
+          $ref: '#/components/schemas/KmsPropertiesRequest'
+
+    KmsPropertiesRequest:
+      type: object
+      required:
+        - billingPeriod
+      properties:
+        billingPeriod:
+          $ref: '#/components/schemas/BillingPeriodResource'
+
+    KmsResponse:
+      type: object
+      properties:
+        metadata:
+          $ref: '#/components/schemas/ResourceMetadataResponse'
+        properties:
+          $ref: '#/components/schemas/KmsPropertiesResponse'
+        status:
+          $ref: '#/components/schemas/ResourceStatus'
+
+    KmsPropertiesResponse:
+      type: object
+      properties:
+        billingPeriod:
+          $ref: '#/components/schemas/BillingPeriodResource'
+
+    KmsList:
+      type: object
+      properties:
+        total:
+          type: integer
+          format: int64
+          description: Total number of KMS keys
+        self:
+          type: string
+          description: Self link to current page
+        prev:
+          type: string
+          description: Link to previous page
+        next:
+          type: string
+          description: Link to next page
+        first:
+          type: string
+          description: Link to first page
+        last:
+          type: string
+          description: Link to last page
+        values:
+          type: array
+          items:
+            $ref: '#/components/schemas/KmsResponse'
+
+    BillingPeriodResource:
+      type: object
+      required:
+        - code
+      properties:
+        code:
+          type: string
+          description: Billing period code
+          enum:
+            - Monthly
+            - Yearly
+            - Hourly
+          example: "Monthly"
+        description:
+          type: string
+          description: Description of the billing period
+          example: "Monthly billing cycle"
+
+    RegionalResourceMetadataRequest:
+      type: object
+      required:
+        - name
+        - location
+      properties:
+        name:
+          type: string
+          description: Name of the resource
+          example: "my-kms-key"
+        tags:
+          type: array
+          items:
+            type: string
+          description: Tags associated with the resource
+          example: ["encryption", "production"]
+        location:
+          type: string
+          description: Location/region where the resource will be created
+          example: "it-mil1"
+
+    ResourceMetadataResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the resource
+        uri:
+          type: string
+          description: URI of the resource
+        name:
+          type: string
+          description: Name of the resource
+        tags:
+          type: array
+          items:
+            type: string
+          description: Tags associated with the resource
+        location:
+          type: string
+          description: Location/region of the resource
+        creationDate:
+          type: string
+          format: date-time
+          description: Resource creation timestamp
+        createdBy:
+          type: string
+          description: User who created the resource
+        updateDate:
+          type: string
+          format: date-time
+          description: Last update timestamp
+        updatedBy:
+          type: string
+          description: User who last updated the resource
+
+    ResourceStatus:
+      type: object
+      properties:
+        state:
+          type: string
+          description: Current state of the resource
+          enum:
+            - Creating
+            - Active
+            - Updating
+            - Deleting
+            - Failed
+          example: "Active"
+        creationDate:
+          type: string
+          format: date-time
+          description: Status creation timestamp
+        failureReason:
+          type: string
+          description: Reason for failure if state is Failed
+
+    ErrorResponse:
+      type: object
+      properties:
+        title:
+          type: string
+          description: Error title
+        status:
+          type: integer
+          description: HTTP status code
+        detail:
+          type: string
+          description: Detailed error message
+        instance:
+          type: string
+          description: URI reference to the specific occurrence
+        type:
+          type: string
+          description: URI reference to error type documentation
+
+  responses:
+    BadRequest:
+      description: Bad Request - Invalid request parameters or body
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    Unauthorized:
+      description: Unauthorized - Authentication is required
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    NotFound:
+      description: Not Found - Resource does not exist
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    Conflict:
+      description: Conflict - Resource already exists or operation conflicts with current state
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    InternalServerError:
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'

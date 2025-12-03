@@ -15,7 +15,7 @@ type: application
 # This is the chart version. This version number should be incremented each time you make changes
 # to the chart and its templates, including the app version.
 # Versions are expected to follow Semantic Versioning (https://semver.org/)
-version: CHART_VERSION
+version: 0.0.1
 
 home: https://krateo.io
 icon: "https://github.com/krateoplatformops/krateo/blob/main/docs/media/logo.svg"
@@ -27,8 +27,43 @@ annotations:
   krateoSupportedVersion: ">= 2.5.1"
 
 dependencies:
-  - name: arubacloud-provider-kog-subnet # the name of the dependency chart
-    version: ARUBACLOUD_PROVIDER_KOG_SUBNET_BLUEPRINT_VERSION
-    repository: https://marketplace.krateo.io
-    condition: arubacloud-provider-kog-subnet-blueprint.enabled
+  - name: arubacloud-provider-kog-compute
+    version: 0.0.1
+    repository: file://../arubacloud-provider-kog-compute-blueprint
+    condition: arubacloud-provider-kog-compute-blueprint.enabled
+  
+  - name: arubacloud-provider-kog-container
+    version: 0.0.1
+    repository: file://../arubacloud-provider-kog-container-blueprint
+    condition: arubacloud-provider-kog-container-blueprint.enabled
+  
+  - name: arubacloud-provider-kog-database
+    version: 0.0.1
+    repository: file://../arubacloud-provider-kog-database-blueprint
+    condition: arubacloud-provider-kog-database-blueprint.enabled
+  
+  - name: arubacloud-provider-kog-project
+    version: 0.0.1
+    repository: file://../arubacloud-provider-kog-project-blueprint
+    condition: arubacloud-provider-kog-project-blueprint.enabled
+  
+  - name: arubacloud-provider-kog-schedule
+    version: 0.0.1
+    repository: file://../arubacloud-provider-kog-schedule-blueprint
+    condition: arubacloud-provider-kog-schedule-blueprint.enabled
+  
+  - name: arubacloud-provider-kog-storage
+    version: 0.0.1
+    repository: file://../arubacloud-provider-kog-storage-blueprint
+    condition: arubacloud-provider-kog-storage-blueprint.enabled
+  
+  - name: arubacloud-provider-kog-security
+    version: 0.0.1
+    repository: file://../arubacloud-provider-kog-security-blueprint
+    condition: arubacloud-provider-kog-security-blueprint.enabled
+  
+  - name: arubacloud-provider-kog-network
+    version: 0.0.1
+    repository: file://../arubacloud-provider-kog-network-blueprint
+    condition: arubacloud-provider-kog-network-blueprint.enabled
   

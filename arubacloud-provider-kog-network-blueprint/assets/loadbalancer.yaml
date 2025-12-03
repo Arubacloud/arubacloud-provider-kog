@@ -1,0 +1,241 @@
+openapi: 3.0.3
+info:
+  title: Aruba Cloud - Load Balancer API
+  description: |
+    REST API for managing Load Balancer resources in Aruba Cloud.
+    Load Balancers distribute network traffic across multiple backend servers.
+  version: 1.0.0
+  contact:
+    name: Aruba Cloud API Support
+    url: https://www.arubacloud.com
+
+servers:
+  - url: https://api.arubacloud.com
+    description: Production server
+
+security:
+  - BearerAuth: []
+
+tags:
+  - name: LoadBalancers
+    description: Load balancer operations
+
+paths:
+  /projects/{projectId}/providers/Aruba.Network/loadbalancers:
+    get:
+      tags: [LoadBalancers]
+      summary: List Load Balancers
+      operationId: listLoadBalancers
+      parameters:
+        - $ref: '#/components/parameters/ProjectIdPath'
+        - $ref: '#/components/parameters/Filter'
+        - $ref: '#/components/parameters/Sort'
+        - $ref: '#/components/parameters/Offset'
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/ApiVersion'
+      responses:
+        '200':
+          description: Load balancer list retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoadBalancerList'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /projects/{projectId}/providers/Aruba.Network/loadbalancers/{loadBalancerId}:
+    get:
+      tags: [LoadBalancers]
+      summary: Get Load Balancer
+      operationId: getLoadBalancer
+      parameters:
+        - $ref: '#/components/parameters/ProjectIdPath'
+        - $ref: '#/components/parameters/LoadBalancerIdPath'
+        - $ref: '#/components/parameters/ApiVersion'
+      responses:
+        '200':
+          description: Load balancer details retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoadBalancerResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  parameters:
+    ProjectIdPath:
+      name: projectId
+      in: path
+      required: true
+      description: The unique identifier of the project
+      schema:
+        type: string
+
+    LoadBalancerIdPath:
+      name: loadBalancerId
+      in: path
+      required: true
+      description: The unique identifier of the load balancer
+      schema:
+        type: string
+
+    Filter:
+      name: filter
+      in: query
+      description: Filter expression for results
+      schema:
+        type: string
+
+    Sort:
+      name: sort
+      in: query
+      description: Sort expression for results
+      schema:
+        type: string
+
+    Offset:
+      name: offset
+      in: query
+      description: Number of items to skip
+      schema:
+        type: integer
+        format: int32
+        default: 0
+
+    Limit:
+      name: limit
+      in: query
+      description: Maximum number of items to return
+      schema:
+        type: integer
+        format: int32
+        default: 50
+
+    ApiVersion:
+      name: api-version
+      in: query
+      description: API version
+      schema:
+        type: string
+
+  schemas:
+    LoadBalancerResponse:
+      type: object
+      properties:
+        metadata:
+          $ref: '#/components/schemas/ResourceMetadataResponse'
+        properties:
+          type: object
+          description: Load balancer properties
+        status:
+          $ref: '#/components/schemas/ResourceStatus'
+
+    LoadBalancerList:
+      allOf:
+        - $ref: '#/components/schemas/ListResponse'
+        - type: object
+          properties:
+            values:
+              type: array
+              items:
+                $ref: '#/components/schemas/LoadBalancerResponse'
+
+    ResourceMetadataResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the resource
+        uri:
+          type: string
+          description: URI of the resource
+        name:
+          type: string
+          description: Name of the resource
+        tags:
+          type: array
+          items:
+            type: string
+          description: Tags associated with the resource
+        creationDate:
+          type: string
+          format: date-time
+          description: Resource creation timestamp
+
+    ResourceStatus:
+      type: object
+      properties:
+        state:
+          type: string
+          enum: [Creating, Active, Updating, Deleting, Failed]
+          description: Current state of the resource
+        creationDate:
+          type: string
+          format: date-time
+          description: Status creation timestamp
+        failureReason:
+          type: string
+          description: Reason for failure if state is Failed
+
+    ListResponse:
+      type: object
+      properties:
+        total:
+          type: integer
+          format: int64
+          description: Total number of items available
+        self:
+          type: string
+          description: Link to current page
+        next:
+          type: string
+          description: Link to next page
+        prev:
+          type: string
+          description: Link to previous page
+
+    ErrorResponse:
+      type: object
+      properties:
+        title:
+          type: string
+          description: Error title
+        status:
+          type: integer
+          description: HTTP status code
+        detail:
+          type: string
+          description: Detailed error message
+
+  responses:
+    BadRequest:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    NotFound:
+      description: Not Found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'

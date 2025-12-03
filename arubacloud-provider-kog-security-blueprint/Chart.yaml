@@ -1,0 +1,15 @@
+apiVersion: v2
+name: arubacloud-provider-kog-security
+description: A Helm chart for deploying the Aruba Cloud Provider KOG Security resources.
+type: application
+version: 0.0.1
+appVersion: 0.0.1
+
+home: https://krateo.io
+icon: "https://github.com/krateoplatformops/krateo/blob/main/docs/media/logo.svg"
+keywords:
+  - generator
+sources:
+  - https://github.com/krateoplatformops-blueprints/arubacloud-provider-kog/tree/main/arubacloud-provider-kog-security-blueprint
+annotations:
+  krateoSupportedVersion: ">= 2.5.1"

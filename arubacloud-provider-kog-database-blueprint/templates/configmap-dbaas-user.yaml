@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-dbaas-user
+data:
+  dbaas-user.yaml: |
+{{ tpl (.Files.Get "assets/dbaas-user.yaml") . | indent 4 }}
