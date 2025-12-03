@@ -73,6 +73,11 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
       
+      - name: Convert repository owner to lowercase
+        id: lowercase
+        run: |
+          echo "owner=$(echo ${{ github.repository_owner }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
+      
       - name: Build and Push Docker Image
         uses: docker/build-push-action@v5
         with:
@@ -80,6 +85,6 @@ jobs:
           file: ./plugins/Dockerfile
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: ghcr.io/${{ github.repository_owner }}/arubacloud-provider-kog/${{ needs.parse-tag.outputs.plugin }}:${{ needs.parse-tag.outputs.version }}
+          tags: ghcr.io/${{ steps.lowercase.outputs.owner }}/arubacloud-provider-kog/${{ needs.parse-tag.outputs.plugin }}:${{ needs.parse-tag.outputs.version }}
           build-args: |
             PLUGIN_NAME=${{ needs.parse-tag.outputs.plugin }}
