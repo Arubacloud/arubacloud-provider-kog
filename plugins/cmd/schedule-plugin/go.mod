@@ -1,11 +1,11 @@
-module github.com/Arubacloud/arubacloud-provider-kog/schedule-plugin
+module github.com/Arubacloud/arubacloud-provider-kog/plugins/cmd/schedule-plugin
 
 go 1.24.2
 
 toolchain go1.24.4
 
 require (
-	github.com/Arubacloud/arubacloud-provider-kog/pkg v0.0.0
+	github.com/Arubacloud/arubacloud-provider-kog/plugins/pkg v0.0.0
 	github.com/rs/zerolog v1.34.0
 	github.com/swaggo/http-swagger v1.3.4
 )
@@ -30,4 +30,4 @@ require (
 
 require github.com/krateoplatformops/plumbing v0.5.5 // indirect
 
-replace github.com/Arubacloud/arubacloud-provider-kog/pkg => ../../pkg
+replace github.com/Arubacloud/arubacloud-provider-kog/plugins/pkg => ../../pkg

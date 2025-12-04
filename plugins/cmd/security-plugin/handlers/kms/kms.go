@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/Arubacloud/arubacloud-provider-kog/pkg/handlers"
+	"github.com/Arubacloud/arubacloud-provider-kog/plugins/pkg/handlers"
 )
 
 func GetKms(opts handlers.HandlerOptions) handlers.Handler {

@@ -1,4 +1,4 @@
-module github.com/Arubacloud/arubacloud-provider-kog/pkg
+module github.com/Arubacloud/arubacloud-provider-kog/plugins/pkg
 
 go 1.24.2
 

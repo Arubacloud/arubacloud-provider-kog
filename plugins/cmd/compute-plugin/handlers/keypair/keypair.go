@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/Arubacloud/arubacloud-provider-kog/pkg/handlers"
+	"github.com/Arubacloud/arubacloud-provider-kog/plugins/pkg/handlers"
 )
 
 func GetKeypair(opts handlers.HandlerOptions) handlers.Handler {
@@ -61,13 +61,13 @@ func (h *getHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// TODO: Implement GET logic using Aruba Cloud SDK
 	// Example structure - needs to be customized based on actual SDK
 	_ = r.PathValue("projectId") // projectId
-	_ = r.PathValue("id") // id
-	
+	_ = r.PathValue("id")        // id
+
 	h.Log.Print("TODO: Update log message")
 
 	// TODO: Call Aruba Cloud SDK to get keypair
 	// response, err := arubaSDK.GetKeypair(projectId, id)
-	
+
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusNotImplemented)
 	json.NewEncoder(w).Encode(map[string]string{
@@ -79,7 +79,7 @@ func (h *getHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 func (h *postHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// TODO: Implement POST logic using Aruba Cloud SDK
 	_ = r.PathValue("projectId") // projectId
-	
+
 	h.Log.Print("TODO: Update log message")
 
 	var req map[string]interface{}
@@ -90,7 +90,7 @@ func (h *postHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	// TODO: Call Aruba Cloud SDK to create keypair
 	// response, err := arubaSDK.CreateKeypair(projectId, req)
-	
+
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusNotImplemented)
 	json.NewEncoder(w).Encode(map[string]string{
@@ -102,8 +102,8 @@ func (h *postHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 func (h *putHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// TODO: Implement PUT logic using Aruba Cloud SDK
 	_ = r.PathValue("projectId") // projectId
-	_ = r.PathValue("id") // id
-	
+	_ = r.PathValue("id")        // id
+
 	h.Log.Print("TODO: Update log message")
 
 	var req map[string]interface{}
@@ -114,7 +114,7 @@ func (h *putHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	// TODO: Call Aruba Cloud SDK to update keypair
 	// response, err := arubaSDK.UpdateKeypair(projectId, id, req)
-	
+
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusNotImplemented)
 	json.NewEncoder(w).Encode(map[string]string{
@@ -126,12 +126,12 @@ func (h *putHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 func (h *listHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// TODO: Implement LIST logic using Aruba Cloud SDK
 	_ = r.PathValue("projectId") // projectId
-	
+
 	h.Log.Print("TODO: Update log message")
 
 	// TODO: Call Aruba Cloud SDK to list keypairs
 	// response, err := arubaSDK.ListKeypairs(projectId)
-	
+
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusNotImplemented)
 	json.NewEncoder(w).Encode(map[string]string{

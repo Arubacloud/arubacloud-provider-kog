@@ -3,14 +3,14 @@ package main
 import (
 	"net/http"
 
-	"github.com/Arubacloud/arubacloud-provider-kog/pkg/handlers"
-	"github.com/Arubacloud/arubacloud-provider-kog/pkg/health"
-	"github.com/Arubacloud/arubacloud-provider-kog/pkg/server"
-	handlersdbaas "github.com/Arubacloud/arubacloud-provider-kog/database-plugin/handlers/dbaas"
-	handlersdatabase "github.com/Arubacloud/arubacloud-provider-kog/database-plugin/handlers/database"
-	handlersuser "github.com/Arubacloud/arubacloud-provider-kog/database-plugin/handlers/user"
-	handlersgrant "github.com/Arubacloud/arubacloud-provider-kog/database-plugin/handlers/grant"
-	handlersbackup "github.com/Arubacloud/arubacloud-provider-kog/database-plugin/handlers/backup"
+	"github.com/Arubacloud/arubacloud-provider-kog/plugins/pkg/handlers"
+	"github.com/Arubacloud/arubacloud-provider-kog/plugins/pkg/health"
+	"github.com/Arubacloud/arubacloud-provider-kog/plugins/pkg/server"
+	handlersdbaas "github.com/Arubacloud/arubacloud-provider-kog/plugins/cmd/database-plugin/handlers/dbaas"
+	handlersdatabase "github.com/Arubacloud/arubacloud-provider-kog/plugins/cmd/database-plugin/handlers/database"
+	handlersuser "github.com/Arubacloud/arubacloud-provider-kog/plugins/cmd/database-plugin/handlers/user"
+	handlersgrant "github.com/Arubacloud/arubacloud-provider-kog/plugins/cmd/database-plugin/handlers/grant"
+	handlersbackup "github.com/Arubacloud/arubacloud-provider-kog/plugins/cmd/database-plugin/handlers/backup"
 	"github.com/rs/zerolog/log"
 	httpSwagger "github.com/swaggo/http-swagger"
 )

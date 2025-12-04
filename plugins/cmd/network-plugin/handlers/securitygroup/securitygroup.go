@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/Arubacloud/arubacloud-provider-kog/pkg/handlers"
+	"github.com/Arubacloud/arubacloud-provider-kog/plugins/pkg/handlers"
 )
 
 func GetSecuritygroup(opts handlers.HandlerOptions) handlers.Handler {

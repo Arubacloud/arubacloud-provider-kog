@@ -3,10 +3,10 @@ package main
 import (
 	"net/http"
 
-	"github.com/Arubacloud/arubacloud-provider-kog/pkg/handlers"
-	"github.com/Arubacloud/arubacloud-provider-kog/pkg/health"
-	"github.com/Arubacloud/arubacloud-provider-kog/pkg/server"
-	subnet "github.com/Arubacloud/arubacloud-provider-kog/subnet-plugin/handlers"
+	"github.com/Arubacloud/arubacloud-provider-kog/plugins/pkg/handlers"
+	"github.com/Arubacloud/arubacloud-provider-kog/plugins/pkg/health"
+	"github.com/Arubacloud/arubacloud-provider-kog/plugins/pkg/server"
+	subnet "github.com/Arubacloud/arubacloud-provider-kog/plugins/cmd/subnet-plugin/handlers"
 	"github.com/rs/zerolog/log"
 	httpSwagger "github.com/swaggo/http-swagger"
 )

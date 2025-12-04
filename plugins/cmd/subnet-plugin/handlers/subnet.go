@@ -7,8 +7,8 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/Arubacloud/arubacloud-provider-kog/pkg/handlers"
-	"github.com/Arubacloud/arubacloud-provider-kog/pkg/utils"
+	"github.com/Arubacloud/arubacloud-provider-kog/plugins/pkg/handlers"
+	"github.com/Arubacloud/arubacloud-provider-kog/plugins/pkg/utils"
 )
 
 func GetSubnet(opts handlers.HandlerOptions) handlers.Handler {
