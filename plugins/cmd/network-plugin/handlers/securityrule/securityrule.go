@@ -1,7 +1,6 @@
 package securityrule
 
 import (
-	"encoding/json"
 	"net/http"
 
 	"github.com/Arubacloud/arubacloud-provider-kog/plugins/pkg/handlers"
@@ -58,83 +57,24 @@ type listHandler struct {
 
 // ServeHTTP implementation for GET handler
 func (h *getHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	// TODO: Implement GET logic using Aruba Cloud SDK
-	// Example structure - needs to be customized based on actual SDK
-	_ = r.PathValue("projectId") // projectId
-	_ = r.PathValue("id") // id
-	
-	h.Log.Print("TODO: Update log message")
-
-	// TODO: Call Aruba Cloud SDK to get securityrule
-	// response, err := arubaSDK.GetSecurityrule(projectId, id)
-	
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusNotImplemented)
-	json.NewEncoder(w).Encode(map[string]string{
-		"message": "GET securityrule not yet implemented - integrate Aruba Cloud SDK here",
-	})
+	h.Log.Printf("Security rules are not supported by the SDK")
+	http.Error(w, "Security rules not supported", http.StatusMethodNotAllowed)
 }
 
 // ServeHTTP implementation for POST handler
 func (h *postHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	// TODO: Implement POST logic using Aruba Cloud SDK
-	_ = r.PathValue("projectId") // projectId
-	
-	h.Log.Print("TODO: Update log message")
-
-	var req map[string]interface{}
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	// TODO: Call Aruba Cloud SDK to create securityrule
-	// response, err := arubaSDK.CreateSecurityrule(projectId, req)
-	
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusNotImplemented)
-	json.NewEncoder(w).Encode(map[string]string{
-		"message": "POST securityrule not yet implemented - integrate Aruba Cloud SDK here",
-	})
+	h.Log.Printf("Security rules are not supported by the SDK")
+	http.Error(w, "Security rules not supported", http.StatusMethodNotAllowed)
 }
 
 // ServeHTTP implementation for PUT handler
 func (h *putHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	// TODO: Implement PUT logic using Aruba Cloud SDK
-	_ = r.PathValue("projectId") // projectId
-	_ = r.PathValue("id") // id
-	
-	h.Log.Print("TODO: Update log message")
-
-	var req map[string]interface{}
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	// TODO: Call Aruba Cloud SDK to update securityrule
-	// response, err := arubaSDK.UpdateSecurityrule(projectId, id, req)
-	
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusNotImplemented)
-	json.NewEncoder(w).Encode(map[string]string{
-		"message": "PUT securityrule not yet implemented - integrate Aruba Cloud SDK here",
-	})
+	h.Log.Printf("Security rules are not supported by the SDK")
+	http.Error(w, "Security rules not supported", http.StatusMethodNotAllowed)
 }
 
 // ServeHTTP implementation for LIST handler
 func (h *listHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	// TODO: Implement LIST logic using Aruba Cloud SDK
-	_ = r.PathValue("projectId") // projectId
-	
-	h.Log.Print("TODO: Update log message")
-
-	// TODO: Call Aruba Cloud SDK to list securityrules
-	// response, err := arubaSDK.ListSecurityrules(projectId)
-	
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusNotImplemented)
-	json.NewEncoder(w).Encode(map[string]string{
-		"message": "LIST securityrules not yet implemented - integrate Aruba Cloud SDK here",
-	})
+	h.Log.Printf("Security rules are not supported by the SDK")
+	http.Error(w, "Security rules not supported", http.StatusMethodNotAllowed)
 }

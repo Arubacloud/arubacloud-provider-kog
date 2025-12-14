@@ -100,7 +100,6 @@ The following plugins are configured for automatic building:
 - ✅ storage-plugin
 - ✅ security-plugin
 - ✅ network-plugin
-- ✅ subnet-plugin (existing)
 
 ## Image Naming Convention
 

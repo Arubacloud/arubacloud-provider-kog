@@ -58,83 +58,56 @@ type listHandler struct {
 
 // ServeHTTP implementation for GET handler
 func (h *getHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	// TODO: Implement GET logic using Aruba Cloud SDK
-	// Example structure - needs to be customized based on actual SDK
-	_ = r.PathValue("projectId") // projectId
-	_ = r.PathValue("id") // id
-	
-	h.Log.Print("TODO: Update log message")
+	// Restores are nested resources under backups in the SDK
+	// The current route structure doesn't include backupId, so we cannot support this operation
+	h.Log.Print("GET restore operation requires backupId which is not in the route path")
 
-	// TODO: Call Aruba Cloud SDK to get restore
-	// response, err := arubaSDK.GetRestore(projectId, id)
-	
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusNotImplemented)
+	w.WriteHeader(http.StatusMethodNotAllowed)
 	json.NewEncoder(w).Encode(map[string]string{
-		"message": "GET restore not yet implemented - integrate Aruba Cloud SDK here",
+		"error":   "Method Not Allowed",
+		"message": "Restore operations require backupId in the path. SDK expects nested resource: /backups/{backupId}/restores/{id}",
 	})
 }
 
 // ServeHTTP implementation for POST handler
 func (h *postHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	// TODO: Implement POST logic using Aruba Cloud SDK
-	_ = r.PathValue("projectId") // projectId
-	
-	h.Log.Print("TODO: Update log message")
+	// Restores are nested resources under backups in the SDK
+	// The current route structure doesn't include backupId, so we cannot support this operation
+	h.Log.Print("POST restore operation requires backupId which is not in the route path")
 
-	var req map[string]interface{}
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	// TODO: Call Aruba Cloud SDK to create restore
-	// response, err := arubaSDK.CreateRestore(projectId, req)
-	
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusNotImplemented)
+	w.WriteHeader(http.StatusMethodNotAllowed)
 	json.NewEncoder(w).Encode(map[string]string{
-		"message": "POST restore not yet implemented - integrate Aruba Cloud SDK here",
+		"error":   "Method Not Allowed",
+		"message": "Restore operations require backupId in the path. SDK expects nested resource: /backups/{backupId}/restores",
 	})
 }
 
 // ServeHTTP implementation for PUT handler
 func (h *putHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	// TODO: Implement PUT logic using Aruba Cloud SDK
-	_ = r.PathValue("projectId") // projectId
-	_ = r.PathValue("id") // id
-	
-	h.Log.Print("TODO: Update log message")
+	// Restores are nested resources under backups in the SDK
+	// The current route structure doesn't include backupId, so we cannot support this operation
+	h.Log.Print("PUT restore operation requires backupId which is not in the route path")
 
-	var req map[string]interface{}
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	// TODO: Call Aruba Cloud SDK to update restore
-	// response, err := arubaSDK.UpdateRestore(projectId, id, req)
-	
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusNotImplemented)
+	w.WriteHeader(http.StatusMethodNotAllowed)
 	json.NewEncoder(w).Encode(map[string]string{
-		"message": "PUT restore not yet implemented - integrate Aruba Cloud SDK here",
+		"error":   "Method Not Allowed",
+		"message": "Restore operations require backupId in the path. SDK expects nested resource: /backups/{backupId}/restores/{id}",
 	})
 }
 
 // ServeHTTP implementation for LIST handler
 func (h *listHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	// TODO: Implement LIST logic using Aruba Cloud SDK
-	_ = r.PathValue("projectId") // projectId
-	
-	h.Log.Print("TODO: Update log message")
+	// Restores are nested resources under backups in the SDK
+	// The current route structure doesn't include backupId, so we cannot support this operation
+	h.Log.Print("LIST restores operation requires backupId which is not in the route path")
 
-	// TODO: Call Aruba Cloud SDK to list restores
-	// response, err := arubaSDK.ListRestores(projectId)
-	
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusNotImplemented)
+	w.WriteHeader(http.StatusMethodNotAllowed)
 	json.NewEncoder(w).Encode(map[string]string{
-		"message": "LIST restores not yet implemented - integrate Aruba Cloud SDK here",
+		"error":   "Method Not Allowed",
+		"message": "Restore operations require backupId in the path. SDK expects nested resource: /backups/{backupId}/restores",
 	})
 }

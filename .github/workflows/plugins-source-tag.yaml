@@ -4,7 +4,7 @@ on:
   push:
     tags:
       # This workflow triggers on tags prefixed with a plugin name, e.g.,
-      # subnet-plugin/1.0.3 or subnet-plugin/1.0.3-alpha
+      # compute-plugin/1.0.3 or network-plugin/1.0.3-alpha
       - '*-plugin/**'
 
 jobs:
@@ -26,7 +26,7 @@ jobs:
           cache-dependency-path: "plugins/go.work.sum"
       
       - name: Run Go Tests
-        run: go test -v ./pkg/... ./cmd/compute-plugin/... ./cmd/container-plugin/... ./cmd/database-plugin/... ./cmd/project-plugin/... ./cmd/schedule-plugin/... ./cmd/storage-plugin/... ./cmd/security-plugin/... ./cmd/network-plugin/... ./cmd/subnet-plugin/...
+        run: go test -v ./pkg/... ./cmd/compute-plugin/... ./cmd/container-plugin/... ./cmd/database-plugin/... ./cmd/project-plugin/... ./cmd/schedule-plugin/... ./cmd/storage-plugin/... ./cmd/security-plugin/... ./cmd/network-plugin/...
 
   parse-tag:
     name: Parse Git Tag

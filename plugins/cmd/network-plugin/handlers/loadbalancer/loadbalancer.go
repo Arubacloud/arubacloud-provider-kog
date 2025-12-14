@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/Arubacloud/arubacloud-provider-kog/plugins/pkg/handlers"
+	"github.com/Arubacloud/sdk-go/pkg/types"
 )
 
 func GetLoadbalancer(opts handlers.HandlerOptions) handlers.Handler {
@@ -58,83 +59,79 @@ type listHandler struct {
 
 // ServeHTTP implementation for GET handler
 func (h *getHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	// TODO: Implement GET logic using Aruba Cloud SDK
-	// Example structure - needs to be customized based on actual SDK
-	_ = r.PathValue("projectId") // projectId
-	_ = r.PathValue("id") // id
-	
-	h.Log.Print("TODO: Update log message")
+	projectId := r.PathValue("projectId")
+	id := r.PathValue("id")
 
-	// TODO: Call Aruba Cloud SDK to get loadbalancer
-	// response, err := arubaSDK.GetLoadbalancer(projectId, id)
-	
+	// Create SDK client from request's Bearer token
+	client, err := handlers.CreateClientFromRequest(r)
+	if err != nil {
+		h.Log.Printf("Failed to create Aruba Cloud client: %v", err)
+		http.Error(w, "Failed to initialize API client", http.StatusInternalServerError)
+		return
+	}
+
+	// Build request parameters from query string
+	params := &types.RequestParameters{}
+	if apiVersion := r.URL.Query().Get("api-version"); apiVersion != "" {
+		params.APIVersion = &apiVersion
+	}
+
+	h.Log.Printf("Getting load balancer %s for project %s", id, projectId)
+
+	// Call Aruba Cloud SDK to get load balancer
+	response, err := client.FromNetwork().LoadBalancers().Get(r.Context(), projectId, id, params)
+	if err != nil {
+		h.Log.Printf("Failed to get load balancer: %v", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusNotImplemented)
-	json.NewEncoder(w).Encode(map[string]string{
-		"message": "GET loadbalancer not yet implemented - integrate Aruba Cloud SDK here",
-	})
+	w.WriteHeader(response.StatusCode)
+	json.NewEncoder(w).Encode(response.Data)
 }
 
 // ServeHTTP implementation for POST handler
 func (h *postHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	// TODO: Implement POST logic using Aruba Cloud SDK
-	_ = r.PathValue("projectId") // projectId
-	
-	h.Log.Print("TODO: Update log message")
-
-	var req map[string]interface{}
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	// TODO: Call Aruba Cloud SDK to create loadbalancer
-	// response, err := arubaSDK.CreateLoadbalancer(projectId, req)
-	
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusNotImplemented)
-	json.NewEncoder(w).Encode(map[string]string{
-		"message": "POST loadbalancer not yet implemented - integrate Aruba Cloud SDK here",
-	})
+	h.Log.Printf("Load balancer Create operation is not supported by the SDK")
+	http.Error(w, "Create operation not supported for load balancers", http.StatusMethodNotAllowed)
 }
 
 // ServeHTTP implementation for PUT handler
 func (h *putHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	// TODO: Implement PUT logic using Aruba Cloud SDK
-	_ = r.PathValue("projectId") // projectId
-	_ = r.PathValue("id") // id
-	
-	h.Log.Print("TODO: Update log message")
-
-	var req map[string]interface{}
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	// TODO: Call Aruba Cloud SDK to update loadbalancer
-	// response, err := arubaSDK.UpdateLoadbalancer(projectId, id, req)
-	
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusNotImplemented)
-	json.NewEncoder(w).Encode(map[string]string{
-		"message": "PUT loadbalancer not yet implemented - integrate Aruba Cloud SDK here",
-	})
+	h.Log.Printf("Load balancer Update operation is not supported by the SDK")
+	http.Error(w, "Update operation not supported for load balancers", http.StatusMethodNotAllowed)
 }
 
 // ServeHTTP implementation for LIST handler
 func (h *listHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	// TODO: Implement LIST logic using Aruba Cloud SDK
-	_ = r.PathValue("projectId") // projectId
-	
-	h.Log.Print("TODO: Update log message")
+	projectId := r.PathValue("projectId")
 
-	// TODO: Call Aruba Cloud SDK to list loadbalancers
-	// response, err := arubaSDK.ListLoadbalancers(projectId)
-	
+	// Create SDK client from request's Bearer token
+	client, err := handlers.CreateClientFromRequest(r)
+	if err != nil {
+		h.Log.Printf("Failed to create Aruba Cloud client: %v", err)
+		http.Error(w, "Failed to initialize API client", http.StatusInternalServerError)
+		return
+	}
+
+	// Build request parameters from query string
+	params := &types.RequestParameters{}
+	if apiVersion := r.URL.Query().Get("api-version"); apiVersion != "" {
+		params.APIVersion = &apiVersion
+	}
+
+	h.Log.Printf("Listing load balancers for project %s", projectId)
+
+	// Call Aruba Cloud SDK to list load balancers
+	response, err := client.FromNetwork().LoadBalancers().List(r.Context(), projectId, params)
+	if err != nil {
+		h.Log.Printf("Failed to list load balancers: %v", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusNotImplemented)
-	json.NewEncoder(w).Encode(map[string]string{
-		"message": "LIST loadbalancers not yet implemented - integrate Aruba Cloud SDK here",
-	})
+	w.WriteHeader(response.StatusCode)
+	json.NewEncoder(w).Encode(response.Data)
 }

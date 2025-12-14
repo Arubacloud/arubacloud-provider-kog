@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/Arubacloud/arubacloud-provider-kog/plugins/pkg/handlers"
+	"github.com/Arubacloud/sdk-go/pkg/types"
 )
 
 func GetCloudserver(opts handlers.HandlerOptions) handlers.Handler {
@@ -58,83 +59,158 @@ type listHandler struct {
 
 // ServeHTTP implementation for GET handler
 func (h *getHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	// TODO: Implement GET logic using Aruba Cloud SDK
-	// Example structure - needs to be customized based on actual SDK
-	_ = r.PathValue("projectId") // projectId
-	_ = r.PathValue("id")        // id
+	projectId := r.PathValue("projectId")
+	id := r.PathValue("id")
 
-	h.Log.Print("TODO: Update log message")
+	// Create SDK client from request's Bearer token
+	client, err := handlers.CreateClientFromRequest(r)
+	if err != nil {
+		h.Log.Printf("Failed to create Aruba Cloud client: %v", err)
+		http.Error(w, "Failed to initialize API client", http.StatusInternalServerError)
+		return
+	}
 
-	// TODO: Call Aruba Cloud SDK to get cloudserver
-	// response, err := arubaSDK.GetCloudserver(projectId, id)
+	// Build request parameters from query string
+	params := &types.RequestParameters{}
+	if apiVersion := r.URL.Query().Get("api-version"); apiVersion != "" {
+		params.APIVersion = &apiVersion
+	}
+
+	h.Log.Printf("Getting cloudserver %s for project %s", id, projectId)
+
+	// Call Aruba Cloud SDK to get cloudserver
+	response, err := client.FromCompute().CloudServers().Get(r.Context(), projectId, id, params)
+	if err != nil {
+		h.Log.Printf("Failed to get cloudserver: %v", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusNotImplemented)
-	json.NewEncoder(w).Encode(map[string]string{
-		"message": "GET cloudserver not yet implemented - integrate Aruba Cloud SDK here",
-	})
+	w.WriteHeader(response.StatusCode)
+	json.NewEncoder(w).Encode(response.Data)
 }
 
 // ServeHTTP implementation for POST handler
 func (h *postHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	// TODO: Implement POST logic using Aruba Cloud SDK
-	_ = r.PathValue("projectId") // projectId
+	projectId := r.PathValue("projectId")
 
-	h.Log.Print("TODO: Update log message")
+	// Create SDK client from request's Bearer token
+	client, err := handlers.CreateClientFromRequest(r)
+	if err != nil {
+		h.Log.Printf("Failed to create Aruba Cloud client: %v", err)
+		http.Error(w, "Failed to initialize API client", http.StatusInternalServerError)
+		return
+	}
 
-	var req map[string]interface{}
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+	// Decode request body
+	var reqBody interface{}
+	if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	// TODO: Call Aruba Cloud SDK to create cloudserver
-	// response, err := arubaSDK.CreateCloudserver(projectId, req)
+	// Convert to typed request
+	reqBytes, _ := json.Marshal(reqBody)
+	var req types.CloudServerRequest
+	json.Unmarshal(reqBytes, &req)
+
+	// Build request parameters from query string
+	params := &types.RequestParameters{}
+	if apiVersion := r.URL.Query().Get("api-version"); apiVersion != "" {
+		params.APIVersion = &apiVersion
+	}
+
+	h.Log.Printf("Creating cloudserver for project %s", projectId)
+
+	// Call Aruba Cloud SDK to create cloudserver
+	response, err := client.FromCompute().CloudServers().Create(r.Context(), projectId, req, params)
+	if err != nil {
+		h.Log.Printf("Failed to create cloudserver: %v", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusNotImplemented)
-	json.NewEncoder(w).Encode(map[string]string{
-		"message": "POST cloudserver not yet implemented - integrate Aruba Cloud SDK here",
-	})
+	w.WriteHeader(response.StatusCode)
+	json.NewEncoder(w).Encode(response.Data)
 }
 
 // ServeHTTP implementation for PUT handler
 func (h *putHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	// TODO: Implement PUT logic using Aruba Cloud SDK
-	_ = r.PathValue("projectId") // projectId
-	_ = r.PathValue("id")        // id
+	projectId := r.PathValue("projectId")
+	id := r.PathValue("id")
 
-	h.Log.Print("TODO: Update log message")
+	// Create SDK client from request's Bearer token
+	client, err := handlers.CreateClientFromRequest(r)
+	if err != nil {
+		h.Log.Printf("Failed to create Aruba Cloud client: %v", err)
+		http.Error(w, "Failed to initialize API client", http.StatusInternalServerError)
+		return
+	}
 
-	var req map[string]interface{}
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+	// Decode request body
+	var reqBody interface{}
+	if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	// TODO: Call Aruba Cloud SDK to update cloudserver
-	// response, err := arubaSDK.UpdateCloudserver(projectId, id, req)
+	// Convert to typed request
+	reqBytes, _ := json.Marshal(reqBody)
+	var req types.CloudServerRequest
+	json.Unmarshal(reqBytes, &req)
+
+	// Build request parameters from query string
+	params := &types.RequestParameters{}
+	if apiVersion := r.URL.Query().Get("api-version"); apiVersion != "" {
+		params.APIVersion = &apiVersion
+	}
+
+	h.Log.Printf("Updating cloudserver %s for project %s", id, projectId)
+
+	// Call Aruba Cloud SDK to update cloudserver
+	response, err := client.FromCompute().CloudServers().Update(r.Context(), projectId, id, req, params)
+	if err != nil {
+		h.Log.Printf("Failed to update cloudserver: %v", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusNotImplemented)
-	json.NewEncoder(w).Encode(map[string]string{
-		"message": "PUT cloudserver not yet implemented - integrate Aruba Cloud SDK here",
-	})
+	w.WriteHeader(response.StatusCode)
+	json.NewEncoder(w).Encode(response.Data)
 }
 
 // ServeHTTP implementation for LIST handler
 func (h *listHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	// TODO: Implement LIST logic using Aruba Cloud SDK
-	_ = r.PathValue("projectId") // projectId
+	projectId := r.PathValue("projectId")
 
-	h.Log.Print("TODO: Update log message")
+	// Create SDK client from request's Bearer token
+	client, err := handlers.CreateClientFromRequest(r)
+	if err != nil {
+		h.Log.Printf("Failed to create Aruba Cloud client: %v", err)
+		http.Error(w, "Failed to initialize API client", http.StatusInternalServerError)
+		return
+	}
 
-	// TODO: Call Aruba Cloud SDK to list cloudservers
-	// response, err := arubaSDK.ListCloudservers(projectId)
+	// Build request parameters from query string
+	params := &types.RequestParameters{}
+	if apiVersion := r.URL.Query().Get("api-version"); apiVersion != "" {
+		params.APIVersion = &apiVersion
+	}
+
+	h.Log.Printf("Listing cloudservers for project %s", projectId)
+
+	// Call Aruba Cloud SDK to list cloudservers
+	response, err := client.FromCompute().CloudServers().List(r.Context(), projectId, params)
+	if err != nil {
+		h.Log.Printf("Failed to list cloudservers: %v", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusNotImplemented)
-	json.NewEncoder(w).Encode(map[string]string{
-		"message": "LIST cloudservers not yet implemented - integrate Aruba Cloud SDK here",
-	})
+	w.WriteHeader(response.StatusCode)
+	json.NewEncoder(w).Encode(response.Data)
 }

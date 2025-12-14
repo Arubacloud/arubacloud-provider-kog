@@ -9,6 +9,5 @@ use (
 	./cmd/schedule-plugin
 	./cmd/security-plugin
 	./cmd/storage-plugin
-	./cmd/subnet-plugin
 	./pkg
 )
