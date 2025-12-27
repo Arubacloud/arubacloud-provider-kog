@@ -2,10 +2,13 @@ package handlers
 
 import (
 	"net/http"
+	"net/url"
+	"strconv"
 	"strings"
 	"sync"
 
 	"github.com/Arubacloud/sdk-go/pkg/aruba"
+	"github.com/Arubacloud/sdk-go/pkg/types"
 )
 
 // Logger interface allows mocking of logger
@@ -53,4 +56,37 @@ func CreateClientFromRequest(r *http.Request) (aruba.Client, error) {
 	clientCache.Store(token, client)
 
 	return client, nil
+}
+
+// BuildRequestParameters extracts query parameters and builds a RequestParameters struct
+// This function extracts all supported query parameters: api-version, filter, sort, projection, offset, limit
+func BuildRequestParameters(query url.Values) *types.RequestParameters {
+	params := &types.RequestParameters{}
+
+	if apiVersion := query.Get("api-version"); apiVersion != "" {
+		params.APIVersion = &apiVersion
+	}
+	if filter := query.Get("filter"); filter != "" {
+		params.Filter = &filter
+	}
+	if sort := query.Get("sort"); sort != "" {
+		params.Sort = &sort
+	}
+	if projection := query.Get("projection"); projection != "" {
+		params.Projection = &projection
+	}
+	if offsetStr := query.Get("offset"); offsetStr != "" {
+		if offset, err := strconv.ParseInt(offsetStr, 10, 32); err == nil {
+			offsetInt := int32(offset)
+			params.Offset = &offsetInt
+		}
+	}
+	if limitStr := query.Get("limit"); limitStr != "" {
+		if limit, err := strconv.ParseInt(limitStr, 10, 32); err == nil {
+			limitInt := int32(limit)
+			params.Limit = &limitInt
+		}
+	}
+
+	return params
 }

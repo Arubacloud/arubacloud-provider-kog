@@ -36,10 +36,10 @@ func main() {
 	srv.Mux().Handle("PUT /projects/{projectId}/providers/Aruba.Container/kaas/{id}", handlerskaas.PutKaas(opts))
 
 	// Containerregistry
-	srv.Mux().Handle("POST /projects/{projectId}/providers/Aruba.Container/containerregistries", handlerscontainerregistry.PostContainerregistry(opts))
-	srv.Mux().Handle("GET /projects/{projectId}/providers/Aruba.Container/containerregistries", handlerscontainerregistry.ListContainerregistrys(opts))
-	srv.Mux().Handle("GET /projects/{projectId}/providers/Aruba.Container/containerregistries/{id}", handlerscontainerregistry.GetContainerregistry(opts))
-	srv.Mux().Handle("PUT /projects/{projectId}/providers/Aruba.Container/containerregistries/{id}", handlerscontainerregistry.PutContainerregistry(opts))
+	srv.Mux().Handle("POST /projects/{projectId}/providers/Aruba.Container/registries", handlerscontainerregistry.PostContainerregistry(opts))
+	srv.Mux().Handle("GET /projects/{projectId}/providers/Aruba.Container/registries", handlerscontainerregistry.ListContainerregistrys(opts))
+	srv.Mux().Handle("GET /projects/{projectId}/providers/Aruba.Container/registries/{id}", handlerscontainerregistry.GetContainerregistry(opts))
+	srv.Mux().Handle("PUT /projects/{projectId}/providers/Aruba.Container/registries/{id}", handlerscontainerregistry.PutContainerregistry(opts))
 
 	// Swagger UI
 	srv.Mux().Handle("/swagger/", httpSwagger.WrapHandler)

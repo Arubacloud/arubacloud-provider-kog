@@ -29,10 +29,10 @@ func main() {
 	}
 
 	// Kms
-	srv.Mux().Handle("POST /projects/{projectId}/providers/Aruba.Security/kms", handlerskms.PostKms(opts))
-	srv.Mux().Handle("GET /projects/{projectId}/providers/Aruba.Security/kms", handlerskms.ListKmss(opts))
-	srv.Mux().Handle("GET /projects/{projectId}/providers/Aruba.Security/kms/{id}", handlerskms.GetKms(opts))
-	srv.Mux().Handle("PUT /projects/{projectId}/providers/Aruba.Security/kms/{id}", handlerskms.PutKms(opts))
+	srv.Mux().Handle("POST /projects/{projectId}/providers/Aruba.Security/kms/keys", handlerskms.PostKms(opts))
+	srv.Mux().Handle("GET /projects/{projectId}/providers/Aruba.Security/kms/keys", handlerskms.ListKmss(opts))
+	srv.Mux().Handle("GET /projects/{projectId}/providers/Aruba.Security/kms/keys/{id}", handlerskms.GetKms(opts))
+	srv.Mux().Handle("PUT /projects/{projectId}/providers/Aruba.Security/kms/keys/{id}", handlerskms.PutKms(opts))
 
 	// Swagger UI
 	srv.Mux().Handle("/swagger/", httpSwagger.WrapHandler)

@@ -1,9 +1,11 @@
 package securityrule
 
 import (
+	"encoding/json"
 	"net/http"
 
 	"github.com/Arubacloud/arubacloud-provider-kog/plugins/pkg/handlers"
+	"github.com/Arubacloud/sdk-go/pkg/types"
 )
 
 func GetSecurityrule(opts handlers.HandlerOptions) handlers.Handler {
@@ -57,24 +59,214 @@ type listHandler struct {
 
 // ServeHTTP implementation for GET handler
 func (h *getHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	h.Log.Printf("Security rules are not supported by the SDK")
-	http.Error(w, "Security rules not supported", http.StatusMethodNotAllowed)
+	projectId := r.PathValue("projectId")
+	vpcId := r.PathValue("vpcId")
+	securityGroupId := r.PathValue("securityGroupId")
+	id := r.PathValue("id")
+
+	if projectId == "" {
+		http.Error(w, "projectId is required", http.StatusBadRequest)
+		return
+	}
+	if vpcId == "" {
+		http.Error(w, "vpcId is required", http.StatusBadRequest)
+		return
+	}
+	if securityGroupId == "" {
+		http.Error(w, "securityGroupId is required", http.StatusBadRequest)
+		return
+	}
+	if id == "" {
+		http.Error(w, "id is required", http.StatusBadRequest)
+		return
+	}
+
+	// Create SDK client from request's Bearer token
+	client, err := handlers.CreateClientFromRequest(r)
+	if err != nil {
+		h.Log.Printf("Failed to create Aruba Cloud client: %v", err)
+		http.Error(w, "Failed to initialize API client", http.StatusInternalServerError)
+		return
+	}
+
+	// Build request parameters from query string
+	params := handlers.BuildRequestParameters(r.URL.Query())
+
+	h.Log.Printf("Getting security rule %s for security group %s in vpc %s in project %s", id, securityGroupId, vpcId, projectId)
+
+	// Call Aruba Cloud SDK to get security rule
+	response, err := client.FromNetwork().SecurityGroupRules().Get(r.Context(), projectId, vpcId, securityGroupId, id, params)
+	if err != nil {
+		h.Log.Printf("Failed to get security rule: %v", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(response.StatusCode)
+	if err := json.NewEncoder(w).Encode(response.Data); err != nil {
+		h.Log.Printf("Failed to encode response: %v", err)
+	}
 }
 
 // ServeHTTP implementation for POST handler
 func (h *postHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	h.Log.Printf("Security rules are not supported by the SDK")
-	http.Error(w, "Security rules not supported", http.StatusMethodNotAllowed)
+	projectId := r.PathValue("projectId")
+	vpcId := r.PathValue("vpcId")
+	securityGroupId := r.PathValue("securityGroupId")
+
+	if projectId == "" {
+		http.Error(w, "projectId is required", http.StatusBadRequest)
+		return
+	}
+	if vpcId == "" {
+		http.Error(w, "vpcId is required", http.StatusBadRequest)
+		return
+	}
+	if securityGroupId == "" {
+		http.Error(w, "securityGroupId is required", http.StatusBadRequest)
+		return
+	}
+
+	// Create SDK client from request's Bearer token
+	client, err := handlers.CreateClientFromRequest(r)
+	if err != nil {
+		h.Log.Printf("Failed to create Aruba Cloud client: %v", err)
+		http.Error(w, "Failed to initialize API client", http.StatusInternalServerError)
+		return
+	}
+
+	// Decode request body
+	var req types.SecurityRuleRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		h.Log.Printf("Failed to decode request body: %v", err)
+		http.Error(w, "Invalid request body: "+err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	// Build request parameters from query string
+	params := handlers.BuildRequestParameters(r.URL.Query())
+
+	h.Log.Printf("Creating security rule for security group %s in vpc %s in project %s", securityGroupId, vpcId, projectId)
+
+	// Call Aruba Cloud SDK to create security rule
+	response, err := client.FromNetwork().SecurityGroupRules().Create(r.Context(), projectId, vpcId, securityGroupId, req, params)
+	if err != nil {
+		h.Log.Printf("Failed to create security rule: %v", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(response.StatusCode)
+	if err := json.NewEncoder(w).Encode(response.Data); err != nil {
+		h.Log.Printf("Failed to encode response: %v", err)
+	}
 }
 
 // ServeHTTP implementation for PUT handler
 func (h *putHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	h.Log.Printf("Security rules are not supported by the SDK")
-	http.Error(w, "Security rules not supported", http.StatusMethodNotAllowed)
+	projectId := r.PathValue("projectId")
+	vpcId := r.PathValue("vpcId")
+	securityGroupId := r.PathValue("securityGroupId")
+	id := r.PathValue("id")
+
+	if projectId == "" {
+		http.Error(w, "projectId is required", http.StatusBadRequest)
+		return
+	}
+	if vpcId == "" {
+		http.Error(w, "vpcId is required", http.StatusBadRequest)
+		return
+	}
+	if securityGroupId == "" {
+		http.Error(w, "securityGroupId is required", http.StatusBadRequest)
+		return
+	}
+	if id == "" {
+		http.Error(w, "id is required", http.StatusBadRequest)
+		return
+	}
+
+	// Create SDK client from request's Bearer token
+	client, err := handlers.CreateClientFromRequest(r)
+	if err != nil {
+		h.Log.Printf("Failed to create Aruba Cloud client: %v", err)
+		http.Error(w, "Failed to initialize API client", http.StatusInternalServerError)
+		return
+	}
+
+	// Decode request body
+	var req types.SecurityRuleRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		h.Log.Printf("Failed to decode request body: %v", err)
+		http.Error(w, "Invalid request body: "+err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	// Build request parameters from query string
+	params := handlers.BuildRequestParameters(r.URL.Query())
+
+	h.Log.Printf("Updating security rule %s for security group %s in vpc %s in project %s", id, securityGroupId, vpcId, projectId)
+
+	// Call Aruba Cloud SDK to update security rule
+	response, err := client.FromNetwork().SecurityGroupRules().Update(r.Context(), projectId, vpcId, securityGroupId, id, req, params)
+	if err != nil {
+		h.Log.Printf("Failed to update security rule: %v", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(response.StatusCode)
+	if err := json.NewEncoder(w).Encode(response.Data); err != nil {
+		h.Log.Printf("Failed to encode response: %v", err)
+	}
 }
 
 // ServeHTTP implementation for LIST handler
 func (h *listHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	h.Log.Printf("Security rules are not supported by the SDK")
-	http.Error(w, "Security rules not supported", http.StatusMethodNotAllowed)
+	projectId := r.PathValue("projectId")
+	vpcId := r.PathValue("vpcId")
+	securityGroupId := r.PathValue("securityGroupId")
+
+	if projectId == "" {
+		http.Error(w, "projectId is required", http.StatusBadRequest)
+		return
+	}
+	if vpcId == "" {
+		http.Error(w, "vpcId is required", http.StatusBadRequest)
+		return
+	}
+	if securityGroupId == "" {
+		http.Error(w, "securityGroupId is required", http.StatusBadRequest)
+		return
+	}
+
+	// Create SDK client from request's Bearer token
+	client, err := handlers.CreateClientFromRequest(r)
+	if err != nil {
+		h.Log.Printf("Failed to create Aruba Cloud client: %v", err)
+		http.Error(w, "Failed to initialize API client", http.StatusInternalServerError)
+		return
+	}
+
+	// Build request parameters from query string
+	params := handlers.BuildRequestParameters(r.URL.Query())
+
+	h.Log.Printf("Listing security rules for security group %s in vpc %s in project %s", securityGroupId, vpcId, projectId)
+
+	// Call Aruba Cloud SDK to list security rules
+	response, err := client.FromNetwork().SecurityGroupRules().List(r.Context(), projectId, vpcId, securityGroupId, params)
+	if err != nil {
+		h.Log.Printf("Failed to list security rules: %v", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(response.StatusCode)
+	if err := json.NewEncoder(w).Encode(response.Data); err != nil {
+		h.Log.Printf("Failed to encode response: %v", err)
+	}
 }

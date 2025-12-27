@@ -61,6 +61,11 @@ type listHandler struct {
 func (h *getHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	id := r.PathValue("id")
 
+	if id == "" {
+		http.Error(w, "id is required", http.StatusBadRequest)
+		return
+	}
+
 	// Create SDK client from request's Bearer token
 	client, err := handlers.CreateClientFromRequest(r)
 	if err != nil {
@@ -70,10 +75,7 @@ func (h *getHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Build request parameters from query string
-	params := &types.RequestParameters{}
-	if apiVersion := r.URL.Query().Get("api-version"); apiVersion != "" {
-		params.APIVersion = &apiVersion
-	}
+	params := handlers.BuildRequestParameters(r.URL.Query())
 
 	// Call Aruba Cloud SDK to get project
 	h.Log.Printf("Getting project %s", id)
@@ -86,7 +88,9 @@ func (h *getHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(response.StatusCode)
-	json.NewEncoder(w).Encode(response.Data)
+	if err := json.NewEncoder(w).Encode(response.Data); err != nil {
+		h.Log.Printf("Failed to encode response: %v", err)
+	}
 }
 
 // ServeHTTP implementation for POST handler
@@ -108,10 +112,7 @@ func (h *postHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Build request parameters
-	params := &types.RequestParameters{}
-	if apiVersion := r.URL.Query().Get("api-version"); apiVersion != "" {
-		params.APIVersion = &apiVersion
-	}
+	params := handlers.BuildRequestParameters(r.URL.Query())
 
 	// Call Aruba Cloud SDK to create project
 	h.Log.Printf("Creating project")
@@ -124,12 +125,19 @@ func (h *postHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(response.StatusCode)
-	json.NewEncoder(w).Encode(response.Data)
+	if err := json.NewEncoder(w).Encode(response.Data); err != nil {
+		h.Log.Printf("Failed to encode response: %v", err)
+	}
 }
 
 // ServeHTTP implementation for PUT handler
 func (h *putHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	id := r.PathValue("id")
+
+	if id == "" {
+		http.Error(w, "id is required", http.StatusBadRequest)
+		return
+	}
 
 	// Create SDK client from request's Bearer token
 	client, err := handlers.CreateClientFromRequest(r)
@@ -148,10 +156,7 @@ func (h *putHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Build request parameters
-	params := &types.RequestParameters{}
-	if apiVersion := r.URL.Query().Get("api-version"); apiVersion != "" {
-		params.APIVersion = &apiVersion
-	}
+	params := handlers.BuildRequestParameters(r.URL.Query())
 
 	// Call Aruba Cloud SDK to update project
 	h.Log.Printf("Updating project %s", id)
@@ -164,7 +169,9 @@ func (h *putHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(response.StatusCode)
-	json.NewEncoder(w).Encode(response.Data)
+	if err := json.NewEncoder(w).Encode(response.Data); err != nil {
+		h.Log.Printf("Failed to encode response: %v", err)
+	}
 }
 
 // ServeHTTP implementation for LIST handler
@@ -178,17 +185,7 @@ func (h *listHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Build request parameters from query string
-	params := &types.RequestParameters{}
-	query := r.URL.Query()
-	if apiVersion := query.Get("api-version"); apiVersion != "" {
-		params.APIVersion = &apiVersion
-	}
-	if filter := query.Get("filter"); filter != "" {
-		params.Filter = &filter
-	}
-	if sort := query.Get("sort"); sort != "" {
-		params.Sort = &sort
-	}
+	params := handlers.BuildRequestParameters(r.URL.Query())
 
 	// Call Aruba Cloud SDK to list projects
 	h.Log.Printf("Listing projects")
@@ -201,5 +198,7 @@ func (h *listHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(response.StatusCode)
-	json.NewEncoder(w).Encode(response.Data)
+	if err := json.NewEncoder(w).Encode(response.Data); err != nil {
+		h.Log.Printf("Failed to encode response: %v", err)
+	}
 }

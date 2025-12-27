@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	"github.com/Arubacloud/arubacloud-provider-kog/plugins/pkg/handlers"
-	"github.com/Arubacloud/sdk-go/pkg/types"
 )
 
 func GetLoadbalancer(opts handlers.HandlerOptions) handlers.Handler {
@@ -62,6 +61,15 @@ func (h *getHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	projectId := r.PathValue("projectId")
 	id := r.PathValue("id")
 
+	if projectId == "" {
+		http.Error(w, "projectId is required", http.StatusBadRequest)
+		return
+	}
+	if id == "" {
+		http.Error(w, "id is required", http.StatusBadRequest)
+		return
+	}
+
 	// Create SDK client from request's Bearer token
 	client, err := handlers.CreateClientFromRequest(r)
 	if err != nil {
@@ -71,10 +79,7 @@ func (h *getHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Build request parameters from query string
-	params := &types.RequestParameters{}
-	if apiVersion := r.URL.Query().Get("api-version"); apiVersion != "" {
-		params.APIVersion = &apiVersion
-	}
+	params := handlers.BuildRequestParameters(r.URL.Query())
 
 	h.Log.Printf("Getting load balancer %s for project %s", id, projectId)
 
@@ -88,7 +93,9 @@ func (h *getHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(response.StatusCode)
-	json.NewEncoder(w).Encode(response.Data)
+	if err := json.NewEncoder(w).Encode(response.Data); err != nil {
+		h.Log.Printf("Failed to encode response: %v", err)
+	}
 }
 
 // ServeHTTP implementation for POST handler
@@ -107,6 +114,11 @@ func (h *putHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 func (h *listHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	projectId := r.PathValue("projectId")
 
+	if projectId == "" {
+		http.Error(w, "projectId is required", http.StatusBadRequest)
+		return
+	}
+
 	// Create SDK client from request's Bearer token
 	client, err := handlers.CreateClientFromRequest(r)
 	if err != nil {
@@ -116,10 +128,7 @@ func (h *listHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Build request parameters from query string
-	params := &types.RequestParameters{}
-	if apiVersion := r.URL.Query().Get("api-version"); apiVersion != "" {
-		params.APIVersion = &apiVersion
-	}
+	params := handlers.BuildRequestParameters(r.URL.Query())
 
 	h.Log.Printf("Listing load balancers for project %s", projectId)
 
@@ -133,5 +142,7 @@ func (h *listHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(response.StatusCode)
-	json.NewEncoder(w).Encode(response.Data)
+	if err := json.NewEncoder(w).Encode(response.Data); err != nil {
+		h.Log.Printf("Failed to encode response: %v", err)
+	}
 }

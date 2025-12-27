@@ -53,10 +53,10 @@ func main() {
 	srv.Mux().Handle("PUT /projects/{projectId}/providers/Aruba.Network/securitygroups/{id}", handlerssecuritygroup.PutSecuritygroup(opts))
 
 	// Securityrule
-	srv.Mux().Handle("POST /projects/{projectId}/providers/Aruba.Network/securitygroups/{securityGroupId}/rules", handlerssecurityrule.PostSecurityrule(opts))
-	srv.Mux().Handle("GET /projects/{projectId}/providers/Aruba.Network/securitygroups/{securityGroupId}/rules", handlerssecurityrule.ListSecurityrules(opts))
-	srv.Mux().Handle("GET /projects/{projectId}/providers/Aruba.Network/securitygroups/{securityGroupId}/rules/{id}", handlerssecurityrule.GetSecurityrule(opts))
-	srv.Mux().Handle("PUT /projects/{projectId}/providers/Aruba.Network/securitygroups/{securityGroupId}/rules/{id}", handlerssecurityrule.PutSecurityrule(opts))
+	srv.Mux().Handle("POST /projects/{projectId}/providers/Aruba.Network/vpcs/{vpcId}/securitygroups/{securityGroupId}/securityrules", handlerssecurityrule.PostSecurityrule(opts))
+	srv.Mux().Handle("GET /projects/{projectId}/providers/Aruba.Network/vpcs/{vpcId}/securitygroups/{securityGroupId}/securityrules", handlerssecurityrule.ListSecurityrules(opts))
+	srv.Mux().Handle("GET /projects/{projectId}/providers/Aruba.Network/vpcs/{vpcId}/securitygroups/{securityGroupId}/securityrules/{id}", handlerssecurityrule.GetSecurityrule(opts))
+	srv.Mux().Handle("PUT /projects/{projectId}/providers/Aruba.Network/vpcs/{vpcId}/securitygroups/{securityGroupId}/securityrules/{id}", handlerssecurityrule.PutSecurityrule(opts))
 
 	// Elasticip
 	srv.Mux().Handle("POST /projects/{projectId}/providers/Aruba.Network/elasticips", handlerselasticip.PostElasticip(opts))

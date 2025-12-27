@@ -63,6 +63,19 @@ func (h *getHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	dbaasId := r.PathValue("dbaasId")
 	id := r.PathValue("id")
 
+	if projectId == "" {
+		http.Error(w, "projectId is required", http.StatusBadRequest)
+		return
+	}
+	if dbaasId == "" {
+		http.Error(w, "dbaasId is required", http.StatusBadRequest)
+		return
+	}
+	if id == "" {
+		http.Error(w, "id is required", http.StatusBadRequest)
+		return
+	}
+
 	// Create SDK client from request's Bearer token
 	client, err := handlers.CreateClientFromRequest(r)
 	if err != nil {
@@ -72,10 +85,7 @@ func (h *getHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Build request parameters from query string
-	params := &types.RequestParameters{}
-	if apiVersion := r.URL.Query().Get("api-version"); apiVersion != "" {
-		params.APIVersion = &apiVersion
-	}
+	params := handlers.BuildRequestParameters(r.URL.Query())
 
 	h.Log.Printf("Getting user %s for dbaas %s in project %s", id, dbaasId, projectId)
 
@@ -89,13 +99,24 @@ func (h *getHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(response.StatusCode)
-	json.NewEncoder(w).Encode(response.Data)
+	if err := json.NewEncoder(w).Encode(response.Data); err != nil {
+		h.Log.Printf("Failed to encode response: %v", err)
+	}
 }
 
 // ServeHTTP implementation for POST handler
 func (h *postHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	projectId := r.PathValue("projectId")
 	dbaasId := r.PathValue("dbaasId")
+
+	if projectId == "" {
+		http.Error(w, "projectId is required", http.StatusBadRequest)
+		return
+	}
+	if dbaasId == "" {
+		http.Error(w, "dbaasId is required", http.StatusBadRequest)
+		return
+	}
 
 	// Create SDK client from request's Bearer token
 	client, err := handlers.CreateClientFromRequest(r)
@@ -106,22 +127,15 @@ func (h *postHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Decode request body
-	var reqBody interface{}
-	if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+	var req types.UserRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		h.Log.Printf("Failed to decode request body: %v", err)
+		http.Error(w, "Invalid request body: "+err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	// Convert to typed request
-	reqBytes, _ := json.Marshal(reqBody)
-	var req types.UserRequest
-	json.Unmarshal(reqBytes, &req)
-
 	// Build request parameters from query string
-	params := &types.RequestParameters{}
-	if apiVersion := r.URL.Query().Get("api-version"); apiVersion != "" {
-		params.APIVersion = &apiVersion
-	}
+	params := handlers.BuildRequestParameters(r.URL.Query())
 
 	h.Log.Printf("Creating user for dbaas %s in project %s", dbaasId, projectId)
 
@@ -135,7 +149,9 @@ func (h *postHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(response.StatusCode)
-	json.NewEncoder(w).Encode(response.Data)
+	if err := json.NewEncoder(w).Encode(response.Data); err != nil {
+		h.Log.Printf("Failed to encode response: %v", err)
+	}
 }
 
 // ServeHTTP implementation for PUT handler
@@ -143,6 +159,19 @@ func (h *putHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	projectId := r.PathValue("projectId")
 	dbaasId := r.PathValue("dbaasId")
 	id := r.PathValue("id")
+
+	if projectId == "" {
+		http.Error(w, "projectId is required", http.StatusBadRequest)
+		return
+	}
+	if dbaasId == "" {
+		http.Error(w, "dbaasId is required", http.StatusBadRequest)
+		return
+	}
+	if id == "" {
+		http.Error(w, "id is required", http.StatusBadRequest)
+		return
+	}
 
 	// Create SDK client from request's Bearer token
 	client, err := handlers.CreateClientFromRequest(r)
@@ -153,22 +182,15 @@ func (h *putHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Decode request body
-	var reqBody interface{}
-	if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+	var req types.UserRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		h.Log.Printf("Failed to decode request body: %v", err)
+		http.Error(w, "Invalid request body: "+err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	// Convert to typed request
-	reqBytes, _ := json.Marshal(reqBody)
-	var req types.UserRequest
-	json.Unmarshal(reqBytes, &req)
-
 	// Build request parameters from query string
-	params := &types.RequestParameters{}
-	if apiVersion := r.URL.Query().Get("api-version"); apiVersion != "" {
-		params.APIVersion = &apiVersion
-	}
+	params := handlers.BuildRequestParameters(r.URL.Query())
 
 	h.Log.Printf("Updating user %s for dbaas %s in project %s", id, dbaasId, projectId)
 
@@ -182,13 +204,24 @@ func (h *putHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(response.StatusCode)
-	json.NewEncoder(w).Encode(response.Data)
+	if err := json.NewEncoder(w).Encode(response.Data); err != nil {
+		h.Log.Printf("Failed to encode response: %v", err)
+	}
 }
 
 // ServeHTTP implementation for LIST handler
 func (h *listHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	projectId := r.PathValue("projectId")
 	dbaasId := r.PathValue("dbaasId")
+
+	if projectId == "" {
+		http.Error(w, "projectId is required", http.StatusBadRequest)
+		return
+	}
+	if dbaasId == "" {
+		http.Error(w, "dbaasId is required", http.StatusBadRequest)
+		return
+	}
 
 	// Create SDK client from request's Bearer token
 	client, err := handlers.CreateClientFromRequest(r)
@@ -199,10 +232,7 @@ func (h *listHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Build request parameters from query string
-	params := &types.RequestParameters{}
-	if apiVersion := r.URL.Query().Get("api-version"); apiVersion != "" {
-		params.APIVersion = &apiVersion
-	}
+	params := handlers.BuildRequestParameters(r.URL.Query())
 
 	h.Log.Printf("Listing users for dbaas %s in project %s", dbaasId, projectId)
 
@@ -216,5 +246,7 @@ func (h *listHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(response.StatusCode)
-	json.NewEncoder(w).Encode(response.Data)
+	if err := json.NewEncoder(w).Encode(response.Data); err != nil {
+		h.Log.Printf("Failed to encode response: %v", err)
+	}
 }
