@@ -1,0 +1,30 @@
+apiVersion: database.ogen-krateo.arubacloud.com/v1alpha1
+kind: DBaaSUserConfiguration
+metadata:
+  name: my-dbaas-user-config
+  namespace: default
+spec:
+  authentication:
+    bearer:
+      tokenRef:
+        name: aruba-access-token
+        namespace: default
+        key: token
+  configuration:
+    query:
+      create:
+        api-version: "1.0"
+      delete:
+        api-version: "1.0"
+      get:
+        api-version: "1.0"
+      update:
+        api-version: "1.0"
+      findby:
+        api-version: "1.0"
+        #filter: "projectId=project-001"
+        #limit: 10
+        #offset: 0
+        #projection: "id,name"
+        #sort: "name"
+

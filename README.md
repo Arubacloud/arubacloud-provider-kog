@@ -216,8 +216,10 @@ This provider supports the following resources across multiple categories:
 | SecurityGroup | ✅   | ✅     | ✅     | ✅     |
 | SecurityRule  | ✅   | ✅     | ✅     | ✅     |
 | ElasticIP     | ✅   | ✅     | ✅     | ✅     |
-| LoadBalancer  | ✅   | ✅     | ✅     | ✅     |
+| LoadBalancer  | ✅   | ❌     | ❌     | ❌     |
 | VPNTunnel     | ✅   | ✅     | ✅     | ✅     |
+
+> **Note**: LoadBalancer is read-only. Only GET (list and retrieve) operations are supported. Create, update, and delete operations are not available via the REST API.
 
 ### Storage Resources
 | Resource      | Get  | Create | Update | Delete |
@@ -242,7 +244,7 @@ This provider supports the following resources across multiple categories:
 |---------|------|--------|--------|--------|
 | KMS     | ✅   | ✅     | ✅     | ✅     |
 
-The resources listed above are Custom Resources (CRs) defined in the `arubacloud.ogen.krateo.io` API group. They are used to manage Aruba Cloud resources in a Kubernetes-native way, allowing you to create, update, and delete Aruba Cloud resources using Kubernetes manifests.
+The resources listed above are Custom Resources (CRs) defined in resource group-specific API groups (e.g., `compute.ogen-krateo.arubacloud.com`, `network.ogen-krateo.arubacloud.com`, etc.). They are used to manage Aruba Cloud resources in a Kubernetes-native way, allowing you to create, update, and delete Aruba Cloud resources using Kubernetes manifests.
 
 ## Available Blueprints
 
@@ -267,7 +269,7 @@ You can specify the subnet name, location, tags, type, and other settings such a
 
 An example of a Subnet resource is:
 ```yaml
-apiVersion: arubacloud.ogen.krateo.io/v1alpha1
+apiVersion: network.ogen-krateo.arubacloud.com/v1alpha1
 kind: Subnet
 metadata:
   name: test-subnet-kog-123-complete
@@ -314,7 +316,7 @@ You can specify the server name, location, instance type, image, network configu
 
 An example of a CloudServer resource is:
 ```yaml
-apiVersion: arubacloud.ogen.krateo.io/v1alpha1
+apiVersion: compute.ogen-krateo.arubacloud.com/v1alpha1
 kind: CloudServer
 metadata:
   name: my-cloud-server
@@ -347,8 +349,8 @@ You can specify the database engine, version, instance type, storage, and other 
 
 An example of a DBaaS resource is:
 ```yaml
-apiVersion: arubacloud.ogen.krateo.io/v1alpha1
-kind: Dbaas
+apiVersion: database.ogen-krateo.arubacloud.com/v1alpha1
+kind: DBaaS
 metadata:
   name: my-postgres-db
   namespace: default
@@ -381,6 +383,8 @@ For instance:
 
 The umbrella chart (`arubacloud-provider-kog-blueprint`) also includes sample files for quick reference.
 
+**Sample Configuration Files**: Ready-to-use configuration examples for all resource types are available in `arubacloud-provider-kog-blueprint/samples/configs/`. These files are pre-configured to reference the `aruba-access-token` secret in the `default` namespace and use the correct API versions for each resource group.
+
 ## Authentication
 
 The authentication to the Aruba Cloud API is managed using 2 kinds of resources (both are required):
@@ -398,7 +402,7 @@ kubectl apply -f - <<EOF
 apiVersion: v1
 kind: Secret
 metadata:
-  name: arubacloud-token
+  name: aruba-access-token
   namespace: default
 type: Opaque
 stringData:
@@ -423,7 +427,7 @@ Note that the specific configuration resource type depends on the resource you a
 An example of a `SubnetConfiguration` resource that references the Kubernetes Secret:
 ```sh
 kubectl apply -f - <<EOF
-apiVersion: arubacloud.ogen.krateo.io/v1alpha1
+apiVersion: network.ogen-krateo.arubacloud.com/v1alpha1
 kind: SubnetConfiguration
 metadata:
   name: my-subnet-config
@@ -432,7 +436,7 @@ spec:
   authentication:
     bearer:
       tokenRef:
-        name: arubacloud-token
+        name: aruba-access-token
         namespace: default
         key: token
   configuration:
@@ -443,7 +447,6 @@ spec:
         api-version: "1.0"
       get:
         api-version: "1.0"
-        ignoreDeletedStatus: false
       update:
         api-version: "1.0"
       findby:
@@ -453,7 +456,7 @@ EOF
 
 Then, in the `Subnet` resource, you can reference the `SubnetConfiguration` resource as follows:
 ```yaml
-apiVersion: arubacloud.ogen.krateo.io/v1alpha1
+apiVersion: network.ogen-krateo.arubacloud.com/v1alpha1
 kind: Subnet
 metadata:
   name: test-subnet-kog-123
@@ -472,7 +475,7 @@ spec:
 Similarly, for a `CloudServer` resource, you would create a `CloudServerConfiguration`:
 ```sh
 kubectl apply -f - <<EOF
-apiVersion: arubacloud.ogen.krateo.io/v1alpha1
+apiVersion: compute.ogen-krateo.arubacloud.com/v1alpha1
 kind: CloudServerConfiguration
 metadata:
   name: my-cloudserver-config
@@ -481,7 +484,7 @@ spec:
   authentication:
     bearer:
       tokenRef:
-        name: arubacloud-token
+        name: aruba-access-token
         namespace: default
         key: token
   configuration:
@@ -501,7 +504,7 @@ EOF
 
 And reference it in your `CloudServer` resource:
 ```yaml
-apiVersion: arubacloud.ogen.krateo.io/v1alpha1
+apiVersion: compute.ogen-krateo.arubacloud.com/v1alpha1
 kind: CloudServer
 metadata:
   name: my-server
@@ -524,32 +527,44 @@ More details about the configuration resources in the [Configuration resources](
 Each resource type requires a specific configuration resource to be created in the cluster.
 
 **Currently supported configuration resources:**
-- `CloudServerConfiguration` - For CloudServer resources
-- `KeyPairConfiguration` - For KeyPair resources
-- `KaaSConfiguration` - For KaaS resources
-- `ContainerRegistryConfiguration` - For ContainerRegistry resources
-- `DbaasConfiguration` - For DBaaS resources
-- `DatabaseConfiguration` - For Database resources
-- `UserConfiguration` - For User resources
-- `GrantConfiguration` - For Grant resources
-- `BackupConfiguration` - For Backup resources (database)
-- `VpcConfiguration` - For VPC resources
-- `SubnetConfiguration` - For Subnet resources
-- `SecurityGroupConfiguration` - For SecurityGroup resources
-- `SecurityRuleConfiguration` - For SecurityRule resources
-- `ElasticIpConfiguration` - For ElasticIP resources
-- `LoadBalancerConfiguration` - For LoadBalancer resources
-- `VpnTunnelConfiguration` - For VPNTunnel resources
-- `BlockStorageConfiguration` - For BlockStorage resources
-- `SnapshotConfiguration` - For Snapshot resources
-- `BackupConfiguration` - For Backup resources (storage)
-- `RestoreConfiguration` - For Restore resources
-- `ProjectConfiguration` - For Project resources
-- `JobConfiguration` - For Job resources
-- `KmsConfiguration` - For KMS resources
+- `CloudServerConfiguration` - For CloudServer resources (API: `compute.ogen-krateo.arubacloud.com/v1alpha1`)
+- `KeyPairConfiguration` - For KeyPair resources (API: `compute.ogen-krateo.arubacloud.com/v1alpha1`)
+- `KaaSConfiguration` - For KaaS resources (API: `container.ogen-krateo.arubacloud.com/v1alpha1`)
+- `ContainerRegistryConfiguration` - For ContainerRegistry resources (API: `container.ogen-krateo.arubacloud.com/v1alpha1`)
+- `DBaaSConfiguration` - For DBaaS resources (API: `database.ogen-krateo.arubacloud.com/v1alpha1`)
+- `DBaaSDatabaseConfiguration` - For Database resources (API: `database.ogen-krateo.arubacloud.com/v1alpha1`)
+- `DBaaSUserConfiguration` - For User resources (API: `database.ogen-krateo.arubacloud.com/v1alpha1`)
+- `DBaaSGrantConfiguration` - For Grant resources (API: `database.ogen-krateo.arubacloud.com/v1alpha1`)
+- `BackupConfiguration` - For Backup resources (database) (API: `database.ogen-krateo.arubacloud.com/v1alpha1`)
+- `VPCConfiguration` - For VPC resources (API: `network.ogen-krateo.arubacloud.com/v1alpha1`)
+- `SubnetConfiguration` - For Subnet resources (API: `network.ogen-krateo.arubacloud.com/v1alpha1`)
+- `SecurityGroupConfiguration` - For SecurityGroup resources (API: `network.ogen-krateo.arubacloud.com/v1alpha1`)
+- `SecurityRuleConfiguration` - For SecurityRule resources (API: `network.ogen-krateo.arubacloud.com/v1alpha1`)
+- `ElasticIPConfiguration` - For ElasticIP resources (API: `network.ogen-krateo.arubacloud.com/v1alpha1`)
+- `LoadBalancerConfiguration` - For LoadBalancer resources (API: `network.ogen-krateo.arubacloud.com/v1alpha1`) - **Read-only resource**
+- `VPNTunnelConfiguration` - For VPNTunnel resources (API: `network.ogen-krateo.arubacloud.com/v1alpha1`)
+- `BlockStorageConfiguration` - For BlockStorage resources (API: `storage.ogen-krateo.arubacloud.com/v1alpha1`)
+- `SnapshotConfiguration` - For Snapshot resources (API: `storage.ogen-krateo.arubacloud.com/v1alpha1`)
+- `BackupConfiguration` - For Backup resources (storage) (API: `storage.ogen-krateo.arubacloud.com/v1alpha1`)
+- `RestoreConfiguration` - For Restore resources (API: `storage.ogen-krateo.arubacloud.com/v1alpha1`)
+- `ProjectConfiguration` - For Project resources (API: `project.ogen-krateo.arubacloud.com/v1alpha1`)
+- `JobConfiguration` - For Job resources (API: `schedule.ogen-krateo.arubacloud.com/v1alpha1`)
+- `KMSConfiguration` - For KMS resources (API: `security.ogen-krateo.arubacloud.com/v1alpha1`)
 
 These configuration resources are used to store the authentication information (i.e., reference to the Kubernetes Secret containing the Aruba Cloud Token) and other configuration options for the resource type.
-You can find examples of these configuration resources in the `/samples/configs` folder of each blueprint chart.
+
+**Important**: Each configuration resource uses a specific API version based on its resource group:
+- Compute resources: `compute.ogen-krateo.arubacloud.com/v1alpha1`
+- Container resources: `container.ogen-krateo.arubacloud.com/v1alpha1`
+- Database resources: `database.ogen-krateo.arubacloud.com/v1alpha1`
+- Network resources: `network.ogen-krateo.arubacloud.com/v1alpha1`
+- Storage resources: `storage.ogen-krateo.arubacloud.com/v1alpha1`
+- Project resources: `project.ogen-krateo.arubacloud.com/v1alpha1`
+- Schedule resources: `schedule.ogen-krateo.arubacloud.com/v1alpha1`
+- Security resources: `security.ogen-krateo.arubacloud.com/v1alpha1`
+
+You can find example configuration files for all resource types in the `/samples/configs` folder of the `arubacloud-provider-kog-blueprint` chart. These sample files are ready to use and reference the `aruba-access-token` secret in the `default` namespace.
+
 Note that a single configuration resource can be used by multiple resources of the same type.
 For example, you can create a single `SubnetConfiguration` resource and reference it in multiple `Subnet` resources.
 

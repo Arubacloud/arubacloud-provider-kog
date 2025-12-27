@@ -63,3 +63,11 @@ cover.out
 
 /dev_scripts
 /dev_scripts/**
+
+# Helm chart dependencies
+Chart.lock
+**/Chart.lock
+charts/
+**/charts/
+*.tgz
+**/*.tgz

@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ .Release.Name }}-dbaas-grant
+  name: {{ .Release.Name | lower }}-dbaas-grant
 data:
-  dbaas-grant.yaml: |
+  dbaas_grant.yaml: |
 {{ tpl (.Files.Get "assets/dbaas-grant.yaml") . | indent 4 }}

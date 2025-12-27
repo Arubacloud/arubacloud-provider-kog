@@ -35,7 +35,7 @@ spec:
         name: api-version
         in: query
       fromRestDefinition:
-        actions: ["*"] # star means all actions set in the verbsDescription above
+        actions: ["*"] # all actions defined above (create/update/delete are defined for schema generation but not implemented)
     - fromOpenAPI:
         name: filter
         in: query

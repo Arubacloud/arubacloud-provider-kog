@@ -64,11 +64,9 @@ func main() {
 	srv.Mux().Handle("GET /projects/{projectId}/providers/Aruba.Network/elasticips/{id}", handlerselasticip.GetElasticip(opts))
 	srv.Mux().Handle("PUT /projects/{projectId}/providers/Aruba.Network/elasticips/{id}", handlerselasticip.PutElasticip(opts))
 
-	// Loadbalancer
-	srv.Mux().Handle("POST /projects/{projectId}/providers/Aruba.Network/loadbalancers", handlersloadbalancer.PostLoadbalancer(opts))
+	// Loadbalancer (read-only: only GET and LIST are supported)
 	srv.Mux().Handle("GET /projects/{projectId}/providers/Aruba.Network/loadbalancers", handlersloadbalancer.ListLoadbalancers(opts))
 	srv.Mux().Handle("GET /projects/{projectId}/providers/Aruba.Network/loadbalancers/{id}", handlersloadbalancer.GetLoadbalancer(opts))
-	srv.Mux().Handle("PUT /projects/{projectId}/providers/Aruba.Network/loadbalancers/{id}", handlersloadbalancer.PutLoadbalancer(opts))
 
 	// Vpntunnel
 	srv.Mux().Handle("POST /projects/{projectId}/providers/Aruba.Network/vpntunnels", handlersvpntunnel.PostVpntunnel(opts))

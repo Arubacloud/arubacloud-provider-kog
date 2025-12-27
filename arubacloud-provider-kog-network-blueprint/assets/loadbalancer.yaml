@@ -45,7 +45,35 @@ paths:
         '401':
           $ref: '#/components/responses/Unauthorized'
 
-  /projects/{projectId}/providers/Aruba.Network/loadbalancers/{loadBalancerId}:
+    post:
+      tags: [LoadBalancers]
+      summary: Create Load Balancer (Not Supported - Read-only resource)
+      description: |
+        NOTE: Load balancers are read-only resources. This operation is defined
+        for schema generation purposes only and will return 405 Method Not Allowed.
+      operationId: createLoadBalancer
+      parameters:
+        - $ref: '#/components/parameters/ProjectIdPath'
+        - $ref: '#/components/parameters/ApiVersion'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoadBalancerRequest'
+      responses:
+        '405':
+          description: Method Not Allowed - Load balancers are read-only
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /projects/{projectId}/providers/Aruba.Network/loadbalancers/{id}:
     get:
       tags: [LoadBalancers]
       summary: Get Load Balancer
@@ -61,6 +89,60 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/LoadBalancerResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    put:
+      tags: [LoadBalancers]
+      summary: Update Load Balancer (Not Supported - Read-only resource)
+      description: |
+        NOTE: Load balancers are read-only resources. This operation is defined
+        for schema generation purposes only and will return 405 Method Not Allowed.
+      operationId: updateLoadBalancer
+      parameters:
+        - $ref: '#/components/parameters/ProjectIdPath'
+        - $ref: '#/components/parameters/LoadBalancerIdPath'
+        - $ref: '#/components/parameters/ApiVersion'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoadBalancerRequest'
+      responses:
+        '405':
+          description: Method Not Allowed - Load balancers are read-only
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    delete:
+      tags: [LoadBalancers]
+      summary: Delete Load Balancer (Not Supported - Read-only resource)
+      description: |
+        NOTE: Load balancers are read-only resources. This operation is defined
+        for schema generation purposes only and will return 405 Method Not Allowed.
+      operationId: deleteLoadBalancer
+      parameters:
+        - $ref: '#/components/parameters/ProjectIdPath'
+        - $ref: '#/components/parameters/LoadBalancerIdPath'
+        - $ref: '#/components/parameters/ApiVersion'
+      responses:
+        '405':
+          description: Method Not Allowed - Load balancers are read-only
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '401':
           $ref: '#/components/responses/Unauthorized'
         '404':
@@ -83,7 +165,7 @@ components:
         type: string
 
     LoadBalancerIdPath:
-      name: loadBalancerId
+      name: id
       in: path
       required: true
       description: The unique identifier of the load balancer
@@ -130,6 +212,18 @@ components:
         type: string
 
   schemas:
+    LoadBalancerRequest:
+      type: object
+      required:
+        - metadata
+        - properties
+      properties:
+        metadata:
+          $ref: '#/components/schemas/ResourceMetadataRequest'
+        properties:
+          type: object
+          description: Load balancer properties (read-only resource - not used)
+
     LoadBalancerResponse:
       type: object
       properties:
@@ -150,6 +244,20 @@ components:
               type: array
               items:
                 $ref: '#/components/schemas/LoadBalancerResponse'
+
+    ResourceMetadataRequest:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          description: Name of the resource
+        tags:
+          type: array
+          items:
+            type: string
+          description: Tags associated with the resource
 
     ResourceMetadataResponse:
       type: object

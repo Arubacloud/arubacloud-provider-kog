@@ -1,9 +1,9 @@
 kind: RestDefinition
 apiVersion: ogen.krateo.io/v1alpha1
 metadata:
-  name: {{ .Release.Name }}-dbaas-grant
+  name: {{ .Release.Name | lower }}-dbaas-grant
 spec:
-  oasPath: configmap://{{ .Release.Namespace }}/{{ .Release.Name }}-dbaas-grant/dbaas-grant.yaml
+  oasPath: configmap://{{ .Release.Namespace | lower }}/{{ .Release.Name | lower }}-dbaas-grant/dbaas_grant.yaml
   resourceGroup: database.ogen-krateo.arubacloud.com
   resource: 
     kind: DBaaSGrant

@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ .Release.Name }}-dbaas-backup
+  name: {{ .Release.Name | lower }}-dbaas-backup
 data:
-  dbaas-backup.yaml: |
+  dbaas_backup.yaml: |
 {{ tpl (.Files.Get "assets/dbaas-backup.yaml") . | indent 4 }}
