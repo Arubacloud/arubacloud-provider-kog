@@ -1,13 +1,11 @@
 package main
 
 import (
-	"net/http"
-
+	handlerscontainerregistry "github.com/Arubacloud/arubacloud-provider-kog/plugins/cmd/container-plugin/handlers/containerregistry"
+	handlerskaas "github.com/Arubacloud/arubacloud-provider-kog/plugins/cmd/container-plugin/handlers/kaas"
 	"github.com/Arubacloud/arubacloud-provider-kog/plugins/pkg/handlers"
 	"github.com/Arubacloud/arubacloud-provider-kog/plugins/pkg/health"
 	"github.com/Arubacloud/arubacloud-provider-kog/plugins/pkg/server"
-	handlerskaas "github.com/Arubacloud/arubacloud-provider-kog/plugins/cmd/container-plugin/handlers/kaas"
-	handlerscontainerregistry "github.com/Arubacloud/arubacloud-provider-kog/plugins/cmd/container-plugin/handlers/containerregistry"
 	"github.com/rs/zerolog/log"
 	httpSwagger "github.com/swaggo/http-swagger"
 )
@@ -28,8 +26,7 @@ func main() {
 	srv := server.New()
 
 	opts := handlers.HandlerOptions{
-		Log:    &log.Logger,
-		Client: http.DefaultClient,
+		Log: &log.Logger,
 	}
 
 	// Kaas
@@ -39,17 +36,17 @@ func main() {
 	srv.Mux().Handle("PUT /projects/{projectId}/providers/Aruba.Container/kaas/{id}", handlerskaas.PutKaas(opts))
 
 	// Containerregistry
-	srv.Mux().Handle("POST /projects/{projectId}/providers/Aruba.Container/containerregistries", handlerscontainerregistry.PostContainerregistry(opts))
-	srv.Mux().Handle("GET /projects/{projectId}/providers/Aruba.Container/containerregistries", handlerscontainerregistry.ListContainerregistrys(opts))
-	srv.Mux().Handle("GET /projects/{projectId}/providers/Aruba.Container/containerregistries/{id}", handlerscontainerregistry.GetContainerregistry(opts))
-	srv.Mux().Handle("PUT /projects/{projectId}/providers/Aruba.Container/containerregistries/{id}", handlerscontainerregistry.PutContainerregistry(opts))
+	srv.Mux().Handle("POST /projects/{projectId}/providers/Aruba.Container/registries", handlerscontainerregistry.PostContainerregistry(opts))
+	srv.Mux().Handle("GET /projects/{projectId}/providers/Aruba.Container/registries", handlerscontainerregistry.ListContainerregistrys(opts))
+	srv.Mux().Handle("GET /projects/{projectId}/providers/Aruba.Container/registries/{id}", handlerscontainerregistry.GetContainerregistry(opts))
+	srv.Mux().Handle("PUT /projects/{projectId}/providers/Aruba.Container/registries/{id}", handlerscontainerregistry.PutContainerregistry(opts))
 
 	// Swagger UI
 	srv.Mux().Handle("/swagger/", httpSwagger.WrapHandler)
 
 	// Kubernetes health check endpoints
 	srv.Mux().HandleFunc("GET /healthz", health.LivenessHandler(srv.Healthy()))
-	srv.Mux().HandleFunc("GET /readyz", health.ReadinessHandler(srv.Ready(), opts.Client.(*http.Client)))
+	srv.Mux().HandleFunc("GET /readyz", health.ReadinessHandler(srv.Ready()))
 
 	srv.Run()
 }

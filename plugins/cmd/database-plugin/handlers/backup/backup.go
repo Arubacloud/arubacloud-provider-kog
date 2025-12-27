@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/Arubacloud/arubacloud-provider-kog/plugins/pkg/handlers"
+	"github.com/Arubacloud/sdk-go/pkg/types"
 )
 
 func GetBackup(opts handlers.HandlerOptions) handlers.Handler {
@@ -58,83 +59,136 @@ type listHandler struct {
 
 // ServeHTTP implementation for GET handler
 func (h *getHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	// TODO: Implement GET logic using Aruba Cloud SDK
-	// Example structure - needs to be customized based on actual SDK
-	_ = r.PathValue("projectId") // projectId
-	_ = r.PathValue("id") // id
-	
-	h.Log.Print("TODO: Update log message")
+	projectId := r.PathValue("projectId")
+	id := r.PathValue("id")
 
-	// TODO: Call Aruba Cloud SDK to get backup
-	// response, err := arubaSDK.GetBackup(projectId, id)
-	
+	if projectId == "" {
+		http.Error(w, "projectId is required", http.StatusBadRequest)
+		return
+	}
+	if id == "" {
+		http.Error(w, "id is required", http.StatusBadRequest)
+		return
+	}
+
+	// Create SDK client from request's Bearer token
+	client, err := handlers.CreateClientFromRequest(r)
+	if err != nil {
+		h.Log.Printf("Failed to create Aruba Cloud client: %v", err)
+		http.Error(w, "Failed to initialize API client", http.StatusInternalServerError)
+		return
+	}
+
+	// Build request parameters from query string
+	params := handlers.BuildRequestParameters(r.URL.Query())
+
+	h.Log.Printf("Getting backup %s for project %s", id, projectId)
+
+	// Call Aruba Cloud SDK to get backup
+	response, err := client.FromDatabase().Backups().Get(r.Context(), projectId, id, params)
+	if err != nil {
+		h.Log.Printf("Failed to get backup: %v", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusNotImplemented)
-	json.NewEncoder(w).Encode(map[string]string{
-		"message": "GET backup not yet implemented - integrate Aruba Cloud SDK here",
-	})
+	w.WriteHeader(response.StatusCode)
+	if err := json.NewEncoder(w).Encode(response.Data); err != nil {
+		h.Log.Printf("Failed to encode response: %v", err)
+	}
 }
 
 // ServeHTTP implementation for POST handler
 func (h *postHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	// TODO: Implement POST logic using Aruba Cloud SDK
-	_ = r.PathValue("projectId") // projectId
-	
-	h.Log.Print("TODO: Update log message")
+	projectId := r.PathValue("projectId")
 
-	var req map[string]interface{}
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+	if projectId == "" {
+		http.Error(w, "projectId is required", http.StatusBadRequest)
 		return
 	}
 
-	// TODO: Call Aruba Cloud SDK to create backup
-	// response, err := arubaSDK.CreateBackup(projectId, req)
-	
+	// Create SDK client from request's Bearer token
+	client, err := handlers.CreateClientFromRequest(r)
+	if err != nil {
+		h.Log.Printf("Failed to create Aruba Cloud client: %v", err)
+		http.Error(w, "Failed to initialize API client", http.StatusInternalServerError)
+		return
+	}
+
+	// Decode request body
+	var req types.BackupRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		h.Log.Printf("Failed to decode request body: %v", err)
+		http.Error(w, "Invalid request body: "+err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	// Build request parameters from query string
+	params := handlers.BuildRequestParameters(r.URL.Query())
+
+	h.Log.Printf("Creating backup for project %s", projectId)
+
+	// Call Aruba Cloud SDK to create backup
+	response, err := client.FromDatabase().Backups().Create(r.Context(), projectId, req, params)
+	if err != nil {
+		h.Log.Printf("Failed to create backup: %v", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusNotImplemented)
-	json.NewEncoder(w).Encode(map[string]string{
-		"message": "POST backup not yet implemented - integrate Aruba Cloud SDK here",
-	})
+	w.WriteHeader(response.StatusCode)
+	if err := json.NewEncoder(w).Encode(response.Data); err != nil {
+		h.Log.Printf("Failed to encode response: %v", err)
+	}
 }
 
 // ServeHTTP implementation for PUT handler
 func (h *putHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	// TODO: Implement PUT logic using Aruba Cloud SDK
-	_ = r.PathValue("projectId") // projectId
-	_ = r.PathValue("id") // id
-	
-	h.Log.Print("TODO: Update log message")
+	// Backups resource does not support Update operation
+	h.Log.Print("PUT backup operation not supported by Aruba Cloud API")
 
-	var req map[string]interface{}
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	// TODO: Call Aruba Cloud SDK to update backup
-	// response, err := arubaSDK.UpdateBackup(projectId, id, req)
-	
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusNotImplemented)
+	w.WriteHeader(http.StatusMethodNotAllowed)
 	json.NewEncoder(w).Encode(map[string]string{
-		"message": "PUT backup not yet implemented - integrate Aruba Cloud SDK here",
+		"message": "PUT operation not supported for database backups",
 	})
 }
 
 // ServeHTTP implementation for LIST handler
 func (h *listHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	// TODO: Implement LIST logic using Aruba Cloud SDK
-	_ = r.PathValue("projectId") // projectId
-	
-	h.Log.Print("TODO: Update log message")
+	projectId := r.PathValue("projectId")
 
-	// TODO: Call Aruba Cloud SDK to list backups
-	// response, err := arubaSDK.ListBackups(projectId)
-	
+	if projectId == "" {
+		http.Error(w, "projectId is required", http.StatusBadRequest)
+		return
+	}
+
+	// Create SDK client from request's Bearer token
+	client, err := handlers.CreateClientFromRequest(r)
+	if err != nil {
+		h.Log.Printf("Failed to create Aruba Cloud client: %v", err)
+		http.Error(w, "Failed to initialize API client", http.StatusInternalServerError)
+		return
+	}
+
+	// Build request parameters from query string
+	params := handlers.BuildRequestParameters(r.URL.Query())
+
+	h.Log.Printf("Listing backups for project %s", projectId)
+
+	// Call Aruba Cloud SDK to list backups
+	response, err := client.FromDatabase().Backups().List(r.Context(), projectId, params)
+	if err != nil {
+		h.Log.Printf("Failed to list backups: %v", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusNotImplemented)
-	json.NewEncoder(w).Encode(map[string]string{
-		"message": "LIST backups not yet implemented - integrate Aruba Cloud SDK here",
-	})
+	w.WriteHeader(response.StatusCode)
+	if err := json.NewEncoder(w).Encode(response.Data); err != nil {
+		h.Log.Printf("Failed to encode response: %v", err)
+	}
 }

@@ -1,16 +1,14 @@
 package main
 
 import (
-	"net/http"
-
+	handlersbackup "github.com/Arubacloud/arubacloud-provider-kog/plugins/cmd/database-plugin/handlers/backup"
+	handlersdatabase "github.com/Arubacloud/arubacloud-provider-kog/plugins/cmd/database-plugin/handlers/database"
+	handlersdbaas "github.com/Arubacloud/arubacloud-provider-kog/plugins/cmd/database-plugin/handlers/dbaas"
+	handlersgrant "github.com/Arubacloud/arubacloud-provider-kog/plugins/cmd/database-plugin/handlers/grant"
+	handlersuser "github.com/Arubacloud/arubacloud-provider-kog/plugins/cmd/database-plugin/handlers/user"
 	"github.com/Arubacloud/arubacloud-provider-kog/plugins/pkg/handlers"
 	"github.com/Arubacloud/arubacloud-provider-kog/plugins/pkg/health"
 	"github.com/Arubacloud/arubacloud-provider-kog/plugins/pkg/server"
-	handlersdbaas "github.com/Arubacloud/arubacloud-provider-kog/plugins/cmd/database-plugin/handlers/dbaas"
-	handlersdatabase "github.com/Arubacloud/arubacloud-provider-kog/plugins/cmd/database-plugin/handlers/database"
-	handlersuser "github.com/Arubacloud/arubacloud-provider-kog/plugins/cmd/database-plugin/handlers/user"
-	handlersgrant "github.com/Arubacloud/arubacloud-provider-kog/plugins/cmd/database-plugin/handlers/grant"
-	handlersbackup "github.com/Arubacloud/arubacloud-provider-kog/plugins/cmd/database-plugin/handlers/backup"
 	"github.com/rs/zerolog/log"
 	httpSwagger "github.com/swaggo/http-swagger"
 )
@@ -31,8 +29,7 @@ func main() {
 	srv := server.New()
 
 	opts := handlers.HandlerOptions{
-		Log:    &log.Logger,
-		Client: http.DefaultClient,
+		Log: &log.Logger,
 	}
 
 	// Dbaas
@@ -70,7 +67,7 @@ func main() {
 
 	// Kubernetes health check endpoints
 	srv.Mux().HandleFunc("GET /healthz", health.LivenessHandler(srv.Healthy()))
-	srv.Mux().HandleFunc("GET /readyz", health.ReadinessHandler(srv.Ready(), opts.Client.(*http.Client)))
+	srv.Mux().HandleFunc("GET /readyz", health.ReadinessHandler(srv.Ready()))
 
 	srv.Run()
 }

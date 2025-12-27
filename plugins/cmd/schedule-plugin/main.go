@@ -1,12 +1,10 @@
 package main
 
 import (
-	"net/http"
-
+	handlersjob "github.com/Arubacloud/arubacloud-provider-kog/plugins/cmd/schedule-plugin/handlers/job"
 	"github.com/Arubacloud/arubacloud-provider-kog/plugins/pkg/handlers"
 	"github.com/Arubacloud/arubacloud-provider-kog/plugins/pkg/health"
 	"github.com/Arubacloud/arubacloud-provider-kog/plugins/pkg/server"
-	handlersjob "github.com/Arubacloud/arubacloud-provider-kog/plugins/cmd/schedule-plugin/handlers/job"
 	"github.com/rs/zerolog/log"
 	httpSwagger "github.com/swaggo/http-swagger"
 )
@@ -27,8 +25,7 @@ func main() {
 	srv := server.New()
 
 	opts := handlers.HandlerOptions{
-		Log:    &log.Logger,
-		Client: http.DefaultClient,
+		Log: &log.Logger,
 	}
 
 	// Job
@@ -42,7 +39,7 @@ func main() {
 
 	// Kubernetes health check endpoints
 	srv.Mux().HandleFunc("GET /healthz", health.LivenessHandler(srv.Healthy()))
-	srv.Mux().HandleFunc("GET /readyz", health.ReadinessHandler(srv.Ready(), opts.Client.(*http.Client)))
+	srv.Mux().HandleFunc("GET /readyz", health.ReadinessHandler(srv.Ready()))
 
 	srv.Run()
 }

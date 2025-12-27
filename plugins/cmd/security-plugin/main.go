@@ -1,12 +1,10 @@
 package main
 
 import (
-	"net/http"
-
+	handlerskms "github.com/Arubacloud/arubacloud-provider-kog/plugins/cmd/security-plugin/handlers/kms"
 	"github.com/Arubacloud/arubacloud-provider-kog/plugins/pkg/handlers"
 	"github.com/Arubacloud/arubacloud-provider-kog/plugins/pkg/health"
 	"github.com/Arubacloud/arubacloud-provider-kog/plugins/pkg/server"
-	handlerskms "github.com/Arubacloud/arubacloud-provider-kog/plugins/cmd/security-plugin/handlers/kms"
 	"github.com/rs/zerolog/log"
 	httpSwagger "github.com/swaggo/http-swagger"
 )
@@ -27,22 +25,21 @@ func main() {
 	srv := server.New()
 
 	opts := handlers.HandlerOptions{
-		Log:    &log.Logger,
-		Client: http.DefaultClient,
+		Log: &log.Logger,
 	}
 
 	// Kms
-	srv.Mux().Handle("POST /projects/{projectId}/providers/Aruba.Security/kms", handlerskms.PostKms(opts))
-	srv.Mux().Handle("GET /projects/{projectId}/providers/Aruba.Security/kms", handlerskms.ListKmss(opts))
-	srv.Mux().Handle("GET /projects/{projectId}/providers/Aruba.Security/kms/{id}", handlerskms.GetKms(opts))
-	srv.Mux().Handle("PUT /projects/{projectId}/providers/Aruba.Security/kms/{id}", handlerskms.PutKms(opts))
+	srv.Mux().Handle("POST /projects/{projectId}/providers/Aruba.Security/kms/keys", handlerskms.PostKms(opts))
+	srv.Mux().Handle("GET /projects/{projectId}/providers/Aruba.Security/kms/keys", handlerskms.ListKmss(opts))
+	srv.Mux().Handle("GET /projects/{projectId}/providers/Aruba.Security/kms/keys/{id}", handlerskms.GetKms(opts))
+	srv.Mux().Handle("PUT /projects/{projectId}/providers/Aruba.Security/kms/keys/{id}", handlerskms.PutKms(opts))
 
 	// Swagger UI
 	srv.Mux().Handle("/swagger/", httpSwagger.WrapHandler)
 
 	// Kubernetes health check endpoints
 	srv.Mux().HandleFunc("GET /healthz", health.LivenessHandler(srv.Healthy()))
-	srv.Mux().HandleFunc("GET /readyz", health.ReadinessHandler(srv.Ready(), opts.Client.(*http.Client)))
+	srv.Mux().HandleFunc("GET /readyz", health.ReadinessHandler(srv.Ready()))
 
 	srv.Run()
 }

@@ -25,6 +25,10 @@
 *.DS_Store
 **/bin/**
 
+# Plugin build artifacts
+plugins/bin/
+plugins/bin
+
 # Test binary, built with `go test -c`
 *.test
 

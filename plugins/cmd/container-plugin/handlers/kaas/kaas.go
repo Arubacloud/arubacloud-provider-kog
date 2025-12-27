@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/Arubacloud/arubacloud-provider-kog/plugins/pkg/handlers"
+	"github.com/Arubacloud/sdk-go/pkg/types"
 )
 
 func GetKaas(opts handlers.HandlerOptions) handlers.Handler {
@@ -58,83 +59,174 @@ type listHandler struct {
 
 // ServeHTTP implementation for GET handler
 func (h *getHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	// TODO: Implement GET logic using Aruba Cloud SDK
-	// Example structure - needs to be customized based on actual SDK
-	_ = r.PathValue("projectId") // projectId
-	_ = r.PathValue("id") // id
-	
-	h.Log.Print("TODO: Update log message")
+	projectId := r.PathValue("projectId")
+	id := r.PathValue("id")
 
-	// TODO: Call Aruba Cloud SDK to get kaas
-	// response, err := arubaSDK.GetKaas(projectId, id)
-	
+	if projectId == "" {
+		http.Error(w, "projectId is required", http.StatusBadRequest)
+		return
+	}
+	if id == "" {
+		http.Error(w, "id is required", http.StatusBadRequest)
+		return
+	}
+
+	// Create SDK client from request's Bearer token
+	client, err := handlers.CreateClientFromRequest(r)
+	if err != nil {
+		h.Log.Printf("Failed to create Aruba Cloud client: %v", err)
+		http.Error(w, "Failed to initialize API client", http.StatusInternalServerError)
+		return
+	}
+
+	// Build request parameters from query string
+	params := handlers.BuildRequestParameters(r.URL.Query())
+
+	h.Log.Printf("Getting kaas %s for project %s", id, projectId)
+
+	// Call Aruba Cloud SDK to get kaas
+	response, err := client.FromContainer().KaaS().Get(r.Context(), projectId, id, params)
+	if err != nil {
+		h.Log.Printf("Failed to get kaas: %v", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusNotImplemented)
-	json.NewEncoder(w).Encode(map[string]string{
-		"message": "GET kaas not yet implemented - integrate Aruba Cloud SDK here",
-	})
+	w.WriteHeader(response.StatusCode)
+	if err := json.NewEncoder(w).Encode(response.Data); err != nil {
+		h.Log.Printf("Failed to encode response: %v", err)
+	}
 }
 
 // ServeHTTP implementation for POST handler
 func (h *postHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	// TODO: Implement POST logic using Aruba Cloud SDK
-	_ = r.PathValue("projectId") // projectId
-	
-	h.Log.Print("TODO: Update log message")
+	projectId := r.PathValue("projectId")
 
-	var req map[string]interface{}
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+	if projectId == "" {
+		http.Error(w, "projectId is required", http.StatusBadRequest)
 		return
 	}
 
-	// TODO: Call Aruba Cloud SDK to create kaas
-	// response, err := arubaSDK.CreateKaas(projectId, req)
-	
+	// Create SDK client from request's Bearer token
+	client, err := handlers.CreateClientFromRequest(r)
+	if err != nil {
+		h.Log.Printf("Failed to create Aruba Cloud client: %v", err)
+		http.Error(w, "Failed to initialize API client", http.StatusInternalServerError)
+		return
+	}
+
+	// Decode request body
+	var req types.KaaSRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		h.Log.Printf("Failed to decode request body: %v", err)
+		http.Error(w, "Invalid request body: "+err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	// Build request parameters from query string
+	params := handlers.BuildRequestParameters(r.URL.Query())
+
+	h.Log.Printf("Creating kaas for project %s", projectId)
+
+	// Call Aruba Cloud SDK to create kaas
+	response, err := client.FromContainer().KaaS().Create(r.Context(), projectId, req, params)
+	if err != nil {
+		h.Log.Printf("Failed to create kaas: %v", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusNotImplemented)
-	json.NewEncoder(w).Encode(map[string]string{
-		"message": "POST kaas not yet implemented - integrate Aruba Cloud SDK here",
-	})
+	w.WriteHeader(response.StatusCode)
+	if err := json.NewEncoder(w).Encode(response.Data); err != nil {
+		h.Log.Printf("Failed to encode response: %v", err)
+	}
 }
 
 // ServeHTTP implementation for PUT handler
 func (h *putHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	// TODO: Implement PUT logic using Aruba Cloud SDK
-	_ = r.PathValue("projectId") // projectId
-	_ = r.PathValue("id") // id
-	
-	h.Log.Print("TODO: Update log message")
+	projectId := r.PathValue("projectId")
+	id := r.PathValue("id")
 
-	var req map[string]interface{}
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+	if projectId == "" {
+		http.Error(w, "projectId is required", http.StatusBadRequest)
+		return
+	}
+	if id == "" {
+		http.Error(w, "id is required", http.StatusBadRequest)
 		return
 	}
 
-	// TODO: Call Aruba Cloud SDK to update kaas
-	// response, err := arubaSDK.UpdateKaas(projectId, id, req)
-	
+	// Create SDK client from request's Bearer token
+	client, err := handlers.CreateClientFromRequest(r)
+	if err != nil {
+		h.Log.Printf("Failed to create Aruba Cloud client: %v", err)
+		http.Error(w, "Failed to initialize API client", http.StatusInternalServerError)
+		return
+	}
+
+	// Decode request body
+	var req types.KaaSRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		h.Log.Printf("Failed to decode request body: %v", err)
+		http.Error(w, "Invalid request body: "+err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	// Build request parameters from query string
+	params := handlers.BuildRequestParameters(r.URL.Query())
+
+	h.Log.Printf("Updating kaas %s for project %s", id, projectId)
+
+	// Call Aruba Cloud SDK to update kaas
+	response, err := client.FromContainer().KaaS().Update(r.Context(), projectId, id, req, params)
+	if err != nil {
+		h.Log.Printf("Failed to update kaas: %v", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusNotImplemented)
-	json.NewEncoder(w).Encode(map[string]string{
-		"message": "PUT kaas not yet implemented - integrate Aruba Cloud SDK here",
-	})
+	w.WriteHeader(response.StatusCode)
+	if err := json.NewEncoder(w).Encode(response.Data); err != nil {
+		h.Log.Printf("Failed to encode response: %v", err)
+	}
 }
 
 // ServeHTTP implementation for LIST handler
 func (h *listHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	// TODO: Implement LIST logic using Aruba Cloud SDK
-	_ = r.PathValue("projectId") // projectId
-	
-	h.Log.Print("TODO: Update log message")
+	projectId := r.PathValue("projectId")
 
-	// TODO: Call Aruba Cloud SDK to list kaass
-	// response, err := arubaSDK.ListKaass(projectId)
-	
+	if projectId == "" {
+		http.Error(w, "projectId is required", http.StatusBadRequest)
+		return
+	}
+
+	// Create SDK client from request's Bearer token
+	client, err := handlers.CreateClientFromRequest(r)
+	if err != nil {
+		h.Log.Printf("Failed to create Aruba Cloud client: %v", err)
+		http.Error(w, "Failed to initialize API client", http.StatusInternalServerError)
+		return
+	}
+
+	// Build request parameters from query string
+	params := handlers.BuildRequestParameters(r.URL.Query())
+
+	h.Log.Printf("Listing kaass for project %s", projectId)
+
+	// Call Aruba Cloud SDK to list kaass
+	response, err := client.FromContainer().KaaS().List(r.Context(), projectId, params)
+	if err != nil {
+		h.Log.Printf("Failed to list kaass: %v", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusNotImplemented)
-	json.NewEncoder(w).Encode(map[string]string{
-		"message": "LIST kaass not yet implemented - integrate Aruba Cloud SDK here",
-	})
+	w.WriteHeader(response.StatusCode)
+	if err := json.NewEncoder(w).Encode(response.Data); err != nil {
+		h.Log.Printf("Failed to encode response: %v", err)
+	}
 }

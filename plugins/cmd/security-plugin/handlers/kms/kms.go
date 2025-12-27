@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/Arubacloud/arubacloud-provider-kog/plugins/pkg/handlers"
+	"github.com/Arubacloud/sdk-go/pkg/types"
 )
 
 func GetKms(opts handlers.HandlerOptions) handlers.Handler {
@@ -58,83 +59,174 @@ type listHandler struct {
 
 // ServeHTTP implementation for GET handler
 func (h *getHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	// TODO: Implement GET logic using Aruba Cloud SDK
-	// Example structure - needs to be customized based on actual SDK
-	_ = r.PathValue("projectId") // projectId
-	_ = r.PathValue("id") // id
-	
-	h.Log.Print("TODO: Update log message")
+	projectId := r.PathValue("projectId")
+	id := r.PathValue("id")
 
-	// TODO: Call Aruba Cloud SDK to get kms
-	// response, err := arubaSDK.GetKms(projectId, id)
-	
+	if projectId == "" {
+		http.Error(w, "projectId is required", http.StatusBadRequest)
+		return
+	}
+	if id == "" {
+		http.Error(w, "id is required", http.StatusBadRequest)
+		return
+	}
+
+	// Create SDK client from request's Bearer token
+	client, err := handlers.CreateClientFromRequest(r)
+	if err != nil {
+		h.Log.Printf("Failed to create Aruba Cloud client: %v", err)
+		http.Error(w, "Failed to initialize API client", http.StatusInternalServerError)
+		return
+	}
+
+	// Build request parameters from query string
+	params := handlers.BuildRequestParameters(r.URL.Query())
+
+	h.Log.Printf("Getting KMS key %s for project %s", id, projectId)
+
+	// Call Aruba Cloud SDK to get KMS key
+	response, err := client.FromSecurity().KMSKeys().Get(r.Context(), projectId, id, params)
+	if err != nil {
+		h.Log.Printf("Failed to get KMS key: %v", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusNotImplemented)
-	json.NewEncoder(w).Encode(map[string]string{
-		"message": "GET kms not yet implemented - integrate Aruba Cloud SDK here",
-	})
+	w.WriteHeader(response.StatusCode)
+	if err := json.NewEncoder(w).Encode(response.Data); err != nil {
+		h.Log.Printf("Failed to encode response: %v", err)
+	}
 }
 
 // ServeHTTP implementation for POST handler
 func (h *postHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	// TODO: Implement POST logic using Aruba Cloud SDK
-	_ = r.PathValue("projectId") // projectId
-	
-	h.Log.Print("TODO: Update log message")
+	projectId := r.PathValue("projectId")
 
-	var req map[string]interface{}
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+	if projectId == "" {
+		http.Error(w, "projectId is required", http.StatusBadRequest)
 		return
 	}
 
-	// TODO: Call Aruba Cloud SDK to create kms
-	// response, err := arubaSDK.CreateKms(projectId, req)
-	
+	// Create SDK client from request's Bearer token
+	client, err := handlers.CreateClientFromRequest(r)
+	if err != nil {
+		h.Log.Printf("Failed to create Aruba Cloud client: %v", err)
+		http.Error(w, "Failed to initialize API client", http.StatusInternalServerError)
+		return
+	}
+
+	// Decode request body
+	var req types.KmsRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		h.Log.Printf("Failed to decode request body: %v", err)
+		http.Error(w, "Invalid request body: "+err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	// Build request parameters from query string
+	params := handlers.BuildRequestParameters(r.URL.Query())
+
+	h.Log.Printf("Creating KMS key for project %s", projectId)
+
+	// Call Aruba Cloud SDK to create KMS key
+	response, err := client.FromSecurity().KMSKeys().Create(r.Context(), projectId, req, params)
+	if err != nil {
+		h.Log.Printf("Failed to create KMS key: %v", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusNotImplemented)
-	json.NewEncoder(w).Encode(map[string]string{
-		"message": "POST kms not yet implemented - integrate Aruba Cloud SDK here",
-	})
+	w.WriteHeader(response.StatusCode)
+	if err := json.NewEncoder(w).Encode(response.Data); err != nil {
+		h.Log.Printf("Failed to encode response: %v", err)
+	}
 }
 
 // ServeHTTP implementation for PUT handler
 func (h *putHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	// TODO: Implement PUT logic using Aruba Cloud SDK
-	_ = r.PathValue("projectId") // projectId
-	_ = r.PathValue("id") // id
-	
-	h.Log.Print("TODO: Update log message")
+	projectId := r.PathValue("projectId")
+	id := r.PathValue("id")
 
-	var req map[string]interface{}
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+	if projectId == "" {
+		http.Error(w, "projectId is required", http.StatusBadRequest)
+		return
+	}
+	if id == "" {
+		http.Error(w, "id is required", http.StatusBadRequest)
 		return
 	}
 
-	// TODO: Call Aruba Cloud SDK to update kms
-	// response, err := arubaSDK.UpdateKms(projectId, id, req)
-	
+	// Create SDK client from request's Bearer token
+	client, err := handlers.CreateClientFromRequest(r)
+	if err != nil {
+		h.Log.Printf("Failed to create Aruba Cloud client: %v", err)
+		http.Error(w, "Failed to initialize API client", http.StatusInternalServerError)
+		return
+	}
+
+	// Decode request body
+	var req types.KmsRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		h.Log.Printf("Failed to decode request body: %v", err)
+		http.Error(w, "Invalid request body: "+err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	// Build request parameters from query string
+	params := handlers.BuildRequestParameters(r.URL.Query())
+
+	h.Log.Printf("Updating KMS key %s for project %s", id, projectId)
+
+	// Call Aruba Cloud SDK to update KMS key
+	response, err := client.FromSecurity().KMSKeys().Update(r.Context(), projectId, id, req, params)
+	if err != nil {
+		h.Log.Printf("Failed to update KMS key: %v", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusNotImplemented)
-	json.NewEncoder(w).Encode(map[string]string{
-		"message": "PUT kms not yet implemented - integrate Aruba Cloud SDK here",
-	})
+	w.WriteHeader(response.StatusCode)
+	if err := json.NewEncoder(w).Encode(response.Data); err != nil {
+		h.Log.Printf("Failed to encode response: %v", err)
+	}
 }
 
 // ServeHTTP implementation for LIST handler
 func (h *listHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	// TODO: Implement LIST logic using Aruba Cloud SDK
-	_ = r.PathValue("projectId") // projectId
-	
-	h.Log.Print("TODO: Update log message")
+	projectId := r.PathValue("projectId")
 
-	// TODO: Call Aruba Cloud SDK to list kmss
-	// response, err := arubaSDK.ListKmss(projectId)
-	
+	if projectId == "" {
+		http.Error(w, "projectId is required", http.StatusBadRequest)
+		return
+	}
+
+	// Create SDK client from request's Bearer token
+	client, err := handlers.CreateClientFromRequest(r)
+	if err != nil {
+		h.Log.Printf("Failed to create Aruba Cloud client: %v", err)
+		http.Error(w, "Failed to initialize API client", http.StatusInternalServerError)
+		return
+	}
+
+	// Build request parameters from query string
+	params := handlers.BuildRequestParameters(r.URL.Query())
+
+	h.Log.Printf("Listing KMS keys for project %s", projectId)
+
+	// Call Aruba Cloud SDK to list KMS keys
+	response, err := client.FromSecurity().KMSKeys().List(r.Context(), projectId, params)
+	if err != nil {
+		h.Log.Printf("Failed to list KMS keys: %v", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusNotImplemented)
-	json.NewEncoder(w).Encode(map[string]string{
-		"message": "LIST kmss not yet implemented - integrate Aruba Cloud SDK here",
-	})
+	w.WriteHeader(response.StatusCode)
+	if err := json.NewEncoder(w).Encode(response.Data); err != nil {
+		h.Log.Printf("Failed to encode response: %v", err)
+	}
 }

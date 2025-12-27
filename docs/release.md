@@ -15,8 +15,8 @@ Tags are composed of two parts: `component-name/version`. The versioning scheme 
 
 | Component Type          | Tag Format Example                  | Workflow Triggered                 |
 | ----------------------- | ----------------------------------- | ---------------------------------- |
-| Plugin Source           | `subnet-plugin/1.0.3`         | `plugins-source-tag.yaml`          |
-| Resource Blueprint      | `subnet-blueprint/1.0.3`      | `resource-blueprint-tag.yaml`      |
+| Plugin Source           | `compute-plugin/1.0.3`         | `plugins-source-tag.yaml`          |
+| Resource Blueprint      | `compute-blueprint/1.0.3`      | `resource-blueprint-tag.yaml`      |
 | Main (Umbrella) Blueprint | `1.0.3`                             | `main-blueprint-tag.yaml`          |
 
 ---
@@ -25,7 +25,7 @@ Tags are composed of two parts: `component-name/version`. The versioning scheme 
 
 This scenario walks through a complete release cycle, covering all component types.
 
-**Goal:** Release a new feature that requires changes to the `subnet` plugin, its blueprint, and the main umbrella chart.
+**Goal:** Release a new feature that requires changes to a plugin (e.g., `compute`), its blueprint, and the main umbrella chart.
 
 **Prerequisites:**
 - All code changes have been merged into the `main` branch.
@@ -35,29 +35,29 @@ This scenario walks through a complete release cycle, covering all component typ
 
 First, release the container image for the plugin.
 
-- **Action:** Tag and push the new version for the `subnet-plugin`.
+- **Action:** Tag and push the new version for the plugin (e.g., `compute-plugin`).
 - **Command:**
   ```sh
-  git tag subnet-plugin/1.2.0
-  git push origin tag subnet-plugin/1.2.0
+  git tag compute-plugin/1.2.0
+  git push origin tag compute-plugin/1.2.0
   ```
-- **Result:** The `plugins-source-tag` workflow runs, publishing the `subnet-plugin:1.2.0` container image to the GitHub Container Registry.
+- **Result:** The `plugins-source-tag` workflow runs, publishing the `compute-plugin:1.2.0` container image to the GitHub Container Registry.
 - **Verification:** Wait for the workflow to complete successfully before proceeding.
 
 ### Step 2: Release the Resource Blueprint
 
 Now that the new plugin image is available, release the Helm chart that uses it.
 
-- **Action:** Tag and push the new version for the `subnet-blueprint`.
+- **Action:** Tag and push the new version for the resource blueprint.
 - **Command:**
   ```sh
-  git tag subnet-blueprint/1.2.0
-  git push origin tag subnet-blueprint/1.2.0
+  git tag compute-blueprint/1.2.0
+  git push origin tag compute-blueprint/1.2.0
   ```
 - **Result:** The `resource-blueprint-tag` workflow runs. It will:
-  1.  Find the `subnet-plugin:1.2.0` image you just published (latest tag).
+  1.  Find the `compute-plugin:1.2.0` image you just published (latest tag).
   2.  Set the chart's `version` to `1.2.0` and its `appVersion` to `1.2.0` (appVersion reflects the plugin image version).
-  3.  Publish the new `github-provider-kog-subnet` chart to the Helm repository.
+  3.  Publish the new resource chart to the Helm repository.
 - **Verification:** Wait for the workflow to complete successfully.
 
 ### Step 3: Release the Main Blueprint

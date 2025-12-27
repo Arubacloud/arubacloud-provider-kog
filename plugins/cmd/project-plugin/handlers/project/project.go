@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/Arubacloud/arubacloud-provider-kog/plugins/pkg/handlers"
+	"github.com/Arubacloud/sdk-go/pkg/types"
 )
 
 func GetProject(opts handlers.HandlerOptions) handlers.Handler {
@@ -58,83 +59,146 @@ type listHandler struct {
 
 // ServeHTTP implementation for GET handler
 func (h *getHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	// TODO: Implement GET logic using Aruba Cloud SDK
-	// Example structure - needs to be customized based on actual SDK
-	_ = r.PathValue("projectId") // projectId
-	_ = r.PathValue("id") // id
-	
-	h.Log.Print("TODO: Update log message")
+	id := r.PathValue("id")
 
-	// TODO: Call Aruba Cloud SDK to get project
-	// response, err := arubaSDK.GetProject(projectId, id)
-	
+	if id == "" {
+		http.Error(w, "id is required", http.StatusBadRequest)
+		return
+	}
+
+	// Create SDK client from request's Bearer token
+	client, err := handlers.CreateClientFromRequest(r)
+	if err != nil {
+		h.Log.Printf("Failed to create Aruba Cloud client: %v", err)
+		http.Error(w, "Failed to initialize API client", http.StatusInternalServerError)
+		return
+	}
+
+	// Build request parameters from query string
+	params := handlers.BuildRequestParameters(r.URL.Query())
+
+	// Call Aruba Cloud SDK to get project
+	h.Log.Printf("Getting project %s", id)
+	response, err := client.FromProject().Get(r.Context(), id, params)
+	if err != nil {
+		h.Log.Printf("Failed to get project: %v", err)
+		http.Error(w, "Failed to get project", http.StatusInternalServerError)
+		return
+	}
+
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusNotImplemented)
-	json.NewEncoder(w).Encode(map[string]string{
-		"message": "GET project not yet implemented - integrate Aruba Cloud SDK here",
-	})
+	w.WriteHeader(response.StatusCode)
+	if err := json.NewEncoder(w).Encode(response.Data); err != nil {
+		h.Log.Printf("Failed to encode response: %v", err)
+	}
 }
 
 // ServeHTTP implementation for POST handler
 func (h *postHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	// TODO: Implement POST logic using Aruba Cloud SDK
-	_ = r.PathValue("projectId") // projectId
-	
-	h.Log.Print("TODO: Update log message")
-
-	var req map[string]interface{}
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+	// Create SDK client from request's Bearer token
+	client, err := handlers.CreateClientFromRequest(r)
+	if err != nil {
+		h.Log.Printf("Failed to create Aruba Cloud client: %v", err)
+		http.Error(w, "Failed to initialize API client", http.StatusInternalServerError)
 		return
 	}
 
-	// TODO: Call Aruba Cloud SDK to create project
-	// response, err := arubaSDK.CreateProject(projectId, req)
-	
+	// Decode request body
+	var req types.ProjectRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		h.Log.Printf("Failed to decode request body: %v", err)
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	// Build request parameters
+	params := handlers.BuildRequestParameters(r.URL.Query())
+
+	// Call Aruba Cloud SDK to create project
+	h.Log.Printf("Creating project")
+	response, err := client.FromProject().Create(r.Context(), req, params)
+	if err != nil {
+		h.Log.Printf("Failed to create project: %v", err)
+		http.Error(w, "Failed to create project", http.StatusInternalServerError)
+		return
+	}
+
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusNotImplemented)
-	json.NewEncoder(w).Encode(map[string]string{
-		"message": "POST project not yet implemented - integrate Aruba Cloud SDK here",
-	})
+	w.WriteHeader(response.StatusCode)
+	if err := json.NewEncoder(w).Encode(response.Data); err != nil {
+		h.Log.Printf("Failed to encode response: %v", err)
+	}
 }
 
 // ServeHTTP implementation for PUT handler
 func (h *putHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	// TODO: Implement PUT logic using Aruba Cloud SDK
-	_ = r.PathValue("projectId") // projectId
-	_ = r.PathValue("id") // id
-	
-	h.Log.Print("TODO: Update log message")
+	id := r.PathValue("id")
 
-	var req map[string]interface{}
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+	if id == "" {
+		http.Error(w, "id is required", http.StatusBadRequest)
 		return
 	}
 
-	// TODO: Call Aruba Cloud SDK to update project
-	// response, err := arubaSDK.UpdateProject(projectId, id, req)
-	
+	// Create SDK client from request's Bearer token
+	client, err := handlers.CreateClientFromRequest(r)
+	if err != nil {
+		h.Log.Printf("Failed to create Aruba Cloud client: %v", err)
+		http.Error(w, "Failed to initialize API client", http.StatusInternalServerError)
+		return
+	}
+
+	// Decode request body
+	var req types.ProjectRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		h.Log.Printf("Failed to decode request body: %v", err)
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	// Build request parameters
+	params := handlers.BuildRequestParameters(r.URL.Query())
+
+	// Call Aruba Cloud SDK to update project
+	h.Log.Printf("Updating project %s", id)
+	response, err := client.FromProject().Update(r.Context(), id, req, params)
+	if err != nil {
+		h.Log.Printf("Failed to update project: %v", err)
+		http.Error(w, "Failed to update project", http.StatusInternalServerError)
+		return
+	}
+
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusNotImplemented)
-	json.NewEncoder(w).Encode(map[string]string{
-		"message": "PUT project not yet implemented - integrate Aruba Cloud SDK here",
-	})
+	w.WriteHeader(response.StatusCode)
+	if err := json.NewEncoder(w).Encode(response.Data); err != nil {
+		h.Log.Printf("Failed to encode response: %v", err)
+	}
 }
 
 // ServeHTTP implementation for LIST handler
 func (h *listHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	// TODO: Implement LIST logic using Aruba Cloud SDK
-	_ = r.PathValue("projectId") // projectId
-	
-	h.Log.Print("TODO: Update log message")
+	// Create SDK client from request's Bearer token
+	client, err := handlers.CreateClientFromRequest(r)
+	if err != nil {
+		h.Log.Printf("Failed to create Aruba Cloud client: %v", err)
+		http.Error(w, "Failed to initialize API client", http.StatusInternalServerError)
+		return
+	}
 
-	// TODO: Call Aruba Cloud SDK to list projects
-	// response, err := arubaSDK.ListProjects(projectId)
-	
+	// Build request parameters from query string
+	params := handlers.BuildRequestParameters(r.URL.Query())
+
+	// Call Aruba Cloud SDK to list projects
+	h.Log.Printf("Listing projects")
+	response, err := client.FromProject().List(r.Context(), params)
+	if err != nil {
+		h.Log.Printf("Failed to list projects: %v", err)
+		http.Error(w, "Failed to list projects", http.StatusInternalServerError)
+		return
+	}
+
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusNotImplemented)
-	json.NewEncoder(w).Encode(map[string]string{
-		"message": "LIST projects not yet implemented - integrate Aruba Cloud SDK here",
-	})
+	w.WriteHeader(response.StatusCode)
+	if err := json.NewEncoder(w).Encode(response.Data); err != nil {
+		h.Log.Printf("Failed to encode response: %v", err)
+	}
 }

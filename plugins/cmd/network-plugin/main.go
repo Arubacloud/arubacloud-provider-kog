@@ -1,18 +1,16 @@
 package main
 
 import (
-	"net/http"
-
+	handlerselasticip "github.com/Arubacloud/arubacloud-provider-kog/plugins/cmd/network-plugin/handlers/elasticip"
+	handlersloadbalancer "github.com/Arubacloud/arubacloud-provider-kog/plugins/cmd/network-plugin/handlers/loadbalancer"
+	handlerssecuritygroup "github.com/Arubacloud/arubacloud-provider-kog/plugins/cmd/network-plugin/handlers/securitygroup"
+	handlerssecurityrule "github.com/Arubacloud/arubacloud-provider-kog/plugins/cmd/network-plugin/handlers/securityrule"
+	handlerssubnet "github.com/Arubacloud/arubacloud-provider-kog/plugins/cmd/network-plugin/handlers/subnet"
+	handlersvpc "github.com/Arubacloud/arubacloud-provider-kog/plugins/cmd/network-plugin/handlers/vpc"
+	handlersvpntunnel "github.com/Arubacloud/arubacloud-provider-kog/plugins/cmd/network-plugin/handlers/vpntunnel"
 	"github.com/Arubacloud/arubacloud-provider-kog/plugins/pkg/handlers"
 	"github.com/Arubacloud/arubacloud-provider-kog/plugins/pkg/health"
 	"github.com/Arubacloud/arubacloud-provider-kog/plugins/pkg/server"
-	handlersvpc "github.com/Arubacloud/arubacloud-provider-kog/plugins/cmd/network-plugin/handlers/vpc"
-	handlerssubnet "github.com/Arubacloud/arubacloud-provider-kog/plugins/cmd/network-plugin/handlers/subnet"
-	handlerssecuritygroup "github.com/Arubacloud/arubacloud-provider-kog/plugins/cmd/network-plugin/handlers/securitygroup"
-	handlerssecurityrule "github.com/Arubacloud/arubacloud-provider-kog/plugins/cmd/network-plugin/handlers/securityrule"
-	handlerselasticip "github.com/Arubacloud/arubacloud-provider-kog/plugins/cmd/network-plugin/handlers/elasticip"
-	handlersloadbalancer "github.com/Arubacloud/arubacloud-provider-kog/plugins/cmd/network-plugin/handlers/loadbalancer"
-	handlersvpntunnel "github.com/Arubacloud/arubacloud-provider-kog/plugins/cmd/network-plugin/handlers/vpntunnel"
 	"github.com/rs/zerolog/log"
 	httpSwagger "github.com/swaggo/http-swagger"
 )
@@ -33,8 +31,7 @@ func main() {
 	srv := server.New()
 
 	opts := handlers.HandlerOptions{
-		Log:    &log.Logger,
-		Client: http.DefaultClient,
+		Log: &log.Logger,
 	}
 
 	// Vpc
@@ -56,10 +53,10 @@ func main() {
 	srv.Mux().Handle("PUT /projects/{projectId}/providers/Aruba.Network/securitygroups/{id}", handlerssecuritygroup.PutSecuritygroup(opts))
 
 	// Securityrule
-	srv.Mux().Handle("POST /projects/{projectId}/providers/Aruba.Network/securitygroups/{securityGroupId}/rules", handlerssecurityrule.PostSecurityrule(opts))
-	srv.Mux().Handle("GET /projects/{projectId}/providers/Aruba.Network/securitygroups/{securityGroupId}/rules", handlerssecurityrule.ListSecurityrules(opts))
-	srv.Mux().Handle("GET /projects/{projectId}/providers/Aruba.Network/securitygroups/{securityGroupId}/rules/{id}", handlerssecurityrule.GetSecurityrule(opts))
-	srv.Mux().Handle("PUT /projects/{projectId}/providers/Aruba.Network/securitygroups/{securityGroupId}/rules/{id}", handlerssecurityrule.PutSecurityrule(opts))
+	srv.Mux().Handle("POST /projects/{projectId}/providers/Aruba.Network/vpcs/{vpcId}/securitygroups/{securityGroupId}/securityrules", handlerssecurityrule.PostSecurityrule(opts))
+	srv.Mux().Handle("GET /projects/{projectId}/providers/Aruba.Network/vpcs/{vpcId}/securitygroups/{securityGroupId}/securityrules", handlerssecurityrule.ListSecurityrules(opts))
+	srv.Mux().Handle("GET /projects/{projectId}/providers/Aruba.Network/vpcs/{vpcId}/securitygroups/{securityGroupId}/securityrules/{id}", handlerssecurityrule.GetSecurityrule(opts))
+	srv.Mux().Handle("PUT /projects/{projectId}/providers/Aruba.Network/vpcs/{vpcId}/securitygroups/{securityGroupId}/securityrules/{id}", handlerssecurityrule.PutSecurityrule(opts))
 
 	// Elasticip
 	srv.Mux().Handle("POST /projects/{projectId}/providers/Aruba.Network/elasticips", handlerselasticip.PostElasticip(opts))
@@ -84,7 +81,7 @@ func main() {
 
 	// Kubernetes health check endpoints
 	srv.Mux().HandleFunc("GET /healthz", health.LivenessHandler(srv.Healthy()))
-	srv.Mux().HandleFunc("GET /readyz", health.ReadinessHandler(srv.Ready(), opts.Client.(*http.Client)))
+	srv.Mux().HandleFunc("GET /readyz", health.ReadinessHandler(srv.Ready()))
 
 	srv.Run()
 }

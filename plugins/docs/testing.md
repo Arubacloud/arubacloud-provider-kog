@@ -4,7 +4,7 @@ This document outlines the development, testing, and dependency management strat
 
 ## The Go Workspace Model
 
-The `plugins/` directory is a Go workspace, defined by the `go.work` file at its root. This workspace includes all the individual plugin modules (e.g., `subnet-plugin`) and the shared `pkg` module.
+The `plugins/` directory is a Go workspace, defined by the `go.work` file at its root. This workspace includes all the individual plugin modules (e.g., `compute-plugin`, `network-plugin`) and the shared `pkg` module.
 
 The key principle of this model is that the `go.work` file is the **single source of truth** for resolving dependencies between local modules. The individual `go.mod` files for each plugin do **not** contain `replace` directives to find the local `pkg` module. This makes the workspace setup clean but requires all commands to be run in a workspace-aware context.
 
@@ -17,7 +17,7 @@ To ensure the Go toolchain can see and use the `go.work` file, **all `go` comman
 /arubacloud-provider-kog/plugins/
 ```
 
-Running commands from within a subdirectory (e.g., `plugins/cmd/subnet-plugin/`) will fail, as the Go toolchain will not have the workspace context and will be unable to find the local `pkg` module.
+Running commands from within a subdirectory (e.g., `plugins/cmd/compute-plugin/`) will fail, as the Go toolchain will not have the workspace context and will be unable to find the local `pkg` module.
 
 ## Dependency Management
 
@@ -49,7 +49,7 @@ To run all tests for every module in the workspace, use the following command.
 
 **Terminal Location:** `plugins/`
 ```sh
-go test -v -cover ./pkg/... ./cmd/subnet-plugin/...
+go test -v -cover ./pkg/... ./cmd/compute-plugin/... ./cmd/network-plugin/...
 ```
 
 ### Running Tests for a Specific Module
@@ -58,8 +58,8 @@ You can still run tests for a single module, but the command must still be execu
 
 **Terminal Location:** `plugins/`
 ```sh
-# Example: Run tests only for the subnet-plugin
-go test -v -cover ./cmd/subnet-plugin/...
+# Example: Run tests only for the compute-plugin
+go test -v -cover ./cmd/compute-plugin/...
 ```
 
 ## Building Binaries
@@ -70,8 +70,8 @@ To compile a single plugin, run the `go build` command from the workspace root, 
 
 **Terminal Location:** `plugins/`
 ```sh
-# Example: Build the subnet-plugin
-go build ./cmd/subnet-plugin
+# Example: Build the compute-plugin
+go build ./cmd/compute-plugin
 ```
 This will produce a binary in the `plugins/` directory.
 
@@ -81,8 +81,8 @@ The `Dockerfile` at the root of the `plugins/` directory is also workspace-aware
 
 **Terminal Location:** `plugins/`
 ```sh
-# Example: Build the subnet-plugin Docker image
-docker build --build-arg PLUGIN_NAME=subnet-plugin -t subnet-plugin:latest .
+# Example: Build the compute-plugin Docker image
+docker build --build-arg PLUGIN_NAME=compute-plugin -t compute-plugin:latest .
 ```
 
 Note that at the root of the `arubacloud-provider-kog` repository, there are GitHub Actions workflows that automate the building and publishing of these Docker images.

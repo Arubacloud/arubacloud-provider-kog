@@ -2,12 +2,14 @@ package handlers
 
 import (
 	"net/http"
-)
+	"net/url"
+	"strconv"
+	"strings"
+	"sync"
 
-// HTTPClient interface allows mocking of HTTP client
-type HTTPClient interface {
-	Do(req *http.Request) (*http.Response, error)
-}
+	"github.com/Arubacloud/sdk-go/pkg/aruba"
+	"github.com/Arubacloud/sdk-go/pkg/types"
+)
 
 // Logger interface allows mocking of logger
 type Logger interface {
@@ -17,11 +19,74 @@ type Logger interface {
 }
 
 type HandlerOptions struct {
-	Client HTTPClient // HTTPClient interface
-	Log    Logger     // Logger interface
+	Log Logger // Logger interface
 }
 
 // Handler interface
 type Handler interface {
 	ServeHTTP(w http.ResponseWriter, r *http.Request)
+}
+
+// clientCache stores SDK clients by token to avoid recreating them
+var (
+	clientCache = sync.Map{}
+)
+
+// CreateClientFromRequest creates or retrieves a cached Aruba SDK client using the Bearer token from the request
+func CreateClientFromRequest(r *http.Request) (aruba.Client, error) {
+	authHeader := r.Header.Get("Authorization")
+	token := strings.TrimPrefix(authHeader, "Bearer ")
+
+	// Check if client already exists in cache
+	if cached, ok := clientCache.Load(token); ok {
+		return cached.(aruba.Client), nil
+	}
+
+	// Create new client
+	options := aruba.NewOptions()
+	options.WithNativeLogger()
+	options.WithToken(token)
+
+	client, err := aruba.NewClient(options)
+	if err != nil {
+		return nil, err
+	}
+
+	// Store in cache
+	clientCache.Store(token, client)
+
+	return client, nil
+}
+
+// BuildRequestParameters extracts query parameters and builds a RequestParameters struct
+// This function extracts all supported query parameters: api-version, filter, sort, projection, offset, limit
+func BuildRequestParameters(query url.Values) *types.RequestParameters {
+	params := &types.RequestParameters{}
+
+	if apiVersion := query.Get("api-version"); apiVersion != "" {
+		params.APIVersion = &apiVersion
+	}
+	if filter := query.Get("filter"); filter != "" {
+		params.Filter = &filter
+	}
+	if sort := query.Get("sort"); sort != "" {
+		params.Sort = &sort
+	}
+	if projection := query.Get("projection"); projection != "" {
+		params.Projection = &projection
+	}
+	if offsetStr := query.Get("offset"); offsetStr != "" {
+		if offset, err := strconv.ParseInt(offsetStr, 10, 32); err == nil {
+			offsetInt := int32(offset)
+			params.Offset = &offsetInt
+		}
+	}
+	if limitStr := query.Get("limit"); limitStr != "" {
+		if limit, err := strconv.ParseInt(limitStr, 10, 32); err == nil {
+			limitInt := int32(limit)
+			params.Limit = &limitInt
+		}
+	}
+
+	return params
 }

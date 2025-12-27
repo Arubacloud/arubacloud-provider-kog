@@ -15,6 +15,7 @@ jobs:
     
     outputs:
       matrix: ${{ steps.determine-matrix.outputs.matrix }}
+      has_charts: ${{ steps.determine-matrix.outputs.has_charts }}
     
     steps:
       - name: Checkout
@@ -29,7 +30,14 @@ jobs:
         run: |
           CHARTS_TO_LINT="[]"
           # List all blueprint charts, but exclude the main 'arubacloud-provider-kog-blueprint'
-          ALL_CHARTS=$(ls -d arubacloud-provider-kog-*-blueprint 2>/dev/null | grep -v 'arubacloud-provider-kog-blueprint$')
+          ALL_CHARTS=$(ls -d arubacloud-provider-kog-*-blueprint 2>/dev/null | grep -v 'arubacloud-provider-kog-blueprint$' || true)
+          
+          if [ -z "$ALL_CHARTS" ]; then
+            echo "No blueprint charts found."
+            echo "matrix={\"chart\":[]}" >> $GITHUB_OUTPUT
+            echo "has_charts=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
           
           for chart in $ALL_CHARTS; do
             # Check if any of the changed files are within this chart's directory
@@ -40,14 +48,23 @@ jobs:
           done
 
           echo "Charts to lint: $CHARTS_TO_LINT"
+          
+          # Check if we have any charts to lint
+          if [ "$CHARTS_TO_LINT" = "[]" ]; then
+            echo "No charts to lint."
+            echo "has_charts=false" >> $GITHUB_OUTPUT
+          else
+            echo "has_charts=true" >> $GITHUB_OUTPUT
+          fi
+          
           echo "matrix={"chart":${CHARTS_TO_LINT}}" >> $GITHUB_OUTPUT
 
   lint-helm-charts:
     name: Lint changed Helm charts
-    # Only run if the matrix from the previous job is not empty
-    if: needs.determine-changes.outputs.matrix != '{"chart":[]}'
     needs: determine-changes
     runs-on: ubuntu-latest
+    # Only run if there are charts to lint
+    if: needs.determine-changes.outputs.has_charts == 'true'
     
     strategy:
       fail-fast: false

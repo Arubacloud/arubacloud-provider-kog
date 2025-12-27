@@ -1,15 +1,13 @@
 package main
 
 import (
-	"net/http"
-
+	handlersbackup "github.com/Arubacloud/arubacloud-provider-kog/plugins/cmd/storage-plugin/handlers/backup"
+	handlersblockstorage "github.com/Arubacloud/arubacloud-provider-kog/plugins/cmd/storage-plugin/handlers/blockstorage"
+	handlersrestore "github.com/Arubacloud/arubacloud-provider-kog/plugins/cmd/storage-plugin/handlers/restore"
+	handlerssnapshot "github.com/Arubacloud/arubacloud-provider-kog/plugins/cmd/storage-plugin/handlers/snapshot"
 	"github.com/Arubacloud/arubacloud-provider-kog/plugins/pkg/handlers"
 	"github.com/Arubacloud/arubacloud-provider-kog/plugins/pkg/health"
 	"github.com/Arubacloud/arubacloud-provider-kog/plugins/pkg/server"
-	handlersblockstorage "github.com/Arubacloud/arubacloud-provider-kog/plugins/cmd/storage-plugin/handlers/blockstorage"
-	handlerssnapshot "github.com/Arubacloud/arubacloud-provider-kog/plugins/cmd/storage-plugin/handlers/snapshot"
-	handlersbackup "github.com/Arubacloud/arubacloud-provider-kog/plugins/cmd/storage-plugin/handlers/backup"
-	handlersrestore "github.com/Arubacloud/arubacloud-provider-kog/plugins/cmd/storage-plugin/handlers/restore"
 	"github.com/rs/zerolog/log"
 	httpSwagger "github.com/swaggo/http-swagger"
 )
@@ -30,8 +28,7 @@ func main() {
 	srv := server.New()
 
 	opts := handlers.HandlerOptions{
-		Log:    &log.Logger,
-		Client: http.DefaultClient,
+		Log: &log.Logger,
 	}
 
 	// Blockstorage
@@ -63,7 +60,7 @@ func main() {
 
 	// Kubernetes health check endpoints
 	srv.Mux().HandleFunc("GET /healthz", health.LivenessHandler(srv.Healthy()))
-	srv.Mux().HandleFunc("GET /readyz", health.ReadinessHandler(srv.Ready(), opts.Client.(*http.Client)))
+	srv.Mux().HandleFunc("GET /readyz", health.ReadinessHandler(srv.Ready()))
 
 	srv.Run()
 }

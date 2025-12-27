@@ -1,8 +1,6 @@
 package main
 
 import (
-	"net/http"
-
 	handlerscloudserver "github.com/Arubacloud/arubacloud-provider-kog/plugins/cmd/compute-plugin/handlers/cloudserver"
 	handlerskeypair "github.com/Arubacloud/arubacloud-provider-kog/plugins/cmd/compute-plugin/handlers/keypair"
 	"github.com/Arubacloud/arubacloud-provider-kog/plugins/pkg/handlers"
@@ -28,8 +26,7 @@ func main() {
 	srv := server.New()
 
 	opts := handlers.HandlerOptions{
-		Log:    &log.Logger,
-		Client: http.DefaultClient,
+		Log: &log.Logger,
 	}
 
 	// Cloudserver
@@ -49,7 +46,7 @@ func main() {
 
 	// Kubernetes health check endpoints
 	srv.Mux().HandleFunc("GET /healthz", health.LivenessHandler(srv.Healthy()))
-	srv.Mux().HandleFunc("GET /readyz", health.ReadinessHandler(srv.Ready(), opts.Client.(*http.Client)))
+	srv.Mux().HandleFunc("GET /readyz", health.ReadinessHandler(srv.Ready()))
 
 	srv.Run()
 }
