@@ -10,7 +10,7 @@ It acts as an umbrella chart and it includes all the other blueprints:
 - arubacloud-provider-kog-schedule-blueprint (Job)
 - arubacloud-provider-kog-storage-blueprint (BlockStorage, Snapshot, Backup, Restore)
 - arubacloud-provider-kog-security-blueprint (KMS)
-- arubacloud-provider-kog-network-blueprint (VPC, Subnet, SecurityGroup, SecurityRule, ElasticIP, LoadBalancer, VPNTunnel)
+- arubacloud-provider-kog-network-blueprint (VPC, Subnet, SecurityGroup, SecurityRule, ElasticIP, LoadBalancer, VPNTunnel, VPCPeering, VPCPeeringRoute)
 
 ## Requirements
 

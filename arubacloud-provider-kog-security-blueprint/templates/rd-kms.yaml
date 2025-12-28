@@ -17,19 +17,19 @@ spec:
     verbsDescription:
     - action: findby
       method: GET
-      path: /projects/{projectId}/providers/Aruba.Security/kms/keys
+      path: /projects/{projectId}/providers/Aruba.Security/kms
     - action: get
       method: GET
-      path: /projects/{projectId}/providers/Aruba.Security/kms/keys/{id}
+      path: /projects/{projectId}/providers/Aruba.Security/kms/{kmsId}
     - action: create
       method: POST
-      path: /projects/{projectId}/providers/Aruba.Security/kms/keys
+      path: /projects/{projectId}/providers/Aruba.Security/kms
     - action: update
       method: PUT
-      path: /projects/{projectId}/providers/Aruba.Security/kms/keys/{id}
+      path: /projects/{projectId}/providers/Aruba.Security/kms/{kmsId}
     - action: delete
       method: DELETE
-      path: /projects/{projectId}/providers/Aruba.Security/kms/keys/{id}
+      path: /projects/{projectId}/providers/Aruba.Security/kms/{kmsId}
     configurationFields:
     - fromOpenAPI:
         name: api-version

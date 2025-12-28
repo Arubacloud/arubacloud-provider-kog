@@ -1,0 +1,424 @@
+openapi: 3.0.3
+info:
+  title: Aruba Cloud - VPC Peering Route API
+  description: |
+    REST API for managing VPC Peering Route resources in Aruba Cloud.
+    VPC Peering Routes define network routes for VPC Peering connections.
+  version: 1.0.0
+  contact:
+    name: Aruba Cloud API Support
+    url: https://www.arubacloud.com
+
+servers:
+  - url: https://api.arubacloud.com
+    description: Production server
+
+security:
+  - BearerAuth: []
+
+tags:
+  - name: VPCPeeringRoutes
+    description: VPC Peering Route operations
+
+paths:
+  /projects/{projectId}/providers/Aruba.Network/vpcs/{vpcId}/vpcPeerings/{vpcPeeringId}/vpcPeeringRoutes:
+    get:
+      tags: [VPCPeeringRoutes]
+      summary: List VPC Peering Routes
+      operationId: listVPCPeeringRoutes
+      parameters:
+        - $ref: '#/components/parameters/ProjectIdPath'
+        - $ref: '#/components/parameters/VpcIdPath'
+        - $ref: '#/components/parameters/VPCPeeringIdPath'
+        - $ref: '#/components/parameters/Filter'
+        - $ref: '#/components/parameters/Sort'
+        - $ref: '#/components/parameters/Offset'
+        - $ref: '#/components/parameters/Limit'
+        - $ref: '#/components/parameters/ApiVersion'
+      responses:
+        '200':
+          description: VPC Peering Route list retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VPCPeeringRouteList'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+    post:
+      tags: [VPCPeeringRoutes]
+      summary: Create VPC Peering Route
+      operationId: createVPCPeeringRoute
+      parameters:
+        - $ref: '#/components/parameters/ProjectIdPath'
+        - $ref: '#/components/parameters/VpcIdPath'
+        - $ref: '#/components/parameters/VPCPeeringIdPath'
+        - $ref: '#/components/parameters/ApiVersion'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VPCPeeringRouteRequest'
+      responses:
+        '201':
+          description: VPC Peering Route created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VPCPeeringRouteResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /projects/{projectId}/providers/Aruba.Network/vpcs/{vpcId}/vpcPeerings/{vpcPeeringId}/vpcPeeringRoutes/{id}:
+    get:
+      tags: [VPCPeeringRoutes]
+      summary: Get VPC Peering Route
+      operationId: getVPCPeeringRoute
+      parameters:
+        - $ref: '#/components/parameters/ProjectIdPath'
+        - $ref: '#/components/parameters/VpcIdPath'
+        - $ref: '#/components/parameters/VPCPeeringIdPath'
+        - $ref: '#/components/parameters/VPCPeeringRouteIdPath'
+        - $ref: '#/components/parameters/ApiVersion'
+      responses:
+        '200':
+          description: VPC Peering Route details retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VPCPeeringRouteResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    put:
+      tags: [VPCPeeringRoutes]
+      summary: Update VPC Peering Route
+      operationId: updateVPCPeeringRoute
+      parameters:
+        - $ref: '#/components/parameters/ProjectIdPath'
+        - $ref: '#/components/parameters/VpcIdPath'
+        - $ref: '#/components/parameters/VPCPeeringIdPath'
+        - $ref: '#/components/parameters/VPCPeeringRouteIdPath'
+        - $ref: '#/components/parameters/ApiVersion'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VPCPeeringRouteRequest'
+      responses:
+        '200':
+          description: VPC Peering Route updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VPCPeeringRouteResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    delete:
+      tags: [VPCPeeringRoutes]
+      summary: Delete VPC Peering Route
+      operationId: deleteVPCPeeringRoute
+      parameters:
+        - $ref: '#/components/parameters/ProjectIdPath'
+        - $ref: '#/components/parameters/VpcIdPath'
+        - $ref: '#/components/parameters/VPCPeeringIdPath'
+        - $ref: '#/components/parameters/VPCPeeringRouteIdPath'
+        - $ref: '#/components/parameters/ApiVersion'
+      responses:
+        '204':
+          description: VPC Peering Route deleted successfully
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  parameters:
+    ProjectIdPath:
+      name: projectId
+      in: path
+      required: true
+      description: The unique identifier of the project
+      schema:
+        type: string
+
+    VpcIdPath:
+      name: vpcId
+      in: path
+      required: true
+      description: The unique identifier of the VPC
+      schema:
+        type: string
+
+    VPCPeeringIdPath:
+      name: vpcPeeringId
+      in: path
+      required: true
+      description: The unique identifier of the VPC Peering
+      schema:
+        type: string
+
+    VPCPeeringRouteIdPath:
+      name: id
+      in: path
+      required: true
+      description: The unique identifier of the VPC Peering Route
+      schema:
+        type: string
+
+    Filter:
+      name: filter
+      in: query
+      description: Filter expression for results
+      schema:
+        type: string
+
+    Sort:
+      name: sort
+      in: query
+      description: Sort expression for results
+      schema:
+        type: string
+
+    Offset:
+      name: offset
+      in: query
+      description: Number of items to skip
+      schema:
+        type: integer
+        format: int32
+        default: 0
+
+    Limit:
+      name: limit
+      in: query
+      description: Maximum number of items to return
+      schema:
+        type: integer
+        format: int32
+        default: 50
+
+    ApiVersion:
+      name: api-version
+      in: query
+      description: API version
+      schema:
+        type: string
+
+  schemas:
+    VPCPeeringRouteRequest:
+      type: object
+      required:
+        - metadata
+        - properties
+      properties:
+        metadata:
+          $ref: '#/components/schemas/RegionalResourceMetadataRequest'
+        properties:
+          type: object
+          required:
+            - localNetworkAddress
+            - remoteNetworkAddress
+          properties:
+            localNetworkAddress:
+              type: string
+              description: Local network address (CIDR notation)
+              example: "10.0.0.0/24"
+            remoteNetworkAddress:
+              type: string
+              description: Remote network address (CIDR notation)
+              example: "10.1.0.0/24"
+            billingPlan:
+              type: object
+              properties:
+                billingPeriod:
+                  type: string
+                  description: Billing period for the route
+                  example: "Monthly"
+
+    VPCPeeringRouteResponse:
+      type: object
+      properties:
+        metadata:
+          $ref: '#/components/schemas/ResourceMetadataResponse'
+        properties:
+          type: object
+          properties:
+            localNetworkAddress:
+              type: string
+              description: Local network address (CIDR notation)
+            remoteNetworkAddress:
+              type: string
+              description: Remote network address (CIDR notation)
+            billingPlan:
+              type: object
+              properties:
+                billingPeriod:
+                  type: string
+                  description: Billing period for the route
+        status:
+          $ref: '#/components/schemas/ResourceStatus'
+
+    VPCPeeringRouteList:
+      allOf:
+        - $ref: '#/components/schemas/ListResponse'
+        - type: object
+          properties:
+            values:
+              type: array
+              items:
+                $ref: '#/components/schemas/VPCPeeringRouteResponse'
+
+    RegionalResourceMetadataRequest:
+      type: object
+      required:
+        - name
+        - location
+      properties:
+        name:
+          type: string
+          description: Name of the resource
+        tags:
+          type: array
+          items:
+            type: string
+          description: Tags associated with the resource
+        location:
+          type: object
+          required:
+            - value
+          properties:
+            value:
+              type: string
+              description: Location identifier
+
+    ResourceMetadataResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the resource
+        uri:
+          type: string
+          description: URI of the resource
+        name:
+          type: string
+          description: Name of the resource
+        tags:
+          type: array
+          items:
+            type: string
+          description: Tags associated with the resource
+        creationDate:
+          type: string
+          format: date-time
+          description: Resource creation timestamp
+
+    ResourceStatus:
+      type: object
+      properties:
+        state:
+          type: string
+          enum: [Creating, Active, Updating, Deleting, Failed]
+          description: Current state of the resource
+        creationDate:
+          type: string
+          format: date-time
+          description: Status creation timestamp
+        failureReason:
+          type: string
+          description: Reason for failure if state is Failed
+
+    ListResponse:
+      type: object
+      properties:
+        total:
+          type: integer
+          format: int64
+          description: Total number of items available
+        self:
+          type: string
+          description: Link to current page
+        next:
+          type: string
+          description: Link to next page
+        prev:
+          type: string
+          description: Link to previous page
+
+    ErrorResponse:
+      type: object
+      properties:
+        title:
+          type: string
+          description: Error title
+        status:
+          type: integer
+          description: HTTP status code
+        detail:
+          type: string
+          description: Detailed error message
+
+  responses:
+    BadRequest:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    NotFound:
+      description: Not Found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    Conflict:
+      description: Conflict
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    InternalServerError:
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+

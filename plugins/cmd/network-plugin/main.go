@@ -7,6 +7,8 @@ import (
 	handlerssecurityrule "github.com/Arubacloud/arubacloud-provider-kog/plugins/cmd/network-plugin/handlers/securityrule"
 	handlerssubnet "github.com/Arubacloud/arubacloud-provider-kog/plugins/cmd/network-plugin/handlers/subnet"
 	handlersvpc "github.com/Arubacloud/arubacloud-provider-kog/plugins/cmd/network-plugin/handlers/vpc"
+	handlersvpcpeering "github.com/Arubacloud/arubacloud-provider-kog/plugins/cmd/network-plugin/handlers/vpcpeering"
+	handlersvpcpeeringroute "github.com/Arubacloud/arubacloud-provider-kog/plugins/cmd/network-plugin/handlers/vpcpeeringroute"
 	handlersvpntunnel "github.com/Arubacloud/arubacloud-provider-kog/plugins/cmd/network-plugin/handlers/vpntunnel"
 	"github.com/Arubacloud/arubacloud-provider-kog/plugins/pkg/handlers"
 	"github.com/Arubacloud/arubacloud-provider-kog/plugins/pkg/health"
@@ -15,18 +17,6 @@ import (
 	httpSwagger "github.com/swaggo/http-swagger"
 )
 
-// @title           Aruba Cloud Network Plugin API for Krateo Operator Generator (KOG)
-// @version         1.0
-// @description     Simple wrapper around Aruba Cloud API to provide consistency of API response for Krateo Operator Generator (KOG)
-// @termsOfService  http://swagger.io/terms/
-// @contact.name    Krateo Support
-// @contact.url     https://krateo.io
-// @contact.email   contact@krateoplatformops.io
-// @license.name    Apache 2.0
-// @license.url     http://www.apache.org/licenses/LICENSE-2.0.html
-// @host            localhost:8080
-// @BasePath        /
-// @schemes         http
 func main() {
 	srv := server.New()
 
@@ -73,6 +63,20 @@ func main() {
 	srv.Mux().Handle("GET /projects/{projectId}/providers/Aruba.Network/vpntunnels", handlersvpntunnel.ListVpntunnels(opts))
 	srv.Mux().Handle("GET /projects/{projectId}/providers/Aruba.Network/vpntunnels/{id}", handlersvpntunnel.GetVpntunnel(opts))
 	srv.Mux().Handle("PUT /projects/{projectId}/providers/Aruba.Network/vpntunnels/{id}", handlersvpntunnel.PutVpntunnel(opts))
+
+	// Vpcpeering
+	srv.Mux().Handle("POST /projects/{projectId}/providers/Aruba.Network/vpcs/{vpcId}/vpcPeerings", handlersvpcpeering.PostVPCPeering(opts))
+	srv.Mux().Handle("GET /projects/{projectId}/providers/Aruba.Network/vpcs/{vpcId}/vpcPeerings", handlersvpcpeering.ListVPCPeerings(opts))
+	srv.Mux().Handle("GET /projects/{projectId}/providers/Aruba.Network/vpcs/{vpcId}/vpcPeerings/{id}", handlersvpcpeering.GetVPCPeering(opts))
+	srv.Mux().Handle("PUT /projects/{projectId}/providers/Aruba.Network/vpcs/{vpcId}/vpcPeerings/{id}", handlersvpcpeering.PutVPCPeering(opts))
+	srv.Mux().Handle("DELETE /projects/{projectId}/providers/Aruba.Network/vpcs/{vpcId}/vpcPeerings/{id}", handlersvpcpeering.DeleteVPCPeering(opts))
+
+	// Vpcpeeringroute
+	srv.Mux().Handle("POST /projects/{projectId}/providers/Aruba.Network/vpcs/{vpcId}/vpcPeerings/{vpcPeeringId}/vpcPeeringRoutes", handlersvpcpeeringroute.PostVPCPeeringRoute(opts))
+	srv.Mux().Handle("GET /projects/{projectId}/providers/Aruba.Network/vpcs/{vpcId}/vpcPeerings/{vpcPeeringId}/vpcPeeringRoutes", handlersvpcpeeringroute.ListVPCPeeringRoutes(opts))
+	srv.Mux().Handle("GET /projects/{projectId}/providers/Aruba.Network/vpcs/{vpcId}/vpcPeerings/{vpcPeeringId}/vpcPeeringRoutes/{id}", handlersvpcpeeringroute.GetVPCPeeringRoute(opts))
+	srv.Mux().Handle("PUT /projects/{projectId}/providers/Aruba.Network/vpcs/{vpcId}/vpcPeerings/{vpcPeeringId}/vpcPeeringRoutes/{id}", handlersvpcpeeringroute.PutVPCPeeringRoute(opts))
+	srv.Mux().Handle("DELETE /projects/{projectId}/providers/Aruba.Network/vpcs/{vpcId}/vpcPeerings/{vpcPeeringId}/vpcPeeringRoutes/{id}", handlersvpcpeeringroute.DeleteVPCPeeringRoute(opts))
 
 	// Swagger UI
 	srv.Mux().Handle("/swagger/", httpSwagger.WrapHandler)

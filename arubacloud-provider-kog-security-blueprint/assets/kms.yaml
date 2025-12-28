@@ -21,7 +21,7 @@ tags:
     description: Key Management Service operations for encryption keys
 
 paths:
-  /projects/{projectId}/providers/Aruba.Security/kms/keys:
+  /projects/{projectId}/providers/Aruba.Security/kms:
     get:
       tags: [KMS Keys]
       summary: List KMS Keys
@@ -78,7 +78,7 @@ paths:
         '500':
           $ref: '#/components/responses/InternalServerError'
 
-  /projects/{projectId}/providers/Aruba.Security/kms/keys/{id}:
+  /projects/{projectId}/providers/Aruba.Security/kms/{kmsId}:
     get:
       tags: [KMS Keys]
       summary: Get KMS Key
@@ -86,7 +86,7 @@ paths:
       operationId: getKmsKey
       parameters:
         - $ref: '#/components/parameters/ProjectId'
-        - $ref: '#/components/parameters/KeyName'
+        - $ref: '#/components/parameters/KmsIdPath'
         - $ref: '#/components/parameters/ApiVersion'
       responses:
         '200':
@@ -107,7 +107,7 @@ paths:
       operationId: updateKmsKey
       parameters:
         - $ref: '#/components/parameters/ProjectId'
-        - $ref: '#/components/parameters/KeyName'
+        - $ref: '#/components/parameters/KmsIdPath'
         - $ref: '#/components/parameters/ApiVersion'
       requestBody:
         required: true
@@ -138,7 +138,7 @@ paths:
       operationId: deleteKmsKey
       parameters:
         - $ref: '#/components/parameters/ProjectId'
-        - $ref: '#/components/parameters/KeyName'
+        - $ref: '#/components/parameters/KmsIdPath'
         - $ref: '#/components/parameters/ApiVersion'
       responses:
         '204':
@@ -167,11 +167,11 @@ components:
       schema:
         type: string
 
-    KeyName:
-      name: id
+    KmsIdPath:
+      name: kmsId
       in: path
       required: true
-      description: The name of the KMS encryption key
+      description: The unique identifier of the KMS encryption key
       schema:
         type: string
 

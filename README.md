@@ -13,7 +13,7 @@ This provider allows you to manage Aruba Cloud resources in a cloud-native way u
 - **Compute** - Virtual servers and SSH key pairs (CloudServer, KeyPair)
 - **Container** - Kubernetes and container registries (KaaS, ContainerRegistry)
 - **Database** - Managed database services (DBaaS, Database, User, Grant, Backup)
-- **Network** - Networking resources (VPC, Subnet, SecurityGroup, SecurityRule, ElasticIP, LoadBalancer, VPNTunnel)
+- **Network** - Networking resources (VPC, Subnet, SecurityGroup, SecurityRule, ElasticIP, LoadBalancer, VPNTunnel, VPCPeering, VPCPeeringRoute)
 - **Storage** - Block storage and backups (BlockStorage, Snapshot, Backup, Restore)
 - **Project** - Project management (Project)
 - **Schedule** - Job scheduling (Job)
@@ -134,7 +134,7 @@ helm install arubacloud-provider-kog-database arubacloud-provider-kog-database-b
   --wait
 ```
 
-**Network resources (VPC, Subnet, SecurityGroup, SecurityRule, ElasticIP, LoadBalancer, VPNTunnel):**
+**Network resources (VPC, Subnet, SecurityGroup, SecurityRule, ElasticIP, LoadBalancer, VPNTunnel, VPCPeering, VPCPeeringRoute):**
 ```sh
 helm install arubacloud-provider-kog-network arubacloud-provider-kog-network-blueprint \
   --repo https://marketplace.krateo.io \
@@ -209,15 +209,17 @@ This provider supports the following resources across multiple categories:
 | Backup    | ✅   | ✅     | ✅     | ✅     |
 
 ### Network Resources
-| Resource       | Get  | Create | Update | Delete |
-|---------------|------|--------|--------|--------|
-| VPC           | ✅   | ✅     | ✅     | ✅     |
-| Subnet        | ✅   | ✅     | ✅     | ✅     |
-| SecurityGroup | ✅   | ✅     | ✅     | ✅     |
-| SecurityRule  | ✅   | ✅     | ✅     | ✅     |
-| ElasticIP     | ✅   | ✅     | ✅     | ✅     |
-| LoadBalancer  | ✅   | ❌     | ❌     | ❌     |
-| VPNTunnel     | ✅   | ✅     | ✅     | ✅     |
+| Resource         | Get  | Create | Update | Delete |
+|-----------------|------|--------|--------|--------|
+| VPC             | ✅   | ✅     | ✅     | ✅     |
+| Subnet          | ✅   | ✅     | ✅     | ✅     |
+| SecurityGroup   | ✅   | ✅     | ✅     | ✅     |
+| SecurityRule    | ✅   | ✅     | ✅     | ✅     |
+| ElasticIP       | ✅   | ✅     | ✅     | ✅     |
+| LoadBalancer    | ✅   | ❌     | ❌     | ❌     |
+| VPNTunnel       | ✅   | ✅     | ✅     | ✅     |
+| VPCPeering      | ✅   | ✅     | ✅     | ✅     |
+| VPCPeeringRoute | ✅   | ✅     | ✅     | ✅     |
 
 > **Note**: LoadBalancer is read-only. Only GET (list and retrieve) operations are supported. Create, update, and delete operations are not available via the REST API.
 
@@ -253,7 +255,7 @@ This project provides separate Helm charts for each resource category:
 - **arubacloud-provider-kog-compute-blueprint** - Manages compute resources (CloudServer, KeyPair)
 - **arubacloud-provider-kog-container-blueprint** - Manages container resources (KaaS, ContainerRegistry)
 - **arubacloud-provider-kog-database-blueprint** - Manages database resources (DBaaS, Database, User, Grant, Backup)
-- **arubacloud-provider-kog-network-blueprint** - Manages network resources (VPC, Subnet, SecurityGroup, SecurityRule, ElasticIP, LoadBalancer, VPNTunnel)
+- **arubacloud-provider-kog-network-blueprint** - Manages network resources (VPC, Subnet, SecurityGroup, SecurityRule, ElasticIP, LoadBalancer, VPNTunnel, VPCPeering, VPCPeeringRoute)
 - **arubacloud-provider-kog-storage-blueprint** - Manages storage resources (BlockStorage, Snapshot, Backup, Restore)
 - **arubacloud-provider-kog-project-blueprint** - Manages project resources
 - **arubacloud-provider-kog-schedule-blueprint** - Manages scheduling resources (Job)
@@ -543,6 +545,8 @@ Each resource type requires a specific configuration resource to be created in t
 - `ElasticIPConfiguration` - For ElasticIP resources (API: `network.ogen-krateo.arubacloud.com/v1alpha1`)
 - `LoadBalancerConfiguration` - For LoadBalancer resources (API: `network.ogen-krateo.arubacloud.com/v1alpha1`) - **Read-only resource**
 - `VPNTunnelConfiguration` - For VPNTunnel resources (API: `network.ogen-krateo.arubacloud.com/v1alpha1`)
+- `VPCPeeringConfiguration` - For VPCPeering resources (API: `network.ogen-krateo.arubacloud.com/v1alpha1`)
+- `VPCPeeringRouteConfiguration` - For VPCPeeringRoute resources (API: `network.ogen-krateo.arubacloud.com/v1alpha1`)
 - `BlockStorageConfiguration` - For BlockStorage resources (API: `storage.ogen-krateo.arubacloud.com/v1alpha1`)
 - `SnapshotConfiguration` - For Snapshot resources (API: `storage.ogen-krateo.arubacloud.com/v1alpha1`)
 - `BackupConfiguration` - For Backup resources (storage) (API: `storage.ogen-krateo.arubacloud.com/v1alpha1`)

@@ -1,4 +1,4 @@
-package kms
+package vpcpeering
 
 import (
 	"encoding/json"
@@ -8,32 +8,32 @@ import (
 	"github.com/Arubacloud/sdk-go/pkg/types"
 )
 
-func GetKms(opts handlers.HandlerOptions) handlers.Handler {
+func GetVPCPeering(opts handlers.HandlerOptions) handlers.Handler {
 	return &getHandler{baseHandler: newBaseHandler(opts)}
 }
 
-func PostKms(opts handlers.HandlerOptions) handlers.Handler {
+func PostVPCPeering(opts handlers.HandlerOptions) handlers.Handler {
 	return &postHandler{baseHandler: newBaseHandler(opts)}
 }
 
-func PutKms(opts handlers.HandlerOptions) handlers.Handler {
+func PutVPCPeering(opts handlers.HandlerOptions) handlers.Handler {
 	return &putHandler{baseHandler: newBaseHandler(opts)}
 }
 
-func ListKmss(opts handlers.HandlerOptions) handlers.Handler {
-	return &listHandler{baseHandler: newBaseHandler(opts)}
+func DeleteVPCPeering(opts handlers.HandlerOptions) handlers.Handler {
+	return &deleteHandler{baseHandler: newBaseHandler(opts)}
 }
 
-func DeleteKms(opts handlers.HandlerOptions) handlers.Handler {
-	return &deleteHandler{baseHandler: newBaseHandler(opts)}
+func ListVPCPeerings(opts handlers.HandlerOptions) handlers.Handler {
+	return &listHandler{baseHandler: newBaseHandler(opts)}
 }
 
 // Interface compliance verification
 var _ handlers.Handler = &getHandler{}
 var _ handlers.Handler = &postHandler{}
 var _ handlers.Handler = &putHandler{}
-var _ handlers.Handler = &listHandler{}
 var _ handlers.Handler = &deleteHandler{}
+var _ handlers.Handler = &listHandler{}
 
 // Base handler with common functionality
 type baseHandler struct {
@@ -58,25 +58,30 @@ type putHandler struct {
 	*baseHandler
 }
 
-type listHandler struct {
+type deleteHandler struct {
 	*baseHandler
 }
 
-type deleteHandler struct {
+type listHandler struct {
 	*baseHandler
 }
 
 // ServeHTTP implementation for GET handler
 func (h *getHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	projectId := r.PathValue("projectId")
-	kmsId := r.PathValue("kmsId")
+	vpcId := r.PathValue("vpcId")
+	id := r.PathValue("id")
 
 	if projectId == "" {
 		http.Error(w, "projectId is required", http.StatusBadRequest)
 		return
 	}
-	if kmsId == "" {
-		http.Error(w, "kmsId is required", http.StatusBadRequest)
+	if vpcId == "" {
+		http.Error(w, "vpcId is required", http.StatusBadRequest)
+		return
+	}
+	if id == "" {
+		http.Error(w, "id is required", http.StatusBadRequest)
 		return
 	}
 
@@ -91,12 +96,12 @@ func (h *getHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// Build request parameters from query string
 	params := handlers.BuildRequestParameters(r.URL.Query())
 
-	h.Log.Printf("Getting KMS key %s for project %s", kmsId, projectId)
+	h.Log.Printf("Getting VPC peering %s for vpc %s in project %s", id, vpcId, projectId)
 
-	// Call Aruba Cloud SDK to get KMS key
-	response, err := client.FromSecurity().KMSKeys().Get(r.Context(), projectId, kmsId, params)
+	// Call Aruba Cloud SDK to get VPC peering
+	response, err := client.FromNetwork().VPCPeerings().Get(r.Context(), projectId, vpcId, id, params)
 	if err != nil {
-		h.Log.Printf("Failed to get KMS key: %v", err)
+		h.Log.Printf("Failed to get VPC peering: %v", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -111,9 +116,14 @@ func (h *getHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 // ServeHTTP implementation for POST handler
 func (h *postHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	projectId := r.PathValue("projectId")
+	vpcId := r.PathValue("vpcId")
 
 	if projectId == "" {
 		http.Error(w, "projectId is required", http.StatusBadRequest)
+		return
+	}
+	if vpcId == "" {
+		http.Error(w, "vpcId is required", http.StatusBadRequest)
 		return
 	}
 
@@ -126,7 +136,7 @@ func (h *postHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Decode request body
-	var req types.KmsRequest
+	var req types.VPCPeeringRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		h.Log.Printf("Failed to decode request body: %v", err)
 		http.Error(w, "Invalid request body: "+err.Error(), http.StatusBadRequest)
@@ -136,12 +146,12 @@ func (h *postHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// Build request parameters from query string
 	params := handlers.BuildRequestParameters(r.URL.Query())
 
-	h.Log.Printf("Creating KMS key for project %s", projectId)
+	h.Log.Printf("Creating VPC peering for vpc %s in project %s", vpcId, projectId)
 
-	// Call Aruba Cloud SDK to create KMS key
-	response, err := client.FromSecurity().KMSKeys().Create(r.Context(), projectId, req, params)
+	// Call Aruba Cloud SDK to create VPC peering
+	response, err := client.FromNetwork().VPCPeerings().Create(r.Context(), projectId, vpcId, req, params)
 	if err != nil {
-		h.Log.Printf("Failed to create KMS key: %v", err)
+		h.Log.Printf("Failed to create VPC peering: %v", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -156,14 +166,19 @@ func (h *postHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 // ServeHTTP implementation for PUT handler
 func (h *putHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	projectId := r.PathValue("projectId")
-	kmsId := r.PathValue("kmsId")
+	vpcId := r.PathValue("vpcId")
+	id := r.PathValue("id")
 
 	if projectId == "" {
 		http.Error(w, "projectId is required", http.StatusBadRequest)
 		return
 	}
-	if kmsId == "" {
-		http.Error(w, "kmsId is required", http.StatusBadRequest)
+	if vpcId == "" {
+		http.Error(w, "vpcId is required", http.StatusBadRequest)
+		return
+	}
+	if id == "" {
+		http.Error(w, "id is required", http.StatusBadRequest)
 		return
 	}
 
@@ -176,7 +191,7 @@ func (h *putHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Decode request body
-	var req types.KmsRequest
+	var req types.VPCPeeringRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		h.Log.Printf("Failed to decode request body: %v", err)
 		http.Error(w, "Invalid request body: "+err.Error(), http.StatusBadRequest)
@@ -186,12 +201,12 @@ func (h *putHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// Build request parameters from query string
 	params := handlers.BuildRequestParameters(r.URL.Query())
 
-	h.Log.Printf("Updating KMS key %s for project %s", kmsId, projectId)
+	h.Log.Printf("Updating VPC peering %s for vpc %s in project %s", id, vpcId, projectId)
 
-	// Call Aruba Cloud SDK to update KMS key
-	response, err := client.FromSecurity().KMSKeys().Update(r.Context(), projectId, kmsId, req, params)
+	// Call Aruba Cloud SDK to update VPC peering
+	response, err := client.FromNetwork().VPCPeerings().Update(r.Context(), projectId, vpcId, id, req, params)
 	if err != nil {
-		h.Log.Printf("Failed to update KMS key: %v", err)
+		h.Log.Printf("Failed to update VPC peering: %v", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -206,14 +221,19 @@ func (h *putHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 // ServeHTTP implementation for DELETE handler
 func (h *deleteHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	projectId := r.PathValue("projectId")
-	kmsId := r.PathValue("kmsId")
+	vpcId := r.PathValue("vpcId")
+	id := r.PathValue("id")
 
 	if projectId == "" {
 		http.Error(w, "projectId is required", http.StatusBadRequest)
 		return
 	}
-	if kmsId == "" {
-		http.Error(w, "kmsId is required", http.StatusBadRequest)
+	if vpcId == "" {
+		http.Error(w, "vpcId is required", http.StatusBadRequest)
+		return
+	}
+	if id == "" {
+		http.Error(w, "id is required", http.StatusBadRequest)
 		return
 	}
 
@@ -228,12 +248,12 @@ func (h *deleteHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// Build request parameters from query string
 	params := handlers.BuildRequestParameters(r.URL.Query())
 
-	h.Log.Printf("Deleting KMS key %s for project %s", kmsId, projectId)
+	h.Log.Printf("Deleting VPC peering %s for vpc %s in project %s", id, vpcId, projectId)
 
-	// Call Aruba Cloud SDK to delete KMS key
-	response, err := client.FromSecurity().KMSKeys().Delete(r.Context(), projectId, kmsId, params)
+	// Call Aruba Cloud SDK to delete VPC peering
+	response, err := client.FromNetwork().VPCPeerings().Delete(r.Context(), projectId, vpcId, id, params)
 	if err != nil {
-		h.Log.Printf("Failed to delete KMS key: %v", err)
+		h.Log.Printf("Failed to delete VPC peering: %v", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -250,9 +270,14 @@ func (h *deleteHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 // ServeHTTP implementation for LIST handler
 func (h *listHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	projectId := r.PathValue("projectId")
+	vpcId := r.PathValue("vpcId")
 
 	if projectId == "" {
 		http.Error(w, "projectId is required", http.StatusBadRequest)
+		return
+	}
+	if vpcId == "" {
+		http.Error(w, "vpcId is required", http.StatusBadRequest)
 		return
 	}
 
@@ -267,12 +292,12 @@ func (h *listHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// Build request parameters from query string
 	params := handlers.BuildRequestParameters(r.URL.Query())
 
-	h.Log.Printf("Listing KMS keys for project %s", projectId)
+	h.Log.Printf("Listing VPC peerings for vpc %s in project %s", vpcId, projectId)
 
-	// Call Aruba Cloud SDK to list KMS keys
-	response, err := client.FromSecurity().KMSKeys().List(r.Context(), projectId, params)
+	// Call Aruba Cloud SDK to list VPC peerings
+	response, err := client.FromNetwork().VPCPeerings().List(r.Context(), projectId, vpcId, params)
 	if err != nil {
-		h.Log.Printf("Failed to list KMS keys: %v", err)
+		h.Log.Printf("Failed to list VPC peerings: %v", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -283,3 +308,4 @@ func (h *listHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		h.Log.Printf("Failed to encode response: %v", err)
 	}
 }
+

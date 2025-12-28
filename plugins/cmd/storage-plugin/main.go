@@ -12,18 +12,6 @@ import (
 	httpSwagger "github.com/swaggo/http-swagger"
 )
 
-// @title           Aruba Cloud Storage Plugin API for Krateo Operator Generator (KOG)
-// @version         1.0
-// @description     Simple wrapper around Aruba Cloud API to provide consistency of API response for Krateo Operator Generator (KOG)
-// @termsOfService  http://swagger.io/terms/
-// @contact.name    Krateo Support
-// @contact.url     https://krateo.io
-// @contact.email   contact@krateoplatformops.io
-// @license.name    Apache 2.0
-// @license.url     http://www.apache.org/licenses/LICENSE-2.0.html
-// @host            localhost:8080
-// @BasePath        /
-// @schemes         http
 func main() {
 	srv := server.New()
 
