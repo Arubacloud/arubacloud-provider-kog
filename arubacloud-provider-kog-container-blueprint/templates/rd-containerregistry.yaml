@@ -17,19 +17,19 @@ spec:
     verbsDescription:
     - action: findby
       method: GET
-      path: /projects/{projectId}/providers/Aruba.Container/containerregistries
+      path: /projects/{projectId}/providers/Aruba.Container/registries
     - action: get
       method: GET
-      path: /projects/{projectId}/providers/Aruba.Container/containerregistries/{id}
+      path: /projects/{projectId}/providers/Aruba.Container/registries/{id}
     - action: create
       method: POST
-      path: /projects/{projectId}/providers/Aruba.Container/containerregistries
+      path: /projects/{projectId}/providers/Aruba.Container/registries
     - action: update
       method: PUT
-      path: /projects/{projectId}/providers/Aruba.Container/containerregistries/{id}
+      path: /projects/{projectId}/providers/Aruba.Container/registries/{id}
     - action: delete
       method: DELETE
-      path: /projects/{projectId}/providers/Aruba.Container/containerregistries/{id}
+      path: /projects/{projectId}/providers/Aruba.Container/registries/{id}
     configurationFields:
     - fromOpenAPI:
         name: api-version

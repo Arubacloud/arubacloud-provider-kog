@@ -1,9 +1,9 @@
 kind: RestDefinition
 apiVersion: ogen.krateo.io/v1alpha1
 metadata:
-  name: {{ .Release.Name }}-kaas
+  name: {{ .Release.Name | lower }}-kaas
 spec:
-  oasPath: configmap://{{ .Release.Namespace }}/{{ .Release.Name }}-kaas/kaas.yaml
+  oasPath: configmap://{{ .Release.Namespace | lower }}/{{ .Release.Name | lower }}-kaas/kaas.yaml
   resourceGroup: container.ogen-krateo.arubacloud.com
   resource: 
     kind: KaaS

@@ -21,7 +21,7 @@ tags:
     description: Database backup operations
 
 paths:
-  /projects/{projectId}/providers/Aruba.Database/backups:
+  /projects/{projectId}/providers/Aruba.Database/dbaas/{dbaasId}/backups:
     get:
       tags:
         - Backups
@@ -30,6 +30,7 @@ paths:
       operationId: listBackups
       parameters:
         - $ref: '#/components/parameters/ProjectIdPath'
+        - $ref: '#/components/parameters/DbaasIdPath'
         - $ref: '#/components/parameters/Filter'
         - $ref: '#/components/parameters/Sort'
         - $ref: '#/components/parameters/Projection'
@@ -60,6 +61,7 @@ paths:
       operationId: createBackup
       parameters:
         - $ref: '#/components/parameters/ProjectIdPath'
+        - $ref: '#/components/parameters/DbaasIdPath'
         - $ref: '#/components/parameters/ApiVersion'
       requestBody:
         required: true
@@ -85,7 +87,7 @@ paths:
         '500':
           $ref: '#/components/responses/InternalServerError'
 
-  /projects/{projectId}/providers/Aruba.Database/backups/{backupId}:
+  /projects/{projectId}/providers/Aruba.Database/dbaas/{dbaasId}/backups/{id}:
     get:
       tags:
         - Backups
@@ -94,6 +96,7 @@ paths:
       operationId: getBackup
       parameters:
         - $ref: '#/components/parameters/ProjectIdPath'
+        - $ref: '#/components/parameters/DbaasIdPath'
         - $ref: '#/components/parameters/BackupIdPath'
         - $ref: '#/components/parameters/ApiVersion'
       responses:
@@ -122,6 +125,7 @@ paths:
       operationId: deleteBackup
       parameters:
         - $ref: '#/components/parameters/ProjectIdPath'
+        - $ref: '#/components/parameters/DbaasIdPath'
         - $ref: '#/components/parameters/BackupIdPath'
         - $ref: '#/components/parameters/ApiVersion'
       responses:
@@ -158,8 +162,17 @@ components:
         type: string
         example: "my-project-id"
 
+    DbaasIdPath:
+      name: dbaasId
+      in: path
+      required: true
+      description: Unique identifier of the DBaaS instance
+      schema:
+        type: string
+        example: "my-dbaas-id"
+
     BackupIdPath:
-      name: backupId
+      name: id
       in: path
       required: true
       description: Unique identifier of the backup

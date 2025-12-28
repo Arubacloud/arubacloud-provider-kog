@@ -85,7 +85,7 @@ paths:
         '500':
           $ref: '#/components/responses/InternalServerError'
 
-  /projects/{projectId}/providers/Aruba.Container/kaas/{kaasId}:
+  /projects/{projectId}/providers/Aruba.Container/kaas/{id}:
     get:
       tags:
         - KaaS
@@ -195,7 +195,7 @@ components:
         example: "my-project-id"
 
     KaasIdPath:
-      name: kaasId
+      name: id
       in: path
       required: true
       description: Unique identifier of the KaaS cluster

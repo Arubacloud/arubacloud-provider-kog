@@ -78,7 +78,7 @@ paths:
         '500':
           $ref: '#/components/responses/InternalServerError'
 
-  /projects/{projectId}/providers/Aruba.Security/kms/keys/{keyName}:
+  /projects/{projectId}/providers/Aruba.Security/kms/keys/{id}:
     get:
       tags: [KMS Keys]
       summary: Get KMS Key
@@ -168,7 +168,7 @@ components:
         type: string
 
     KeyName:
-      name: keyName
+      name: id
       in: path
       required: true
       description: The name of the KMS encryption key

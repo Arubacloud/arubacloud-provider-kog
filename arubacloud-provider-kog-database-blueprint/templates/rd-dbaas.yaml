@@ -1,9 +1,9 @@
 kind: RestDefinition
 apiVersion: ogen.krateo.io/v1alpha1
 metadata:
-  name: {{ .Release.Name }}-dbaas
+  name: {{ .Release.Name | lower }}-dbaas
 spec:
-  oasPath: configmap://{{ .Release.Namespace }}/{{ .Release.Name }}-dbaas/dbaas.yaml
+  oasPath: configmap://{{ .Release.Namespace | lower }}/{{ .Release.Name | lower }}-dbaas/dbaas.yaml
   resourceGroup: database.ogen-krateo.arubacloud.com
   resource: 
     kind: DBaaS

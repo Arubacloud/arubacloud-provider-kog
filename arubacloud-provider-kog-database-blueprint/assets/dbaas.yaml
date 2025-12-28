@@ -85,7 +85,7 @@ paths:
         '500':
           $ref: '#/components/responses/InternalServerError'
 
-  /projects/{projectId}/providers/Aruba.Database/dbaas/{dbaasId}:
+  /projects/{projectId}/providers/Aruba.Database/dbaas/{id}:
     get:
       tags:
         - DBaaS
@@ -195,7 +195,7 @@ components:
         example: "my-project-id"
 
     DbaasIdPath:
-      name: dbaasId
+      name: id
       in: path
       required: true
       description: Unique identifier of the DBaaS instance

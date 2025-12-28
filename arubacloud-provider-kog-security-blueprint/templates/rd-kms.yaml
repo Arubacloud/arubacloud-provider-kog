@@ -1,9 +1,9 @@
 kind: RestDefinition
 apiVersion: ogen.krateo.io/v1alpha1
 metadata:
-  name: {{ .Release.Name }}-kms
+  name: {{ .Release.Name | lower }}-kms
 spec:
-  oasPath: configmap://{{ .Release.Namespace }}/{{ .Release.Name }}-kms/kms.yaml
+  oasPath: configmap://{{ .Release.Namespace | lower }}/{{ .Release.Name | lower }}-kms/kms.yaml
   resourceGroup: security.ogen-krateo.arubacloud.com
   resource: 
     kind: KMS
